@@ -20,7 +20,7 @@ export default async function MenuNavBar() {
                 </div>
                 <div className="flex-1 text-center">
                     {user ? <p className="text-back text-center text-2xl">Welcome, {user.name.split(" ")[0]}</p> : 
-                    <p className="text-back text-2xl">Welcome to Rev's Grill</p>}
+                    <p className="text-back text-2xl">Welcome to Rev&apos;s Grill</p>}
                 </div>
                 <div className="flex-1 text-right m-[1.5em]">
                     {user ? <Link className="px-[1em] py-[0.5em] text-back text-center text-2xl bg-high1 rounded-[50px] drop-shadow-normal hover:drop-shadow-highlight hover:bg-high2 duration-500" href="/logout">Logout</Link> : 
