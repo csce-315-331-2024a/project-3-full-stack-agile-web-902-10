@@ -1,33 +1,59 @@
+"use client";
 import Link from "next/link";
+import { signIn, signOut } from 'next-auth/react';
+import * as React from "react";
+import { useTheme } from "next-themes";
 
-import { prisma } from "@/lib/db";
-import { getUserSession } from "@/lib/session";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
-export default async function MenuNavBar() {
-    const user_session = await getUserSession();
-    const user = user_session ? await prisma.users.findUnique({
-        where: {
-            email: user_session?.email ?? undefined
-        }
-    }) : null;
+export default function MenuNavBar({ username, is_manager }: { username: string | undefined, is_manager: boolean | undefined }) {
+    const { theme, setTheme } = useTheme();
+
+    const toggleTheme = () => {
+        setTheme(theme === "dark" ? "light" : "dark");
+    }
 
     return (
-        <nav className="w-[85%] h-[5em] mt-[1em] mx-auto relative bg-fore rounded-[50px] drop-shadow-normal hover:drop-shadow-highlight duration-500">
-            <div className="flex justify-between items-center align-middle">
-                <div className="flex-1 m-[1.5em]">
-                    {user?.is_manager ? <Link className="px-[1em] py-[0.5em] text-back text-center text-2xl bg-high1 rounded-[50px] drop-shadow-normal hover:drop-shadow-highlight hover:bg-high2 duration-500" href="/manager">Manager</Link> : 
-                    <p className="text-back text-center text-2xl">Weather here?</p>}
-                </div>
-                <div className="flex-1 text-center">
-                    {user ? <p className="text-back text-center text-2xl">Welcome, {user.name.split(" ")[0]}</p> : 
-                    <p className="text-back text-2xl">Welcome to Rev&apos;s Grill</p>}
-                </div>
-                <div className="flex-1 text-right m-[1.5em]">
-                    {user ? <Link className="px-[1em] py-[0.5em] text-back text-center text-2xl bg-high1 rounded-[50px] drop-shadow-normal hover:drop-shadow-highlight hover:bg-high2 duration-500" href="/logout">Logout</Link> : 
-                    <Link className="px-[1em] py-[0.5em] text-back text-center text-2xl bg-high1 rounded-[50px] drop-shadow-normal hover:drop-shadow-highlight hover:bg-high2 duration-500" href="/login">Login</Link>}
-                </div>
+        <div className="border-b">
+            <div className="flex h-16 items-center justify-center px-4">
+                <nav className="flex item-center space-x-4 lg:space-x-48">
+                    <Link 
+                        href={is_manager === undefined ? "https://www.weather.gov/" : "/manager"}
+                        className="text-sm font-medium transition-colors hover:text-primary"
+                    >
+                        {is_manager === undefined ? "68 F" : "Manager"}
+                    </Link>
+                    <p className="text-sm font-medium transition-colors">{username === undefined ? "Rev's Grill" : "Welcome, " + username.split(" ")[0]}</p>
+                    <Dialog>
+                        <DialogTrigger className="text-sm font-medium transition-colors hover:text-primary">Settings</DialogTrigger>
+                        <DialogContent className="sm:max-w-[30em] md:max-w-[50em] md:max-h-[50em] rounded-[50px]">
+                            <DialogHeader>
+                                <DialogTitle>Settings</DialogTitle>
+                                <DialogDescription>Make changes to your session here.</DialogDescription>
+                            </DialogHeader>
+                            <div className="flex-col space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <Switch checked={theme == "dark" ? true : false} onCheckedChange={toggleTheme} id="dark-mode"/>
+                                    <Label htmlFor="dark-mode">Dark Mode</Label>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <Switch id="another-setting"/>
+                                    <Label htmlFor="another-setting">another setting</Label>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    {username === undefined ? 
+                                        <Button variant={"outline"} onClick={() => signIn('google', { callbackUrl: "/menu" })}>Sign In</Button> :
+                                        <Button variant={"destructive"} onClick={() => signOut()}>Sign Out</Button>
+                                    }
+                                </div>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                </nav>
             </div>
-        </nav>
-
+        </div>
     );
 }
