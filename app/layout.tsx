@@ -14,7 +14,7 @@ export default function HomeLayout({ children, }: Readonly<{ children: React.Rea
             <body>
                 <ThemeProvider
                     attribute="class"
-                    defaultTheme="system"
+                    defaultTheme="light"
                 >
                     {children}
                 </ThemeProvider>

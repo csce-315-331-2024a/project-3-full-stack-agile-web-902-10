@@ -1,6 +1,7 @@
 import MenuNavBar from "@/components/MenuNavBar";
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
+import CustomerMenu from "@/components/CustmerMenu";
 
 export const metadata = {
     title: "Menu | Rev's Grill",
@@ -17,6 +18,7 @@ export default async function MenuPage() {
     return (
         <>
             <MenuNavBar username={user?.name} is_manager={user?.is_manager} />
+            <CustomerMenu />
         </>
     );
 }
