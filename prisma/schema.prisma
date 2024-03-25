@@ -1,70 +1,60 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Users {
-    id         Int     @id @default(autoincrement())
-    email      String  @unique
-    name       String
-    avatar     String?
-    is_manager Boolean
-
-    login_log Login_Log[]
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  name       String
+  avatar     String?
+  is_manager Boolean
+  login_log  Login_Log[]
 }
 
 model Login_Log {
-    id Int @id @default(autoincrement())
-
-    time  DateTime @default(now())
-    login Boolean
-
-    user    Users @relation(fields: [user_id], references: [id])
-    user_id Int
+  id      Int      @id @default(autoincrement())
+  time    DateTime @default(now())
+  login   Boolean
+  user_id Int
+  user    Users    @relation(fields: [user_id], references: [id])
 }
 
 model Ingredient {
-    id       Int                @id @default(autoincrement())
-    name     String             @unique
-    category String
-    stock    Int
-    menus    Menus_Ingredients?
+  id       Int                @id @default(autoincrement())
+  name     String             @unique
+  stock    Int
+  category String
+  menus    Menus_Ingredients?
 }
 
 model Menu_Item {
-    id          Int                @id @default(autoincrement())
-    name        String             @unique
-    price       Decimal
-    category    String
-    image_url   String
-    ingredients Menus_Ingredients?
+  id          Int                @id @default(autoincrement())
+  name        String             @unique
+  price       Int
+  image_url   String
+  category    String
+  ingredients Menus_Ingredients?
 }
 
-// Join table for many-to-many relationship between menu_item and ingredient
 model Menus_Ingredients {
-    ratio         Int
-    menu_item     Menu_Item  @relation(fields: [menu_item_id], references: [id])
-    menu_item_id  Int        @unique
-    ingredient    Ingredient @relation(fields: [ingredient_id], references: [id])
-    ingredient_id Int        @unique
+  ratio         Int
+  menu_item_id  Int        @unique
+  ingredient_id Int        @unique
+  ingredient    Ingredient @relation(fields: [ingredient_id], references: [id])
+  menu_item     Menu_Item  @relation(fields: [menu_item_id], references: [id])
 
-    @@id([menu_item_id, ingredient_id])
+  @@id([menu_item_id, ingredient_id])
 }
 
 model Order_Log {
-    id          Int      @id @default(autoincrement())
-    time        DateTime @default(now())
-    price       Decimal
-    menu_items  String // JSON
-    ingredients String // JSON
+  id          Int      @id @default(autoincrement())
+  time        DateTime @default(now())
+  price       Int
+  menu_items  String
+  ingredients String
 }

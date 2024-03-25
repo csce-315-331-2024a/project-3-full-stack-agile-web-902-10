@@ -1,7 +1,6 @@
-import MenuNavBar from "@/components/MenuNavBar";
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import CustomerMenu from "@/components/CustmerMenu";
+import CustomerMenu from "@/components/CustomerMenu";
 
 export const metadata = {
     title: "Menu | Rev's Grill",
@@ -15,10 +14,10 @@ export default async function MenuPage() {
         }
     }) : null;
 
+    const menu_items = await prisma.menu_Item.findMany();
+    const categories = Array.from(new Set(menu_items.map((item) => item.category)));
+
     return (
-        <>
-            <MenuNavBar username={user?.name} is_manager={user?.is_manager} />
-            <CustomerMenu />
-        </>
+        <CustomerMenu menu_items={menu_items} categories={categories} username={user?.name} is_manager={user?.is_manager}/>
     );
 }
