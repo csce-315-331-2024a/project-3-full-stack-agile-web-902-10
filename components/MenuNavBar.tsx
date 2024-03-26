@@ -35,17 +35,17 @@ export default function MenuNavBar({ username, is_manager, cart, setCart }: { us
                     <div className="flex justify-start">
                         <Link
                             href={is_manager === undefined ? "https://www.weather.gov/" : "/manager"}
-                            className="text-md font-medium hover:text-secondary"
+                            className="text-lg font-bold transition-colors hover:text-primary"
                         >
                             {is_manager === undefined ? "68 F" : "Manager"}
                         </Link>
                     </div>
                     <div className="flex justify-center flex-grow">
                         {cart.length <= 0 ?
-                            <p className="text-md font-medium text-center">{username === undefined ? "Rev's Grill" : "Welcome, " + username.split(" ")[0]}</p> :
+                            <p className="text-lg font-bold text-center">{username === undefined ? "Rev's Grill" : "Welcome, " + username.split(" ")[0]}</p> :
                             <Drawer direction="bottom">
                                 <DrawerTrigger>
-                                    <Button variant="destructive" className="">{cart.length} items in cart</Button>
+                                    <Button variant="default" className="text-lg font-bold">{cart.length} items in cart</Button>
                                 </DrawerTrigger>
                                 <DrawerContent>
                                     <DrawerHeader>
@@ -72,11 +72,10 @@ export default function MenuNavBar({ username, is_manager, cart, setCart }: { us
                                 </DrawerContent>
                             </Drawer>
                         }
-
                     </div>
                     <div className="flex justify-end">
                         <Dialog>
-                            <DialogTrigger className="text-md font-medium transition-colors hover:text-secondary">Settings</DialogTrigger>
+                            <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">Settings</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>Settings</DialogTitle>

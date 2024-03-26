@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 
-export default function CustomerMenuDesktop({ menu_items, categories, setCart}: { menu_items: Menu_Item[], categories: string[], setCart: any }) {
+export default function CustomerMenuDesktop({ menu_items, categories, setCart }: { menu_items: Menu_Item[], categories: string[], setCart: any }) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
 
@@ -47,10 +47,10 @@ export default function CustomerMenuDesktop({ menu_items, categories, setCart}: 
         <div className="hidden lg:flex flex-row">
             <ScrollArea className="h-[92vh] w-auto p-10  whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
-                    <h1> Category </h1>
+                    <h1 className="text-lg font-bold"> Category </h1>
                     <Separator />
                     {categories.map((cat) => (
-                        <Button key={cat} variant={selectedCategory === cat ? "default" : "secondary"} className="w-[8vw] h-[5vh]" onClick={() => onCategoryClick(cat)}> {cat} </Button>
+                        <Button key={cat} variant={selectedCategory === cat ? "default" : "secondary"} className="w-[8vw] h-[5vh] text-lg font-bold" onClick={() => onCategoryClick(cat)}> {cat} </Button>
                     ))}
                 </div>
                 <ScrollBar orientation="vertical" />
@@ -61,7 +61,7 @@ export default function CustomerMenuDesktop({ menu_items, categories, setCart}: 
                         <Dialog key={menu_item.id}>
                             <DialogTrigger asChild>
                                 <Button variant="outline" className="flex-col justify-evenly w-[25vw] h-[40vh]">
-                                    <h2 className="text-2xl">{menu_item.name}</h2>
+                                    <h2 className="text-2xl font-bold">{menu_item.name}</h2>
                                     <Image
                                         src={menu_item.image_url}
                                         width={200}
