@@ -66,7 +66,7 @@ export default function CustomerMenuDesktop({ menu_items, categories, setCart }:
                                         src={menu_item.image_url}
                                         width={200}
                                         height={200}
-                                        alt="Photo by ..."
+                                        alt={menu_item.name}
                                         className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
                                     />
                                     <h2 className="text-2xl">${menu_item.price}</h2>
@@ -81,7 +81,7 @@ export default function CustomerMenuDesktop({ menu_items, categories, setCart }:
                                     src={menu_item.image_url}
                                     width={200}
                                     height={200}
-                                    alt="Photo by ..."
+                                    alt={menu_item.name}
                                     className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
                                 />
 

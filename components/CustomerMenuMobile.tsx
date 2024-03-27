@@ -72,11 +72,11 @@ export default function CustomerMenuMobile({ menu_items, categories, setCart }: 
                                     src={menu_item.image_url}
                                     width={200}
                                     height={200}
-                                    alt="Photo by ..."
+                                    alt={menu_item.name}
                                     className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
                                 />
                                 <DialogFooter>
-                                    <DialogClose>
+                                    <DialogClose asChild>
                                         <Button variant="default" onClick={() => onAddToCart(menu_item)}>Add to Cart</Button>
                                     </DialogClose>
                                 </DialogFooter>
