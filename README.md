@@ -6,8 +6,7 @@ Run the dev server with
 npm run dev
 ```
 
-Run end to end tests by first starting a dev server, then running the test command
+Run end to end tests with
 ```bash
-npm run dev
 npm run test
 ```
