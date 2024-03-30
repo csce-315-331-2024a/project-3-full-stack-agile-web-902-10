@@ -54,12 +54,12 @@ export default function MenuBoardClient({ menu_items, categories}:
     preCategories2.splice(0,1);
 
 
-    let temp11 = [""];
+    /*let temp11 = [""];
     temp11.splice(0,1);
 
     let temp21 = [""];
-    temp21.splice(0,1);
-    for (let i = 0; i < categories.length; ++i){
+    temp21.splice(0,1);*/
+    for (let i = 0; i < categories.length; i = i +2){
         temp1 = getMenuItems(categories[i]);
         while (temp1.length > 5){  
             preMenu1.push(temp1.splice(0,5));
@@ -68,14 +68,24 @@ export default function MenuBoardClient({ menu_items, categories}:
         preMenu1.push(temp1);
         preCategories1.push(categories[i]);
      }
+     for (let i = 1; i < categories.length; i = i +2){
+        temp2 = getMenuItems(categories[i]);
+        while (temp2.length > 5){  
+            preMenu2.push(temp2.splice(0,5));
+            preCategories2.push(categories[i]);
+        }   
+        preMenu2.push(temp2);
+        preCategories2.push(categories[i]);
+     }
 
-    /*for (let i = 0; i < categories.length; i + 2){
-        if (i + 1 == categories.length){
+    /*for (let i = 0; i < categories.length; i = i + 2){
+        if (i  == categories.length - 1){
             
             temp1 = getMenuItems(categories[i]);
             while (temp1.length > 5){
-                temp11 = temp1.splice(0,5);
-                preMenu1.push(temp11);
+                //temp11 = temp1.splice(0,5);
+                //preMenu1.push(temp11);
+                preMenu1.push(temp1.splice(0,5));
                 preCategories1.push(categories[i]);
                 preMenu2.push(temp2);
                 preCategories2.push(categories[i-1]);
@@ -94,8 +104,9 @@ export default function MenuBoardClient({ menu_items, categories}:
 
             while(temp1.length > 5 || temp2.length > 5){
                 if (temp1.length > 5){
-                    temp11 = temp1.splice(0,5);
-                    preMenu1.push(temp11);
+                    //temp11 = temp1.splice(0,5);
+                    //preMenu1.push(temp11);
+                    preMenu1.push(temp1.splice(0,5));
                     preCategories1.push(categories[i]);
                 }
                 else {
@@ -104,8 +115,9 @@ export default function MenuBoardClient({ menu_items, categories}:
                 }
 
                 if (temp2.length > 5){
-                    temp21 = temp2.splice(0,5);
-                    preMenu2.push(temp21);
+                    //temp21 = temp2.splice(0,5);
+                    //preMenu2.push(temp21);
+                    preMenu2.push(temp2.splice(0,5));
                     preCategories2.push(categories[i+1]);
                 }
                 else {
@@ -123,7 +135,8 @@ export default function MenuBoardClient({ menu_items, categories}:
     
 
 
-    const [index, setIndex] = useState(0);
+    const [index1, setIndex1] = useState(0);
+    const [index2, setIndex2] = useState(0);
     //const [count, setCount] = useState(0);
 
     //let preCat1 = categories[0];
@@ -198,20 +211,29 @@ export default function MenuBoardClient({ menu_items, categories}:
                 //setCurrentCat1(categories[(index-1)%categories.length]);
                 //setCurrentCat2(categories[(index)%categories.length]);
             }*/
+            let next1 = (index1 + 1)%preCategories1.length ;
+            let next2 = (index2 + 1)%preCategories2.length ;
 
+            if (preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2]){//stall index 2
+                next2 = index2;
+            }
 
-            const next = (index + 1)%preCategories1.length ;
-            setIndex(next);
-            setCurrentCat1(preCategories1[next]);
-            setCurrentMI1(preMenu1[next]);
-            /*setCurrentCat2(preCategories2[next]);
-            setCurrentMI2(preMenu2[next]);*/
+            if (preCategories2[next2] == preCategories1[index2] && preCategories1[next1] != preCategories1[index1]){//stall index 1
+                next1 = index1;
+            }
+
+            setIndex1(next1);
+            setIndex2(next2);
+            setCurrentCat1(preCategories1[next1]);
+            setCurrentMI1(preMenu1[next1]);
+            setCurrentCat2(preCategories2[next2]);
+            setCurrentMI2(preMenu2[next2]);
         };
 
         const intervalId = setInterval(scroll, 5000); 
 
         return () => clearInterval(intervalId);
-    }, [index]);//, count, currentCategory1, currentCategory2, currentMenuItems1, currentCategory2]); 
+    }, [index1, index2]);//, count, currentCategory1, currentCategory2, currentMenuItems1, currentCategory2]); 
     
     
     return (
@@ -220,6 +242,7 @@ export default function MenuBoardClient({ menu_items, categories}:
         
         <p> {currentCategory1}  {currentMenuItems1}</p>
         <p> {currentCategory2}  {currentMenuItems2}</p>
+        <p> {preCategories1.length} {preCategories2.length} {preMenu1.length} {preMenu2.length} {index1} {index2}</p>
         
         
         </div>
