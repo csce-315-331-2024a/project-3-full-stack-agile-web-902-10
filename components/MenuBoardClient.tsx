@@ -138,6 +138,7 @@ export default function MenuBoardClient({ menu_items, categories}:
         
         <p> {currentCategory1}  {currentMenuItems1}</p>
         <p> {currentCategory2}  {currentMenuItems2}</p>
+        //<p> {index}</p>
         
         
         </div>
