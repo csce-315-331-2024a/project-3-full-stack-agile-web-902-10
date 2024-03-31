@@ -7,9 +7,9 @@ import { ColumnDef } from "@tanstack/react-table"
 export type Payment = {
   id: number
   name: string
-  price: number
-  image_url: string
   category: string
+  stock: number
+  min_stock: number
 }
  
 export const columns: ColumnDef<Payment>[] = [
@@ -18,11 +18,15 @@ export const columns: ColumnDef<Payment>[] = [
     header: "Name",
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "category",
+    header: "Category",
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
+    accessorKey: "stock",
+    header: "Stock",
+  },
+  {
+    accessorKey: "min_stock",
+    header: "Minimum Stock",
   },
 ]
