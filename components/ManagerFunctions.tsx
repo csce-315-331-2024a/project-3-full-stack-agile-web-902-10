@@ -28,7 +28,11 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
 
     const toggleEditMenuDiv = () => {
         setShowEditDiv(!showEditDiv);
-    };
+    }
+
+    const toggleBoard = () => {
+        window.open('/menu_board', '_blank');
+    }
 
     const editItem = (menu_item: Menu_Item) => {
 
@@ -47,6 +51,8 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                     <Separator />
                     
                     <Button variant={"secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
+                    <Button variant={"secondary"} onClick={toggleBoard}>Menu Board</Button>
+
                 </div>
             </ScrollArea>
             {/* if editing menu items */}
