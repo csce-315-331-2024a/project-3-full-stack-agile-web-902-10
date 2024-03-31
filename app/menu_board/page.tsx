@@ -8,7 +8,7 @@ export default async function menu_board() {
     const categories = Array.from(new Set(menu_items.map((item) => item.category)));
     
     
-    return (
+    return ( //calls the client side thing
         <MenuBoardClient menu_items={menu_items} categories={categories}/>
     );
 }
