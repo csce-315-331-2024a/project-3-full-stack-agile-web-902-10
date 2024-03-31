@@ -85,7 +85,7 @@ export default function MenuBoardClient({ menu_items, categories}:
             let next1 = (index1 + 1)%preCategories1.length ;
             let next2 = (index2 + 1)%preCategories2.length ;
 
-            if ((preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2]) || (next2 == 0 && next1 != 0)){//stall index 2 (added for if odd, stall t=till index 1 is done)
+            if (preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2]){//stall index 2
                 next2 = index2;
             }
 
