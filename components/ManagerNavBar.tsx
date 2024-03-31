@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { signIn, signOut } from 'next-auth/react';
-import React, { useEffect } from "react";
+import React from "react";
 import { useTheme } from "next-themes";
 import { useRouter } from 'next/navigation';
 
@@ -27,13 +27,8 @@ export default function ManagerNavBar({ username }: {
     const handleSignOut = async () => {
         await signOut({ redirect: false});
         router.push("/menu");
+        router.refresh();
     }
-
-    useEffect(() => {
-        if (username === undefined) {
-          handleSignOut();
-        }
-    }, [username]);
 
     return (
         <div className="border-b">
