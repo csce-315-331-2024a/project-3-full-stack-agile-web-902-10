@@ -12,7 +12,7 @@ export type RestockReportData = {
   min_stock: number
 }
  
-export const columns: ColumnDef<RestockReportData>[] = [
+export const RestockReportColumns: ColumnDef<RestockReportData>[] = [
   {
     accessorKey: "name",
     header: "Name",

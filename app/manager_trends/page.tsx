@@ -1,6 +1,6 @@
 import ManagerTrends from "@/components/ManagerTrends";
 import { prisma } from "@/lib/db";
-import { RestockReportData, columns } from "@/app/manager_trends/columns"
+import { RestockReportData, RestockReportColumns } from "@/app/manager_trends/columns"
 
 export const metadata = {
     title: "Trends",
