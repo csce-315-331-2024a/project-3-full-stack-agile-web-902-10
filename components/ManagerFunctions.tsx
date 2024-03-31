@@ -25,13 +25,21 @@ import { Checkbox } from "@radix-ui/react-checkbox";
 export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Menus_Ingredients[]}) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined); 
     const [showEditDiv, setShowEditDiv] = useState(false);
+    const [showTrendDiv, setShowTrendDiv] = useState(false);
+
 
     const toggleEditMenuDiv = () => {
+        setShowTrendDiv(false);
         setShowEditDiv(!showEditDiv);
     }
 
     const toggleBoard = () => {
         window.open('/menu_board', '_blank');
+    }
+
+    const toggleTrends = () => {
+        setShowEditDiv(false);
+        setShowTrendDiv(!showTrendDiv);
     }
 
     const editItem = (menu_item: Menu_Item) => {
@@ -52,6 +60,7 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                     
                     <Button variant={"secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
                     <Button variant={"secondary"} onClick={toggleBoard}>Menu Board</Button>
+                    <Button variant={"secondary"} onClick={toggleTrends}>Trends</Button>
 
                 </div>
             </ScrollArea>
@@ -61,7 +70,7 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                 <div className="grid grid-cols-1 gap-4 p-4">
                 <Dialog>
                     <DialogTrigger className="justify-evenly">
-                        <Button variant="default" className="text-lg font-bold">Add Items</Button>
+                        <Button variant="default" className="text-lg font-bold">Add Item</Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
@@ -127,6 +136,13 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                     ))}
                 </div>
             </ScrollArea>
+            )}
+            {showTrendDiv && (
+                <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
+                    <div className="grid grid-cols-1 gap-4 p-4">
+                        <h2 className="text-2xl">Trends Data Goes Here</h2>
+                    </div>
+                </ScrollArea>
             )}
         </div>
     );
