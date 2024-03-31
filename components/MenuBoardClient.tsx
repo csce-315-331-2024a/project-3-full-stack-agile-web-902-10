@@ -38,88 +38,6 @@ export default function MenuBoardClient({ menu_items, categories}:
         strAr.splice(0,5)
         return strAr;
     }*/
-    let preMenu1 = [[""]];
-    preMenu1.splice(0,1);
-    let temp1 = [""];
-    temp1.splice(0,1);
-
-    let preMenu2 = [[""]];
-    preMenu2.splice(0,1);
-    let temp2 = [""];
-    temp2.splice(0,1);
-
-    let preCategories1 = [""];
-    preCategories1.splice(0,1);
-    let preCategories2 = [""];
-    preCategories2.splice(0,1);
-
-
-    let temp11 = [""];
-    temp11.splice(0,1);
-
-    let temp21 = [""];
-    temp21.splice(0,1);
-    for (let i = 0; i < categories.length; ++i){
-        temp1 = getMenuItems(categories[i]);
-        while (temp1.length > 5){  
-            preMenu1.push(temp1.splice(0,5));
-            preCategories1.push(categories[i]);
-        }   
-        preMenu1.push(temp1);
-        preCategories1.push(categories[i]);
-     }
-
-    /*for (let i = 0; i < categories.length; i + 2){
-        if (i + 1 == categories.length){
-            
-            temp1 = getMenuItems(categories[i]);
-            while (temp1.length > 5){
-                temp11 = temp1.splice(0,5);
-                preMenu1.push(temp11);
-                preCategories1.push(categories[i]);
-                preMenu2.push(temp2);
-                preCategories2.push(categories[i-1]);
-            }
-            preMenu1.push(temp1);
-            preCategories1.push(categories[i]);
-            preMenu2.push(temp2);
-            preCategories2.push(categories[i-1]);
-        }
-        else {
-            preCategories1.push(categories[i]);
-            preCategories2.push(categories[i+1]);
-
-            temp1 = getMenuItems(categories[i]);
-            temp2 = getMenuItems(categories[i+1]);
-
-            while(temp1.length > 5 || temp2.length > 5){
-                if (temp1.length > 5){
-                    temp11 = temp1.splice(0,5);
-                    preMenu1.push(temp11);
-                    preCategories1.push(categories[i]);
-                }
-                else {
-                    preMenu1.push(temp1);
-                    preCategories1.push(categories[i]);
-                }
-
-                if (temp2.length > 5){
-                    temp21 = temp2.splice(0,5);
-                    preMenu2.push(temp21);
-                    preCategories2.push(categories[i+1]);
-                }
-                else {
-                    preMenu2.push(temp2);
-                    preCategories2.push(categories[i+1]);
-                }
-            }
-            preMenu1.push(temp1);
-            preCategories1.push(categories[i]);
-
-            preMenu2.push(temp2);
-            preCategories2.push(categories[i+1]);
-        }
-    }*/
     
 
 
@@ -139,17 +57,17 @@ export default function MenuBoardClient({ menu_items, categories}:
 
     //const [preMenuItems2, spreMenuItems2] = useState(getMenuItems(categories[1]));
 
-    const [currentCategory1, setCurrentCat1] = useState(preCategories1[0]);
-    const [currentMenuItems1, setCurrentMI1] = useState(preMenu1[0]);//useState(firstFive(preMenuItems1));
+    const [currentCategory1, setCurrentCat1] = useState(categories[0]);
+    const [currentMenuItems1, setCurrentMI1] = useState(getMenuItems(categories[0]));//useState(firstFive(preMenuItems1));
 
-    const [currentCategory2, setCurrentCat2] = useState(preCategories2[0]);
-    const [currentMenuItems2, setCurrentMI2] = useState(preMenu2[0]);//useState(firstFive(preMenuItems2));
+    const [currentCategory2, setCurrentCat2] = useState(categories[1]);
+    const [currentMenuItems2, setCurrentMI2] = useState(getMenuItems(categories[1]));//useState(firstFive(preMenuItems2));
 
 
 
 
     useEffect(() => {
-        const scroll = () => {
+        const switchString = () => {
             /*if (preMenuItems1.length <=5 && preMenuItems2.length <=5){
                 setCount(count + 1);
                 const next = (index + 2);
@@ -200,15 +118,15 @@ export default function MenuBoardClient({ menu_items, categories}:
             }*/
 
 
-            const next = (index + 1)%preCategories1.length ;
-            setIndex(next);
-            setCurrentCat1(preCategories1[next]);
-            setCurrentMI1(preMenu1[next]);
-            /*setCurrentCat2(preCategories2[next]);
-            setCurrentMI2(preMenu2[next]);*/
+            const next = (index + 2) ;
+            setIndex(next% categories.length);
+            setCurrentCat1(categories[(next-1)% categories.length]);
+            setCurrentMI1(getMenuItems(categories[(next-1)% categories.length]));
+            setCurrentCat2(categories[(next)% categories.length]);
+            setCurrentMI2(getMenuItems(categories[(next)% categories.length]));
         };
 
-        const intervalId = setInterval(scroll, 5000); 
+        const intervalId = setInterval(switchString, 5000); 
 
         return () => clearInterval(intervalId);
     }, [index]);//, count, currentCategory1, currentCategory2, currentMenuItems1, currentCategory2]); 
