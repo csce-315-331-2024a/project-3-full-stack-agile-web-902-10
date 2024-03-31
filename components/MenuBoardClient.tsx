@@ -13,26 +13,11 @@ export default function MenuBoardClient({ menu_items, categories}:
         categories: string[]
     }) {
     
-    const getMenuItems = (cat: string) => {
-        let menuItems = [": "];
-        for (let i = 0; i < menu_items.length; ++i){
-            if (menu_items[i].category == cat){
-                menuItems.push(menu_items[i].name);
-                menuItems.push(" ");
-                menuItems.push("$"+menu_items[i].price.toString());
-                menuItems.push(" | ");
-            }
-        }
-        return menuItems;
-    }
 
 
     const [index, setIndex] = useState(0);
     const [currentCategory, setCurrentCat] = useState(categories[0]);
-    const [currentMenuItems, setCurrentMI] = useState(getMenuItems(categories[0]));
-
-    const [currentCategory2, setCurrentCat2] = useState(categories[1]);
-    const [currentMenuItems2, setCurrentMI2] = useState(getMenuItems(categories[1]));
+    //const [currentMenuItems, setCurrentMI] = useState([0]);
 
 
 
@@ -41,25 +26,48 @@ export default function MenuBoardClient({ menu_items, categories}:
         const next = (index + 1) % categories.length;
         setIndex(next);
         setCurrentCat(categories[next]);
-        setCurrentMI(getMenuItems(categories[next]));
-        setCurrentCat2(categories[next+1]);
-        setCurrentMI2(getMenuItems(categories[next+1]));
     };
 
     const intervalId = setInterval(switchString, 5000); 
 
     return () => clearInterval(intervalId);
     }, [index]); 
+
+
+        
+    /*let i = 0;
+    const [j, setj] = useState<string | undefined>(undefined);
+    
+
+    const timeout = () => {
+        const timeout_clear = setTimeout(loop, 5000);
+        return () =>  clearTimeout(timeout_clear);
+    }
+
+    const loop = () => {
+        if (j == "whats up"){
+            setj("what");
+        }
+        else {
+            setj("whats up");
+        }
+    };*/
     
     
     return (
         <div>
         
         
-        <p> {currentCategory}  {currentMenuItems}</p>
-        <p> {currentCategory2}  {currentMenuItems2}</p>
+        <p> {currentCategory}</p>
         
         
         </div>
+        
+    
+        /*<div> 
+        {menu_items.filter((menu_item) => menu_item.name === categories[0]).map((menu_item) => (
+            <h2 className="text-xl text-wrap text-left">{menu_item.category}  </h2>
+        ))}
+        </div> */
     );
 }
