@@ -3,12 +3,12 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Payment, columns } from "@/app/manager_trends/columns"
+import { RestockReportData, columns } from "@/app/manager_trends/columns"
 import { DataTable } from "@/components/ui/data-table"
 
 
 
-export default async function ManagerTrends({ data }: {data: Payment[]}) {
+export default async function ManagerTrends({ data }: {data: RestockReportData[]}) {
 
 
     return (
