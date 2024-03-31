@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 import { Menu_Item } from "@prisma/client";
-import menu_board_client from "@/components/menu_board_client";
 
 
 export default async function menu_board() {
@@ -9,7 +8,11 @@ export default async function menu_board() {
     
     
     return (
-        <menu_board_client menu_items={menu_items} categories={categories}/>
+    <div> {/*Not implemented ;C*/}
+        {menu_items.filter((menu_item) => menu_item.name === "Bacon Cheeseburger").map((menu_item) => (
+            <h2 className="text-xl text-wrap text-left">{menu_item.category}</h2>
+        ))}
+    </div>
     );
 }
 
