@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Menu_Item, Ingredient, Menus_Ingredients, Users } from "@prisma/client";
 import * as React from "react";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 import { prisma } from '@/lib/db';
 import {
@@ -43,7 +44,7 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
     const [showTrendDiv, setShowTrendDiv] = useState(false);
     const [showEmployeeDiv, setShowEmployeeDiv] = useState(false);
     const [date, setDate] = useState<Date>();
-
+    const router = useRouter();
 
     const toggleEditMenuDiv = () => {
         setShowEmployeeDiv(false);
@@ -58,7 +59,8 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
     const toggleTrends = () => {
         setShowEmployeeDiv(false);
         setShowEditDiv(false);
-        setShowTrendDiv(!showTrendDiv);
+        setShowTrendDiv(false);
+        router.push("/manager_trends");
     }
 
     const toggleEmployee = () => {
@@ -90,6 +92,7 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
 
                 </div>
             </ScrollArea>
+
             {/* if editing menu items */}
             {showEditDiv && (
             <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
@@ -196,15 +199,7 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                 </div>
             </ScrollArea>
             )}
-            {/* if displaying trend data */}
-            {showTrendDiv && (
-                <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
-                    <div className="grid grid-cols-1 gap-4 p-4">
-                        <h2 className="text-2xl">Trends Data Goes Here</h2>
-                    </div>
-                </ScrollArea>
-            )}
-
+            
             {/* Employee management */}
             {showEmployeeDiv && (
                 <UsersList users={ users }/>

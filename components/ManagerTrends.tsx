@@ -6,13 +6,16 @@ import { Separator } from "@/components/ui/separator"
 import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns } from "@/app/manager_trends/columns"
 import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react";
-import RedirectPage from "@/app/page";
+import { useRouter } from 'next/navigation';
+
 
 
 
 export default function ManagerTrends({ restockReportData, whatSellsTogtherData }: {restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[]}) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
+
+    const router = useRouter();
 
     const onButtonClick = (trend: string) => {
         setSelectedTrend(trend);
@@ -26,7 +29,7 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
                     <Separator />
                         <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
                         <Button key={"Test2"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
-                        <Button key={"Test3"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => RedirectPage()}> {"Back to Manager"} </Button>
+                        <Button key={"Test3"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => router.push("/manager")}> {"Back to Manager"} </Button>
                     
                 </div>
                 <ScrollBar orientation="vertical" />
