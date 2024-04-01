@@ -1,8 +1,17 @@
 import ManagerTrends from "@/components/ManagerTrends";
 import { prisma } from "@/lib/db";
 import { RestockReportData, WhatSellsTogetherData } from "@/app/manager_trends/columns"
+import ManagerNavBar from "@/components/ManagerNavBar";
+import { getUserSession } from "@/lib/session";
 
 export default async function ManagerTrendsPage() {
+    const user_session = await getUserSession();
+    const user = user_session ? await prisma.users.findUnique({
+        where: {
+            email: user_session?.email ?? undefined
+        }
+    }) : null;
+
     const restockReportData = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE STOCK < 10000 ORDER BY STOCK;`);
     const whatSellsTogtherData = await prisma.$queryRawUnsafe<WhatSellsTogetherData[]>(`SELECT mi1.name AS item1_name, mi2.name AS item2_name, COUNT(*) AS frequency
         FROM (
@@ -23,5 +32,10 @@ export default async function ManagerTrendsPage() {
         GROUP BY item1_name, item2_name
         ORDER BY frequency DESC
         LIMIT 10;`);
-    return (<ManagerTrends restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>);
+    return (
+        <>
+        <ManagerNavBar username={user?.name}/>
+        <ManagerTrends restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>
+        </>
+    );
 }
