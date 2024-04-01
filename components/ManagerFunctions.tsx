@@ -123,7 +123,7 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                             </PopoverContent>
                         </Popover>
                         </div>
-                            <ScrollArea className="h-[40vh] w-[90vw] p-2 whitespace-nowrap">
+                            <ScrollArea className="h-[40vh] w-100 p-2 whitespace-nowrap">
                                 <div className="flex-col space-y-4">
                                 {ingredients.map((item, index) => (
                                     <div key={index} className="flex items-center">
