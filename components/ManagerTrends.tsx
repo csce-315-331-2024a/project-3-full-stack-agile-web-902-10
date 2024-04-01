@@ -14,19 +14,14 @@ export default function ManagerTrends({ restockReportData, data2 }: {restockRepo
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
     const onButtonClick = (trend: string) => {
-        if (trend == "Restock Report") {
-            setSelectedTrend(trend);
-        }
-        else if (trend == "Restock Report 2") {
-            setSelectedTrend(trend);
-        }
+        setSelectedTrend(trend);
     }
 
     const dataType = () => {
         if (selectedTrend == "Restock Report") {
             return restockReportData;
         }
-        else if (selectedTrend == "Restock Report 2") {
+        else if (selectedTrend == "What Sells Together") {
             return data2;
         } 
         return restockReportData;
@@ -39,7 +34,7 @@ export default function ManagerTrends({ restockReportData, data2 }: {restockRepo
                     <h1 className="text-lg font-bold"> Trends </h1>
                     <Separator />
                         <Button key={"Test"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
-                        <Button key={"Test2"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report 2")}> {"Restock 2"} </Button>
+                        <Button key={"Test2"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
                         <Button key={"Test3"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report 3")}> {} </Button>
                     
                 </div>
