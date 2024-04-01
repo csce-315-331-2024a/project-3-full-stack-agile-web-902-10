@@ -26,7 +26,7 @@ export default function MenuBoardClient({ menu_items, categories}:
     }
 
 
-    //definitions
+    //definitions for arrays
     let preMenu1 = [[""]];
     preMenu1.splice(0,1);
     let temp1 = [""];
