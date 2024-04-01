@@ -30,6 +30,7 @@ const authOptions: NextAuthOptions = {
                     email: profile.email,
                     name: profile.name,
                     avatar: profile.image,
+                    is_employee: false,
                     is_manager: false,
                 },
                 update: {

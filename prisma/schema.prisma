@@ -29,8 +29,8 @@ model Ingredient {
   id        Int                @id @default(autoincrement())
   name      String             @unique
   stock     Int
-  min_stock Int
   category  String
+  min_stock Int
   menus     Menus_Ingredients?
 }
 
