@@ -11,6 +11,12 @@ export type RestockReportData = {
   stock: number
   min_stock: number
 }
+
+export type WhatSellsTogetherData = {
+    item1_name: string
+    item2_name: string
+    frequency: number
+  }
  
 export const RestockReportColumns: ColumnDef<RestockReportData>[] = [
   {
@@ -30,3 +36,18 @@ export const RestockReportColumns: ColumnDef<RestockReportData>[] = [
     header: "Minimum Stock",
   },
 ]
+
+export const WhatSellsTogetherColumns: ColumnDef<WhatSellsTogetherData>[] = [
+    {
+      accessorKey: "item1_name",
+      header: "Item 1",
+    },
+    {
+      accessorKey: "item2_name",
+      header: "Item 2",
+    },
+    {
+      accessorKey: "frequency",
+      header: "Frequency",
+    },
+  ]
