@@ -40,6 +40,14 @@ export default function MenuNavBar({ username, is_manager, cart, setCart }: { us
                             {is_manager === undefined ? "68 F" : "Manager"}
                         </Link>
                     </div>
+                    <div className="flex justify-between px-10">
+                        <Link
+                            href={is_manager === undefined ? "" : "/cashier"}
+                            className="text-lg font-bold transition-colors hover:text-primary"
+                        >
+                            {is_manager === undefined ? "" : "Cashier"}
+                        </Link>
+                    </div>
                     <div className="flex justify-center flex-grow">
                         {cart.length <= 0 ?
                             <p className="text-lg font-bold text-center">{username === undefined ? "Rev's Grill" : "Welcome, " + username.split(" ")[0]}</p> :
