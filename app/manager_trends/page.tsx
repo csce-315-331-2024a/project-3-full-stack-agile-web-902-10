@@ -1,10 +1,6 @@
 import ManagerTrends from "@/components/ManagerTrends";
 import { prisma } from "@/lib/db";
-import { RestockReportData, RestockReportColumns, WhatSellsTogetherData } from "@/app/manager_trends/columns"
-
-export const metadata = {
-    title: "Trends",
-};
+import { RestockReportData, WhatSellsTogetherData } from "@/app/manager_trends/columns"
 
 export default async function ManagerTrendsPage() {
     const restockReportData = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE STOCK < 10000 ORDER BY STOCK;`);
