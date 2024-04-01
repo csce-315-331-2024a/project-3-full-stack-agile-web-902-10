@@ -27,6 +27,16 @@ export default function ManagerTrends({ restockReportData, data2 }: {restockRepo
         return restockReportData;
     }
 
+    const columnType = () => {
+        if (selectedTrend == "Restock Report") {
+            return RestockReportColumns;
+        }
+        else if (selectedTrend == "What Sells Together") {
+            return RestockReportColumns;
+        }
+        return RestockReportColumns;
+    }
+
     return (
         <div className="hidden lg:flex flex-row">
             <ScrollArea className="h-[92vh] w-auto p-12  whitespace-nowrap">
@@ -42,7 +52,7 @@ export default function ManagerTrends({ restockReportData, data2 }: {restockRepo
             </ScrollArea>
             <ScrollArea className="h-[92vh] w-[80vw] p-8 whitespace-nowrap">
                 <h1 className="text-lg font-bold"> {selectedTrend} </h1>
-                <DataTable columns={RestockReportColumns} data={dataType()} />
+                <DataTable columns={columnType()} data={dataType()} />
             </ScrollArea>
         </div>
     );
