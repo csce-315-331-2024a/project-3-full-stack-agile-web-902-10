@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Users {
-  id         Int         @id @default(autoincrement())
-  email      String      @unique
-  name       String
-  avatar     String?
-  is_manager Boolean
-  login_log  Login_Log[]
+  id          Int         @id @default(autoincrement())
+  email       String      @unique
+  name        String
+  avatar      String?
+  is_manager  Boolean
+  is_employee Boolean
+  login_log   Login_Log[]
 }
 
 model Login_Log {
@@ -25,11 +26,12 @@ model Login_Log {
 }
 
 model Ingredient {
-  id       Int                @id @default(autoincrement())
-  name     String             @unique
-  stock    Int
-  category String
-  menus    Menus_Ingredients?
+  id        Int                @id @default(autoincrement())
+  name      String             @unique
+  stock     Int
+  min_stock Int
+  category  String
+  menus     Menus_Ingredients?
 }
 
 model Menu_Item {
