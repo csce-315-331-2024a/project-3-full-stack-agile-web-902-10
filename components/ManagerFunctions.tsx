@@ -94,6 +94,8 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                         </DialogHeader>
                         <div>
                         <div className="p-2">
+                        <Label htmlFor="message">Enter Item Name</Label>
+                            <Textarea className="w-64 h-2 p-2" placeholder="Type item name here." id="message" />
                             <Label htmlFor="message">Enter Catagory</Label>
                             <Textarea className="w-64 h-2 p-2" placeholder="Type item catagory here." id="message" />
                         </div>
