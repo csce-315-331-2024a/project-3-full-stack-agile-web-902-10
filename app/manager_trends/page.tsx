@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default async function ManagerTrendsPage() {
-    const data1 = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE STOCK < 10000 ORDER BY STOCK;`);
+    const restockReportData = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE STOCK < 10000 ORDER BY STOCK;`);
     const data2 = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE STOCK > 5000;`);
-    return (<ManagerTrends data1 ={data1} data2 = {data2}/>);
+    return (<ManagerTrends restockReportData ={restockReportData} data2 = {data2}/>);
 }

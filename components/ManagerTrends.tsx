@@ -9,12 +9,12 @@ import { useState } from "react";
 
 
 
-export default function ManagerTrends({ data1, data2 }: {data1: RestockReportData[], data2: RestockReportData[]}) {
+export default function ManagerTrends({ restockReportData, data2 }: {restockReportData: RestockReportData[], data2: RestockReportData[]}) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
     const onButtonClick = (trend: string) => {
-        if (trend == "Restock Report 1") {
+        if (trend == "Restock Report") {
             setSelectedTrend(trend);
         }
         else if (trend == "Restock Report 2") {
@@ -23,13 +23,13 @@ export default function ManagerTrends({ data1, data2 }: {data1: RestockReportDat
     }
 
     const dataType = () => {
-        if (selectedTrend == "Restock Report 1") {
-            return data1;
+        if (selectedTrend == "Restock Report") {
+            return restockReportData;
         }
         else if (selectedTrend == "Restock Report 2") {
             return data2;
         } 
-        return data1;
+        return restockReportData;
     }
 
     return (
@@ -38,7 +38,7 @@ export default function ManagerTrends({ data1, data2 }: {data1: RestockReportDat
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
                     <h1 className="text-lg font-bold"> Trends </h1>
                     <Separator />
-                        <Button key={"Test"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report 1")}> {"Restock 1"} </Button>
+                        <Button key={"Test"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
                         <Button key={"Test2"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report 2")}> {"Restock 2"} </Button>
                         <Button key={"Test3"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report 3")}> {} </Button>
                     
