@@ -1,11 +1,13 @@
 "use client";
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
-import { Menu_Item, Ingredient, Menus_Ingredients } from "@prisma/client"
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
+import { Menu_Item, Ingredient, Menus_Ingredients } from "@prisma/client";
+import * as React from "react";
 import { useState } from "react";
+
 import { prisma } from '@/lib/db';
 import {
     Dialog,
@@ -16,16 +18,29 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@radix-ui/react-checkbox";
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
 
 
 export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Menus_Ingredients[]}) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined); 
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);
+    const [date, setDate] = useState<Date>();
 
 
     const toggleEditMenuDiv = () => {
@@ -53,14 +68,15 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
     return (
         <div className="hidden lg:flex flex-row">
             {/* Manager Options */}
-            <ScrollArea className="h-[92vh] w-auto p-10  whitespace-nowrap">
+            <ScrollArea className="h-[92vh] w-auto p-8  whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
                     <p className="text-lg font-bold"> Options </p>
                     <Separator />
                     
-                    <Button variant={"secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
-                    <Button variant={"secondary"} onClick={toggleBoard}>Menu Board</Button>
-                    <Button variant={"secondary"} onClick={toggleTrends}>Trends</Button>
+                    <Button className="text-md font-bold" variant={"secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
+                    <Button className="text-md font-bold" variant={"secondary"} onClick={toggleTrends}>Trends</Button>
+                    <Button className="text-md font-bold" variant={"secondary"} onClick={toggleBoard}>Menu Board</Button>
+
 
                 </div>
             </ScrollArea>
@@ -74,29 +90,60 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Add New Item</DialogTitle>
+                            <DialogTitle className="text-lg font-bold">Add New Item</DialogTitle>
                         </DialogHeader>
                         <div>
-                            <ScrollArea className="h-[40vh] w-[90vw] p-8 whitespace-nowrap">
+                        <div className="p-2">
+                            <Label htmlFor="message">Enter Catagory</Label>
+                            <Textarea className="w-64 h-2 p-2" placeholder="Type item catagory here." id="message" />
+                        </div>
+                        <div className="p-2">
+                        <Popover modal={true}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-[280px] justify-start text-left font-normal",
+                                    !date && "text-muted-foreground"
+                                  )}
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {date ? format(date, "PPP") : <span>Seasonal Item End Date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                  mode="single"
+                                  selected={date}
+                                  onSelect={setDate}
+                                  initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                        </div>
+                            <ScrollArea className="h-[40vh] w-[90vw] p-2 whitespace-nowrap">
                                 <div className="flex-col space-y-4">
                                 {ingredients.map((item, index) => (
                                     <div key={index} className="flex items-center">
                                         <Checkbox/>
-                                            <label>{item.name}</label>
+                                            <label className="p-2">{item.name}</label>
                                         </div>
                                     ))}
                                 </div>
                             </ScrollArea>
                         </div>
-                        <DialogFooter>
+                        <div>
                             <DialogClose asChild>
                                 <Button variant="default" onClick={() => addItem}>Add Item</Button>
                             </DialogClose>
                             <DialogClose asChild>
                                 <Button variant={"destructive"} >Cancel</Button>
                             </DialogClose>
-                        </DialogFooter>
-                    </DialogContent>
+                        </div>
+                        <DialogFooter>
+                            
+                        </DialogFooter>                        
+                    </DialogContent>                  
                 </Dialog>
                 <Separator />
                 </div>
@@ -137,6 +184,7 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                 </div>
             </ScrollArea>
             )}
+            {/* if displaying trend data */}
             {showTrendDiv && (
                 <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
                     <div className="grid grid-cols-1 gap-4 p-4">
