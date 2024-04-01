@@ -9,7 +9,7 @@ import { useState } from "react";
 
 
 
-export default function ManagerTrends({ restockReportData, whatSellsTogtherData }: {restockReportData: RestockReportData[], whatSellsTogtherData: WhatSells[]}) {
+export default function ManagerTrends({ restockReportData, whatSellsTogtherData }: {restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[]}) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
@@ -39,7 +39,7 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
                 )}
                 {selectedTrend == "What Sells Together" && (
                     <div>
-                        <DataTable columns={RestockReportColumns} data={whatSellsTogtherData} />
+                        <DataTable columns={WhatSellsTogetherColumns} data={whatSellsTogtherData} />
                     </div>
                 )}
                 {selectedTrend == undefined && (
