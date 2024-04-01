@@ -9,7 +9,7 @@ import { useState } from "react";
 
 
 
-export default function ManagerTrends({ restockReportData, data2 }: {restockReportData: RestockReportData[], data2: RestockReportData[]}) {
+export default function ManagerTrends({ restockReportData, whatSellsTogtherData }: {restockReportData: RestockReportData[], whatSellsTogtherData: RestockReportData[]}) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
@@ -22,7 +22,7 @@ export default function ManagerTrends({ restockReportData, data2 }: {restockRepo
             return restockReportData;
         }
         else if (selectedTrend == "What Sells Together") {
-            return data2;
+            return whatSellsTogtherData;
         } 
         return restockReportData;
     }
