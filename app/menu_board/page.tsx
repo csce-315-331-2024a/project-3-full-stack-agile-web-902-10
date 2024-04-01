@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { Menu_Item } from "@prisma/client";
-import menu_board_client from "@/components/menu_board_client";
+import MenuBoardClient from "@/components/MenuBoardClient";
 
 
 export default async function menu_board() {
@@ -9,7 +9,7 @@ export default async function menu_board() {
     
     
     return (
-        <menu_board_client menu_items={menu_items} categories={categories}/>
+        <MenuBoardClient menu_items={menu_items} categories={categories}/>
     );
 }
 
