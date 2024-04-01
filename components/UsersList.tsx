@@ -19,6 +19,9 @@ export default function UsersList({ users }:
     return (
       <div>
         <h1>Users</h1>
+          <Button variant="outline" className="flex-col justify-evenly w-[14vw] h-[8vh]">
+              <h2 className="text-2xl font-bold">Add Employee</h2>
+          </Button>
         <ul>
           {filteredUsers.map(user => (
             <Dialog key={user.id}>
