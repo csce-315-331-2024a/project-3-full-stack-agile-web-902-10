@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns } from "@/app/manager_trends/columns"
 import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react";
+import RedirectPage from "@/app/page";
 
 
 
@@ -20,12 +21,12 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
     return (
         <div className="hidden lg:flex flex-row">
             <ScrollArea className="h-[92vh] w-auto p-12  whitespace-nowrap">
-                <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
+                <div className="flex flex-col w-[14vw] space-y-8 justify-center items-center">
                     <h1 className="text-lg font-bold"> Trends </h1>
                     <Separator />
-                        <Button key={"Test"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
-                        <Button key={"Test2"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
-                        <Button key={"Test3"} className="w-[10vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report 3")}> {} </Button>
+                        <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
+                        <Button key={"Test2"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
+                        <Button key={"Test3"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => RedirectPage()}> {"Back to Manager"} </Button>
                     
                 </div>
                 <ScrollBar orientation="vertical" />
