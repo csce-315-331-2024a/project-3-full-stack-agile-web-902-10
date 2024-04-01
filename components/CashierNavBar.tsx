@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/drawer";
 
 
-export default function MenuNavBar({ username, is_manager, cart, setCart }: { username: string | undefined, is_manager: boolean | undefined, cart: Menu_Item[], setCart: any }) {
+export default function CashierNavBar({ username, is_manager, cart, setCart }: { username: string | undefined, is_manager: boolean | undefined, cart: Menu_Item[], setCart: any }) {
     const { theme, setTheme } = useTheme();
 
     const toggleTheme = () => {
@@ -38,14 +38,6 @@ export default function MenuNavBar({ username, is_manager, cart, setCart }: { us
                             className="text-lg font-bold transition-colors hover:text-primary"
                         >
                             {is_manager === undefined ? "68 F" : "Manager"}
-                        </Link>
-                    </div>
-                    <div className="flex justify-between px-10">
-                        <Link
-                            href={is_manager === undefined ? "" : "/cashier"}
-                            className="text-lg font-bold transition-colors hover:text-primary"
-                        >
-                            {is_manager === undefined ? "" : "Cashier"}
                         </Link>
                     </div>
                     <div className="flex justify-center flex-grow">
