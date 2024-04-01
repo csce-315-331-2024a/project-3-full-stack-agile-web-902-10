@@ -3,7 +3,7 @@ import { Menu_Item } from "@prisma/client";
 import MenuBoardClient from "@/components/MenuBoardClient";
 
 export const metadata = {
-    title: "Menu | Rev's Grill",
+    title: "Menu Board | Rev's Grill",
 };
 
 export default async function menu_board() {
