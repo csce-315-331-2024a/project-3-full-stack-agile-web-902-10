@@ -3,38 +3,18 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { RestockReportData, RestockReportColumns } from "@/app/manager_trends/columns"
+import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns } from "@/app/manager_trends/columns"
 import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react";
 
 
 
-export default function ManagerTrends({ restockReportData, whatSellsTogtherData }: {restockReportData: RestockReportData[], whatSellsTogtherData: RestockReportData[]}) {
+export default function ManagerTrends({ restockReportData, whatSellsTogtherData }: {restockReportData: RestockReportData[], whatSellsTogtherData: WhatSells[]}) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
     const onButtonClick = (trend: string) => {
         setSelectedTrend(trend);
-    }
-
-    const dataType = () => {
-        if (selectedTrend == "Restock Report") {
-            return restockReportData;
-        }
-        else if (selectedTrend == "What Sells Together") {
-            return whatSellsTogtherData;
-        } 
-        return restockReportData;
-    }
-
-    const columnType = () => {
-        if (selectedTrend == "Restock Report") {
-            return RestockReportColumns;
-        }
-        else if (selectedTrend == "What Sells Together") {
-            return RestockReportColumns;
-        }
-        return RestockReportColumns;
     }
 
     return (
@@ -52,7 +32,21 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
             </ScrollArea>
             <ScrollArea className="h-[92vh] w-[80vw] p-8 whitespace-nowrap">
                 <h1 className="text-lg font-bold"> {selectedTrend} </h1>
-                <DataTable columns={columnType()} data={dataType()} />
+                {selectedTrend == "Restock Report" && (
+                    <div>
+                        <DataTable columns={RestockReportColumns} data={restockReportData} />
+                    </div>
+                )}
+                {selectedTrend == "What Sells Together" && (
+                    <div>
+                        <DataTable columns={RestockReportColumns} data={whatSellsTogtherData} />
+                    </div>
+                )}
+                {selectedTrend == undefined && (
+                    <div>
+                        <h1 className="text-lg font-bold"> Select a trend with the buttons to the right!! </h1>
+                    </div>
+                )}
             </ScrollArea>
         </div>
     );
