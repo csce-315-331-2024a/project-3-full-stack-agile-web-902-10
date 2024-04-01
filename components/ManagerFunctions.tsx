@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { Menu_Item, Ingredient, Menus_Ingredients } from "@prisma/client";
+import { Menu_Item, Ingredient, Menus_Ingredients, Users } from "@prisma/client";
 import * as React from "react";
 import { useState } from "react";
 
@@ -33,17 +33,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import UsersList from "./UsersList";
 
 
 
-export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Menus_Ingredients[]}) {
+export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients, users }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Menus_Ingredients[], users: Users[]}) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined); 
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);
+    const [showEmployeeDiv, setShowEmployeeDiv] = useState(false);
     const [date, setDate] = useState<Date>();
 
 
     const toggleEditMenuDiv = () => {
+        setShowEmployeeDiv(false);
         setShowTrendDiv(false);
         setShowEditDiv(!showEditDiv);
     }
@@ -53,8 +56,15 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
     }
 
     const toggleTrends = () => {
+        setShowEmployeeDiv(false);
         setShowEditDiv(false);
         setShowTrendDiv(!showTrendDiv);
+    }
+
+    const toggleEmployee = () => {
+        setShowTrendDiv(false);
+        setShowEditDiv(false);
+        setShowEmployeeDiv(!showEmployeeDiv);
     }
 
     const editItem = (menu_item: Menu_Item) => {
@@ -66,17 +76,17 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
     }
 
     return (
-        <div className="hidden lg:flex flex-row">
+        <div className="hidden lg:flex flex-row gap-4">
             {/* Manager Options */}
-            <ScrollArea className="h-[92vh] w-auto p-8  whitespace-nowrap">
-                <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
+            <ScrollArea className="h-[92vh] w-auto whitespace-nowrap">
+                <div className="flex flex-col w-[10vw] space-y-8 m-8">
                     <p className="text-lg font-bold"> Options </p>
                     <Separator />
                     
-                    <Button className="text-md font-bold" variant={"secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
-                    <Button className="text-md font-bold" variant={"secondary"} onClick={toggleTrends}>Trends</Button>
-                    <Button className="text-md font-bold" variant={"secondary"} onClick={toggleBoard}>Menu Board</Button>
-
+                    <Button className="text-md font-bold w-[7vw]" variant={"secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
+                    <Button className="text-md font-bold w-[7vw]" variant={"secondary"} onClick={toggleTrends}>Trends</Button>
+                    <Button className="text-md font-bold w-[7vw]" variant={"secondary"} onClick={toggleEmployee}>Employees</Button>
+                    <Button className="text-md font-bold w-[7vw]" variant={"secondary"} onClick={toggleBoard}>Menu Board</Button>
 
                 </div>
             </ScrollArea>
@@ -193,6 +203,11 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                         <h2 className="text-2xl">Trends Data Goes Here</h2>
                     </div>
                 </ScrollArea>
+            )}
+
+            {/* Employee management */}
+            {showEmployeeDiv && (
+                <UsersList users={ users }/>
             )}
         </div>
     );

@@ -18,12 +18,12 @@ export default function UsersList({ users }:
     
     return (
       <div>
-        <h1>Users</h1>
+        {/* <h1>Users</h1> */}
         <ul>
           {filteredUsers.map(user => (
             <Dialog key={user.id}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="flex-col justify-evenly w-[25vw] h-[40vh]">
+                <Button variant="outline" className="flex-col justify-evenly w-[25vw] h-[20vh]">
                     <h2 className="text-2xl font-bold">{user.name}</h2>
                     {/* <Image
                         src={menu_item.image_url}
@@ -32,13 +32,13 @@ export default function UsersList({ users }:
                         alt={menu_item.name}
                         className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
                     /> */}
-                    <h2 className="text-2xl">{user.is_manager?"manager":"employee"}</h2>
+                    <h2 className="text-2xl">{user.is_manager?"Manager":"Employee"}</h2>
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{user.name}</DialogTitle>
-                    <DialogDescription>{user.is_manager?"manager":"employee"}</DialogDescription>
+                    <DialogDescription>{user.is_manager?"Manager":"Employee"}</DialogDescription>
                 </DialogHeader>
                 {/* <Image
                     src={menu_item.image_url}
@@ -50,7 +50,7 @@ export default function UsersList({ users }:
 
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button variant="default" /*onClick={() => onFireEmployee(user)}*/>Fire</Button>
+                        <Button variant="destructive" /*onClick={() => onFireEmployee(user)}*/>Fire</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

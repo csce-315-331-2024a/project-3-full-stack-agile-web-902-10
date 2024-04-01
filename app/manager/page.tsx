@@ -20,8 +20,9 @@ export default async function ManagerPage() {
     const categories = Array.from(new Set(menu_items.map((item) => item.category)));
     const ingredient = await prisma.ingredient.findMany();
     const menuIngredients = await prisma.menus_Ingredients.findMany();
+    const users = await prisma.users.findMany();
 
     return (
-        <Manager menu_items={menu_items} categories={categories} username={user?.name} ingredients={ingredient} menuIngredients={menuIngredients}/>
+        <Manager menu_items={menu_items} categories={categories} username={user?.name} ingredients={ingredient} menuIngredients={menuIngredients} users={users}/>
     );
 }
