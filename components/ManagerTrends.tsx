@@ -7,6 +7,7 @@ import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSel
 import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 
 
@@ -35,7 +36,14 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
                 <ScrollBar orientation="vertical" />
             </ScrollArea>
             <ScrollArea className="h-[92vh] w-[80vw] p-8 whitespace-nowrap">
-                <h1 className="text-lg font-bold"> {selectedTrend} </h1>
+                <HoverCard>
+                    <HoverCardTrigger>
+                        <Button variant="link">{selectedTrend}</Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="w-200">
+                        The Restock Report displays all items that are below the minimum stock requirement.
+                    </HoverCardContent>
+                </HoverCard>
                 {selectedTrend == "Restock Report" && (
                     <div>
                         <DataTable columns={RestockReportColumns} data={restockReportData} />
