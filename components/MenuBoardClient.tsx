@@ -24,6 +24,16 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
         menuItems.splice(0,1);
         return menuItems;
     }
+    const getMenuImages = (cat: string) => {
+        let menuItemsImages = [""];
+        for (let i = 0; i < menu_items.length; ++i){
+            if (menu_items[i].category == cat){
+                menuItemsImages.push(menu_items[i].image_url);
+            }
+        }
+        menuItemsImages.splice(0,1);
+        return menuItemsImages;
+    }
     /*
     const getMenuItems = ({cat, x}: {cat: string, x: number}) => {
         let menuItems = [""];
@@ -49,6 +59,16 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
     let temp2 = [""];
     temp2.splice(0,1);
 
+    let preMenuImages1 = [[""]];
+    preMenuImages1.splice(0,1);
+    let temp3 = [""];
+    temp3.splice(0,1);
+
+    let preMenuImages2 = [[""]];
+    preMenuImages2.splice(0,1);
+    let temp4 = [""];
+    temp4.splice(0,1);
+
     let preCategories1 = [""];
     preCategories1.splice(0,1);
     let preCategories2 = [""];
@@ -59,22 +79,28 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
     for (let i = 0; i < categories.length; i = i +2){
         //temp1 = getMenuItems({cat: categories[i], x: l1[i]});
         temp1 = getMenuItems(categories[i]);
+        temp3 = getMenuImages(categories[i]);
         while (temp1.length > 5){  
             preMenu1.push(temp1.splice(0,5));
+            preMenuImages1.push(temp3.splice(0,5));
             preCategories1.push(categories[i]);
         }   
         preMenu1.push(temp1);
+        preMenuImages1.push(temp3);
         preCategories1.push(categories[i]);
      }
      //gets all the elements for the second half of the menu board
      for (let i = 1; i < categories.length; i = i +2){
         //temp2 = getMenuItems({cat: categories[i], x: l1[i]});
-        temp2 =getMenuItems(categories[i]);
+        temp2 = getMenuItems(categories[i]);
+        temp4 = getMenuImages(categories[i]);
         while (temp2.length > 5){  
             preMenu2.push(temp2.splice(0,5));
+            preMenuImages2.push(temp4.splice(0,5));
             preCategories2.push(categories[i]);
         }   
         preMenu2.push(temp2);
+        preMenuImages2.push(temp4);
         preCategories2.push(categories[i]);
      }
 
@@ -88,9 +114,11 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
 
     const [currentCategory1, setCurrentCat1] = useState(preCategories1[0]);
     const [currentMenuItems1, setCurrentMI1] = useState(preMenu1[0]);
+    const [currentMenuItemImages1, setCurrentMImg1] = useState(preMenuImages1[0]);
 
     const [currentCategory2, setCurrentCat2] = useState(preCategories2[0]);
     const [currentMenuItems2, setCurrentMI2] = useState(preMenu2[0]);
+    const [currentMenuItemImages2, setCurrentMImg2] = useState(preMenuImages2[0]);
 
     const [imgIndex1, setimgIndex1] = useState(0);
     const [imgIndex2, setimgIndex2] = useState(0);
@@ -119,8 +147,10 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
             setIndex2(next2);
             setCurrentCat1(preCategories1[next1]);
             setCurrentMI1(preMenu1[next1]);
+            setCurrentMImg1(preMenuImages1[next1]);
             setCurrentCat2(preCategories2[next2]);
             setCurrentMI2(preMenu2[next2]);
+            setCurrentMImg2(preMenuImages2[next2]);
 
             setimgIndex1(Math.floor(Math.random() * (preMenu1[next1].length)));
             setimgIndex2(Math.floor(Math.random() * (preMenu2[next2].length)));
@@ -141,7 +171,18 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
         <p> {currentCategory2}  {currentMenuItems2}</p>
 
         <p>{currentMenuItems1[imgIndex1]}</p>
+        <img 
+        src = {currentMenuItemImages1[imgIndex1]}
+        width={200}
+        height={200}
+        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+        />
         <p>{currentMenuItems2[imgIndex2]}</p>
+        <img 
+        src = {currentMenuItemImages2[imgIndex2]}
+        height={200}
+        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+        />
         
         
         </div>
