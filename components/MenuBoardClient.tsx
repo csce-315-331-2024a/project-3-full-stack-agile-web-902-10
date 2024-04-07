@@ -12,18 +12,91 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
         menu_items: Menu_Item[],
         categories: string[]
     }) {
+    const menuItemToString = (item: Menu_Item) => {
+        return " | " + item.name + ": $"+ item.price.toString() + " | ";
+    }
+
+    let temperature = 79;//temporary until weather is implimented
+    let temperature_threshold = 80;//at what temperature do we switch between hot and cold items
+
+
+    //to get all menu items in a recognizable way
+    let allMenuItems = [""];
+    allMenuItems.splice(0,1);
+    let allMenuItemsImg = [""];
+    allMenuItemsImg.splice(0,1);
+    for (let i = 0; i < menu_items.length; ++i){
+        allMenuItems.push(menuItemToString(menu_items[i]));
+        allMenuItemsImg.push(menu_items[i].image_url);
+    }
+    
+    const coldw_cat = ["burger", "Burger"];
+    const hotw_cat = ["shake", "Shake"];
+
+    let weather_items = [[""]];
+    weather_items.splice(0,1);
+    let weather_itemsImg = [[""]];
+    weather_itemsImg.splice(0,1);
+    let coldw_items = [""];
+    coldw_items.splice(0,1);
+    let coldw_itemsImg = [""];
+    coldw_itemsImg.splice(0,1);
+    let hotw_items = [""];
+    hotw_items.splice(0,1);
+    let hotw_itemsImg = [""];
+    hotw_itemsImg.splice(0,1);
+
+    for(let x = 0; x < coldw_cat.length; ++x){
+        for (let y = 0; y < menu_items.length; ++y){
+            if (menu_items[y].name.search(coldw_cat[x]) != -1){
+                coldw_items.push(menuItemToString(menu_items[y]));
+                coldw_itemsImg.push(menu_items[y].image_url);
+            }
+        }
+    }
+    for(let x = 0; x < hotw_cat.length; ++x){
+        for (let y = 0; y < menu_items.length; ++y){
+            if (menu_items[y].name.search(hotw_cat[x]) != -1){
+                hotw_items.push(menuItemToString(menu_items[y]));
+                hotw_itemsImg.push(menu_items[y].image_url);
+            }
+        }
+    }
+
+    if (coldw_items.length == 0){
+        weather_items.push(allMenuItems);
+        weather_itemsImg.push(allMenuItemsImg);
+    }
+    else {
+        weather_items.push(coldw_items);
+        weather_itemsImg.push(coldw_itemsImg);
+    }
+
+    if (hotw_items.length == 0){
+        weather_items.push(allMenuItems);
+        weather_itemsImg.push(allMenuItemsImg);
+    }
+    else {
+        weather_items.push(hotw_items);
+        weather_itemsImg.push(hotw_itemsImg);
+    }
+
+
+    
+
     
     //Gets menu items in a category
     const getMenuItems = (cat: string) => {
         let menuItems = [""];
         for (let i = 0; i < menu_items.length; ++i){
             if (menu_items[i].category == cat){
-                menuItems.push(" | " + menu_items[i].name + ": $"+menu_items[i].price.toString() + " | ");
+                menuItems.push(menuItemToString(menu_items[i]));
             }
         }
         menuItems.splice(0,1);
         return menuItems;
     }
+    //gets menu item images
     const getMenuImages = (cat: string) => {
         let menuItemsImages = [""];
         for (let i = 0; i < menu_items.length; ++i){
@@ -123,6 +196,15 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
     const [imgIndex1, setimgIndex1] = useState(0);
     const [imgIndex2, setimgIndex2] = useState(0);
 
+    let x = 0;
+    if (temperature >= temperature_threshold){//if hot
+        x = 1;
+    }
+    const [hotCold, setHotCold] = useState(weather_items[x]);
+    const [hotColdImg, setHotColdImg] = useState(weather_itemsImg[x]);
+    const [weatherIndex, setWIndex] = useState(0);
+
+
 
 
     //function that updates the menu board
@@ -154,6 +236,18 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
 
             setimgIndex1(Math.floor(Math.random() * (preMenu1[next1].length)));
             setimgIndex2(Math.floor(Math.random() * (preMenu2[next2].length)));
+
+
+            if (temperature >= temperature_threshold){//if hot
+                x = 1;
+            }
+            else{
+                x = 0;
+            }
+
+            setHotCold(weather_items[x]);
+            setHotColdImg(weather_itemsImg[x]);
+            setWIndex(Math.floor(Math.random() * (weather_items[x].length)));
         };
 
         const intervalId = setInterval(scroll, 5000); 
@@ -162,7 +256,6 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
     }, [index1, index2]);
     
     //output
-    //<p>{currentMenuItems1[Math.floor(Math.random() * currentMenuItems1.length)]}</p> 
     return (
         <div>
         
@@ -170,20 +263,25 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
         <p> {currentCategory1}  {currentMenuItems1}</p>
         <p> {currentCategory2}  {currentMenuItems2}</p>
 
-        <p>{currentMenuItems1[imgIndex1]}</p>
+        <p>Board 1 Item and Image: {currentMenuItems1[imgIndex1]}</p>
         <img 
         src = {currentMenuItemImages1[imgIndex1]}
         width={200}
         height={200}
         className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
         />
-        <p>{currentMenuItems2[imgIndex2]}</p>
+        <p>Board 2 Item and Image: {currentMenuItems2[imgIndex2]}</p>
         <img 
         src = {currentMenuItemImages2[imgIndex2]}
         height={200}
         className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
         />
-        
+        <p>Recommended Item: {hotCold[weatherIndex]}</p>
+        <img 
+        src = {hotColdImg[weatherIndex]}
+        height={200}
+        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+        />
         
         </div>
     );
