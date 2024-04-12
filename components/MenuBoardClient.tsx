@@ -7,17 +7,18 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 
-export default function MenuBoardClient({ menu_items, categories}://categories1}:
+export default function MenuBoardClient({ menu_items, categories, temperature}://categories1}:
     {
         menu_items: Menu_Item[],
-        categories: string[]
+        categories: string[],
+        temperature: number
     }) {
     const menuItemToString = (item: Menu_Item) => {
         return " | " + item.name + ": $"+ item.price.toString() + " | ";
     }
 
-    let temperature = 79;//temporary until weather is implimented
-    let temperature_threshold = 80;//at what temperature do we switch between hot and cold items
+    //let temperature = 79;//temporary until weather is implimented
+    let temperature_threshold = 75;//at what temperature do we switch between hot and cold items
 
 
     //to get all menu items in a recognizable way
@@ -282,6 +283,7 @@ export default function MenuBoardClient({ menu_items, categories}://categories1}
         height={200}
         className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
         />
+        <p> {temperature}</p>
         
         </div>
     );
