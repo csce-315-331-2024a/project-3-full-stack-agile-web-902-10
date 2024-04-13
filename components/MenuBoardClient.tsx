@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 
+
 export default function MenuBoardClient({ menu_items, categories, temperature}://categories1}:
     {
         menu_items: Menu_Item[],
@@ -14,11 +15,11 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
         temperature: number
     }) {
     const menuItemToString = (item: Menu_Item) => {
-        return " | " + item.name + ": $"+ item.price.toString() + " | ";
+        return item.name + ": $"+ item.price.toString();
     }
 
     //let temperature = 79;//temporary until weather is implimented
-    let temperature_threshold = 75;//at what temperature do we switch between hot and cold items
+    let temperature_threshold = 80;//at what temperature do we switch between hot and cold items
 
 
     //to get all menu items in a recognizable way
@@ -258,6 +259,60 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
     
     //output
     return (
+        <div className="flex justify-between">
+            <div className="w-1/4 p-2">
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                    <h1>{currentMenuItems1[imgIndex1]}</h1>
+                    <img 
+                        src = {currentMenuItemImages1[imgIndex1]}
+                        height={200}
+                        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                    />
+                </div>
+            </div>
+            <div className="w-1/4 p-2">
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                    <h1>{currentCategory1}</h1>
+                    <br/>
+                    {currentMenuItems1.map((mi) => (
+                        <p key={mi}> {mi} <br></br> <br></br></p> 
+                    ))}
+                </div>
+            </div>
+            <div className="w-1/4 p-2">
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                    <h1>{currentCategory2}</h1>
+                    <br/>
+                    {currentMenuItems2.map((mi) => (
+                        
+                        <p key={mi}> {mi} <br></br> <br></br></p> 
+                    ))}
+                </div>
+            </div>
+            <div className="w-1/4 p-2">
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                    <h1>{currentMenuItems2[imgIndex2]}</h1>
+                    <img 
+                        src = {currentMenuItemImages2[imgIndex2]}
+                        height={200}
+                        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                    />
+                </div>
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                    <h1>{currentMenuItems1[imgIndex1]}</h1>
+                    <img 
+                        src = {currentMenuItemImages2[imgIndex2]}
+                        height={200}
+                        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                    />
+                </div>
+            </div>
+
+        </div>
+    );
+}
+    /*
+    return (
         <div>
         
         
@@ -287,4 +342,4 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
         
         </div>
     );
-}
+}*/
