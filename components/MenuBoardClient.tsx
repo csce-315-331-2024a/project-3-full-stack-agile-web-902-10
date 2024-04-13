@@ -293,8 +293,19 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
                     ))}
                 </div>
             </div>
-            <div className="w-1/4 p-2">
-                <div className="p-2 flex flex-col justify-end" style={{ height: '50vh' }}>
+            <div className="w-1/4 p-2 flex flex-col justify-end">
+                <div className="p-2">
+                    <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                        <h1> Recomended Item:</h1>
+                        <h1>{hotCold[weatherIndex]}</h1>
+                        <img 
+                            src = {hotColdImg[weatherIndex]}
+                            height={200}
+                            className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                        />
+                    </div>
+                </div>
+                <div className="p-2" style={{ height: '50vh' }}>
                     <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
                         <h1>{currentMenuItems2[imgIndex2]}</h1>
                         <img 
@@ -304,16 +315,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
                         />
                     </div>
                 </div>
-                <div className="p-2">
-                    <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
-                        <h1>{hotCold[weatherIndex]}</h1>
-                        <img 
-                            src = {hotColdImg[weatherIndex]}
-                            height={200}
-                            className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                        />
-                    </div>
-                </div>
+                
             </div>
 
         </div>
