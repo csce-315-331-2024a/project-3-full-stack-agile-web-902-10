@@ -1,13 +1,13 @@
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import Manager from "@/components/Manager";
+import Cashier from "@/components/Cashier";
 import { Menu_Item } from "@prisma/client";
 
 export const metadata = {
-    title: "Manager | Rev's Grill",
+    title: "Menu | Rev's Grill",
 };
 
-export default async function ManagerPage() {
+export default async function CashierPage() {
     const user_session = await getUserSession();
     const user = user_session ? await prisma.users.findUnique({
         where: {
@@ -19,10 +19,9 @@ export default async function ManagerPage() {
     const menu_items = await prisma.menu_Item.findMany();
     const categories = Array.from(new Set(menu_items.map((item) => item.category)));
     const ingredient = await prisma.ingredient.findMany();
-    const menuIngredients = await prisma.menus_Ingredients.findMany();
-    const users = await prisma.users.findMany();
 
     return (
-        <Manager menu_items={menu_items} categories={categories} username={user?.name} ingredients={ingredient} menuIngredients={menuIngredients} users={users}/>
+        <Cashier menu_items={menu_items} categories={categories} username={user?.name} is_manager={user?.is_manager} />
     );
 }
+

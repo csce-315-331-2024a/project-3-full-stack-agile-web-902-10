@@ -3,6 +3,9 @@ import { Menu_Item } from "@prisma/client";
 import MenuBoardClient from "@/components/MenuBoardClient";
 import { getTemperature } from '../api/weather';
 
+export const metadata = {
+    title: "Menu Board | Rev's Grill",
+};
 
 export default async function menu_board() {
     const menu_items = await prisma.menu_Item.findMany();
