@@ -261,17 +261,21 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
     return (
         <div className="flex justify-between">
             <div className="w-1/4 p-2">
-                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
-                    <h1>{currentMenuItems1[imgIndex1]}</h1>
-                    <img 
-                        src = {currentMenuItemImages1[imgIndex1]}
-                        height={200}
-                        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                    />
+                <div className="p-2" style={{ height: '50vh' }}>
+                </div>
+                <div className="p-2 " style={{ height: '50vh' }}>
+                        <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                            <h1>{currentMenuItems1[imgIndex1]}</h1>
+                            <img 
+                                src = {currentMenuItemImages1[imgIndex1]}
+                                height={200}
+                                className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                            />
+                    </div>
                 </div>
             </div>
-            <div className="w-1/4 p-2">
-                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+            <div className="w-1/4 p-2 flex flex-col justify-center">
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-start items-center object-cover rounded-3xl" style={{ height: '80vh' }}>
                     <h1>{currentCategory1}</h1>
                     <br/>
                     {currentMenuItems1.map((mi) => (
@@ -279,8 +283,8 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
                     ))}
                 </div>
             </div>
-            <div className="w-1/4 p-2">
-                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+            <div className="w-1/4 p-2 flex flex-col justify-center">
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-start items-center object-cover rounded-3xl" style={{ height: '80vh' }}>
                     <h1>{currentCategory2}</h1>
                     <br/>
                     {currentMenuItems2.map((mi) => (
@@ -290,21 +294,25 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
                 </div>
             </div>
             <div className="w-1/4 p-2">
-                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
-                    <h1>{currentMenuItems2[imgIndex2]}</h1>
-                    <img 
-                        src = {currentMenuItemImages2[imgIndex2]}
-                        height={200}
-                        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                    />
+                <div className="p-2 flex flex-col justify-end" style={{ height: '50vh' }}>
+                    <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                        <h1>{currentMenuItems2[imgIndex2]}</h1>
+                        <img 
+                            src = {currentMenuItemImages2[imgIndex2]}
+                            height={200}
+                            className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                        />
+                    </div>
                 </div>
-                <div className="border-2 border-black p-4 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
-                    <h1>{currentMenuItems1[imgIndex1]}</h1>
-                    <img 
-                        src = {currentMenuItemImages2[imgIndex2]}
-                        height={200}
-                        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                    />
+                <div className="p-2">
+                    <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                        <h1>{hotCold[weatherIndex]}</h1>
+                        <img 
+                            src = {hotColdImg[weatherIndex]}
+                            height={200}
+                            className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                        />
+                    </div>
                 </div>
             </div>
 
