@@ -89,8 +89,9 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
 
     }
 
-    const deleteItem = (menu_item: Menu_Item) => {
-
+    async function deleteItem(menu_item: Menu_Item) {
+       const result = await prisma.$queryRawUnsafe('DELETE FROM Menu_Item WHERE id = ${menu_item.id};');
+       return result
     }
 
     return (
