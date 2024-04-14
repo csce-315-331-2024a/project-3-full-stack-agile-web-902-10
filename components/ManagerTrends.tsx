@@ -48,7 +48,7 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
                 </HoverCard>
                 {selectedTrend == "Sales Report" && (
                     <div>
-                        <BarChart />
+                        <BarChart title={"Test"} label={"hello"} labels={["1", "2"]} data={[3.4, 12]}/>
                     </div>
                 )}
                 {selectedTrend == "Restock Report" && (

@@ -20,7 +20,13 @@ ChartJs.register(
 );
 
 
-const BarChart = () => {
+export default function BarChart({ title, label, labels, data }:
+    {
+        title: string,
+        label: string,
+        labels: string[],
+        data: number[]
+    }) {
 
     const [chartData, setChartData] = useState({
         datasets: [],
@@ -30,11 +36,11 @@ const BarChart = () => {
 
     useEffect(() => {
         setChartData({
-            labels: ['Hello', 'Hello'],
+            labels: labels,
             datasets: [
                 {
-                    label:'Test',
-                    data: [1, 2],
+                    label:label,
+                    data: data,
                     borderColor: 'rgb(53, 162, 235)',
                     backgroundColor: 'rgb(53, 162, 235, 0.4',
 
@@ -48,7 +54,7 @@ const BarChart = () => {
                 },
                 title: {
                     display: true,
-                    text: 'This is a test Graph'
+                    text: title
                 }
             },
             maintainAspectRatio: false,
@@ -65,5 +71,3 @@ const BarChart = () => {
         </>
     );
 }
-
-export default BarChart;
