@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { Menu_Item, Ingredient, Menus_Ingredients, Users } from "@prisma/client";
+import { Menu_Item, Ingredient, Ingredients_Menu, Users } from "@prisma/client";
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
@@ -38,7 +38,7 @@ import UsersList from "./UsersList";
 
 
 
-export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients, users }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Menus_Ingredients[], users: Users[]}) {
+export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients, users }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Ingredients_Menu[], users: Users[]}) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined); 
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);

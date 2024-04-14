@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('add items in cashier page', async ({ page }) => {
-    await page.goto('http://localhost:3000/menu');
+    await page.goto('/menu');
     await page.getByRole('button', { name: 'Revs Grilled Chicken Sandwich' }).click();
     await page.getByRole('button', { name: 'Add to Cart' }).click();
     await page.getByRole('button', { name: 'Sides' }).click();
