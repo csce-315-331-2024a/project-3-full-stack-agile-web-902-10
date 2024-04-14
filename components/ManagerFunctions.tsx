@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { Menu_Item, Ingredient, Menus_Ingredients, Users } from "@prisma/client";
+import { Menu_Item, Ingredient, Ingredients_Menu, Users } from "@prisma/client";
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
@@ -20,10 +20,22 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
+
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+  } from "@/components/ui/alert-dialog"  
+
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -38,7 +50,7 @@ import UsersList from "./UsersList";
 
 
 
-export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients, users }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Menus_Ingredients[], users: Users[]}) {
+export default function ManagerFunctions({ menu_items, categories, ingredients, users }: { menu_items: Menu_Item[], categories: unknown[], menuIngredients: Ingredients_Menu[], ingredients: Ingredient[], users: Users[]}) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined); 
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);
@@ -77,6 +89,10 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
 
     }
 
+    const deleteItem = (menu_item: Menu_Item) => {
+
+    }
+
     return (
         <div className="hidden lg:flex flex-row gap-4">
             {/* Manager Options */}
@@ -95,109 +111,200 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
 
             {/* if editing menu items */}
             {showEditDiv && (
-            <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
+            <ScrollArea className="flex-col w-auto items-center">
                 <div className="grid grid-cols-1 gap-4 p-4">
-                <Dialog>
-                    <DialogTrigger className="justify-evenly">
-                        <Button variant="default" className="text-lg font-bold">Add Item</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle className="text-lg font-bold">Add New Item</DialogTitle>
-                        </DialogHeader>
-                        <div>
-                        <div className="p-2">
-                        <Label htmlFor="message">Enter Item Name</Label>
-                            <Textarea className="w-64 h-2 p-2" placeholder="Type item name here." id="message" />
-                            <Label htmlFor="message">Enter Catagory</Label>
-                            <Textarea className="w-64 h-2 p-2" placeholder="Type item catagory here." id="message" />
-                        </div>
-                        <div className="p-2">
-                        <Popover modal={true}>
-                            <PopoverTrigger asChild>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-[280px] justify-start text-left font-normal",
-                                    !date && "text-muted-foreground"
-                                  )}
-                                >
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {date ? format(date, "PPP") : <span>Seasonal Item End Date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                                <Calendar
-                                  mode="single"
-                                  selected={date}
-                                  onSelect={setDate}
-                                  initialFocus
-                                />
-                            </PopoverContent>
-                        </Popover>
-                        </div>
-                            <ScrollArea className="h-[40vh] w-100 p-2 whitespace-nowrap">
+                    <Dialog>
+                            <div className="flex flex-col w-auto justify-center items-center">
+                                <DialogTrigger>
+                                    <Button variant="default" className="text-3xl font-bold p-8">Add Item</Button>
+                                </DialogTrigger>
+                            </div>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle className="text-lg font-bold">Add New Item</DialogTitle>
+                            </DialogHeader>
+
+                            <div className="">
+                                <Label htmlFor="message">Enter Item Name</Label>
+                                <Input className="w-64" placeholder="Type item name here." id="message" />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="message">Enter Category</Label>
+                                <Input className="w-64" placeholder="Type item category here." id="message" />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="message">Enter Price</Label>
+                                <Input className="w-64" placeholder="Type item price here." id="message" />
+                            </div>
+
+                            <div className="">
+                                <Label htmlFor="message">Enter Seasonal Item End Date</Label>
+                                <Popover modal={true}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                          variant={"outline"}
+                                          className={cn(
+                                            "w-[280px] justify-start text-left font-normal",
+                                            !date && "text-muted-foreground"
+                                          )}
+                                        >
+                                          <CalendarIcon className="mr-2 h-4 w-4" />
+                                          {date ? format(date, "PPP") : <span>Select Date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar
+                                          mode="single"
+                                          selected={date}
+                                          onSelect={setDate}
+                                          initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                                      
+                            <ScrollArea className="h-[40vh] w-100 p-2 whitespace-nowrap overflow-auto border-2 rounded-lg">
                                 <div className="flex-col space-y-4">
-                                {ingredients.map((item, index) => (
-                                    <div key={index} className="flex items-center">
-                                        <Checkbox/>
-                                            <label className="p-2">{item.name}</label>
+                                    {ingredients.map((item, index) => (
+                                        <div key={index} className="flex items-center">
+                                            <Checkbox id={(item.id).toString()}/>
+                                            <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>                                          
                                         </div>
-                                    ))}
+                                        ))}
                                 </div>
                             </ScrollArea>
-                        </div>
-                        <div>
-                            <DialogClose asChild>
-                                <Button variant="default" onClick={() => addItem}>Add Item</Button>
-                            </DialogClose>
-                            <DialogClose asChild>
-                                <Button variant={"destructive"} >Cancel</Button>
-                            </DialogClose>
-                        </div>
-                        <DialogFooter>
-                            
-                        </DialogFooter>                        
-                    </DialogContent>                  
-                </Dialog>
-                <Separator />
+                                    
+
+                            <div className="flex items-center gap-4">
+                                <DialogClose asChild>
+                                    <Button variant="default" onClick={() => addItem}>Add Item</Button>
+                                </DialogClose>
+                                <DialogClose asChild>
+                                    <Button variant={"destructive"} >Cancel</Button>
+                                </DialogClose>
+                            </div>
+                            <DialogFooter>
+                                    
+                            </DialogFooter>                        
+                        </DialogContent>                  
+                    </Dialog>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4">
                     {menu_items.filter((menu_item) => selectedCategory === undefined || menu_item.category === selectedCategory).map((menu_item) => (
                         <Dialog key={menu_item.id}>
-                            <DialogTrigger asChild>
-                                <Button variant="outline" className="flex-col justify-evenly w-[25vw] h-[10vh]">
-                                    <p className="text-2xl font-bold">{menu_item.name}</p>
-                                    <h2 className="text-2xl">${menu_item.price}</h2>
-                                </Button>
-                            </DialogTrigger>
+                        
+                            <div className="flex-col w-[25vw] h-[10vh] border-solid border-2 rounded-lg">
+                                <div className="flex flex-col w-[25vw] h-[10vh] justify-center items-center">
+                                    <h2 className="text-base font-bold snap-center">{menu_item.name}</h2>
+                                    <div className="flex justify-center items-center gap-4">
+                                        <DialogTrigger asChild>
+                                            <Button variant="default" onClick={() => editItem(menu_item)}>Edit Item</Button>
+                                        </DialogTrigger>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger>
+                                                <Button variant="destructive">
+                                                    Delete Item
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete the menu item
+                                                        and remove its data from our server.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <Button variant="destructive" onClick={() => deleteItem(menu_item)}>
+                                                        Continue
+                                                    </Button>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div> 
+                                </div>
+                            </div>
+                            
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>{menu_item.name}</DialogTitle>
-                                    <DialogDescription>${menu_item.price}</DialogDescription>
+                                    <DialogTitle className="text-lg font-bold">Edit Item</DialogTitle>
                                 </DialogHeader>
-                                <div className="flex-col space-y-4">
-                                    {/* {menuIngredients.map((menuIngredient, index) => (
-                                        <div key={index} className="flex items-center">
-                                            <p>{.name}</p>
-                                        </div>
-                                    ))} */}
+
+                                <div className="">
+                                    <Label htmlFor="message">Change Item Name</Label>
+                                    <Input className="w-64" placeholder={menu_item.name} id="message" />
                                 </div>
 
-                                <DialogFooter>
+                                <div>
+                                    <Label htmlFor="message">Change Category</Label>
+                                    <Input className="w-64" placeholder={menu_item.category} id="message" />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="message">Change Price</Label>
+                                    <Input className="w-64" placeholder={(menu_item.price).toString()} id="message" />
+                                </div>
+
+                                <div className="">
+                                    <Label htmlFor="message">Change Seasonal Item End Date</Label>
+                                    <Popover modal={true}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                              variant={"outline"}
+                                              className={cn(
+                                                "w-[280px] justify-start text-left font-normal",
+                                                !date && "text-muted-foreground"
+                                              )}
+                                            >
+                                              <CalendarIcon className="mr-2 h-4 w-4" />
+                                              {date ? format(date, "PPP") : <span>Select Date</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0">
+                                            <Calendar
+                                              mode="single"
+                                              selected={date}
+                                              onSelect={setDate}
+                                              initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                          
+                                <ScrollArea className="h-[40vh] w-100 p-2 whitespace-nowrap overflow-auto border-2 rounded-lg">
+                                    <div className="flex-col space-y-4">
+                                        {ingredients.map((item, index) => (
+                                            <div key={index} className="flex items-center">
+                                                <Checkbox 
+                                                    id={(item.id).toString()} 
+                                                />
+                                                <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>
+                                            </div>
+                                            ))}
+                                    </div>
+                                </ScrollArea>
+                                        
+
+                                <div className="flex items-center gap-4">
                                     <DialogClose asChild>
                                         <Button variant="default" onClick={() => editItem(menu_item)}>Edit Item</Button>
                                     </DialogClose>
                                     <DialogClose asChild>
                                         <Button variant={"destructive"} >Cancel</Button>
                                     </DialogClose>
-                                </DialogFooter>
-                            </DialogContent>
+                                </div>
+                                <DialogFooter>
+                                        
+                                </DialogFooter>                        
+                            </DialogContent> 
                         </Dialog>
                     ))}
                 </div>
-            </ScrollArea>
+            </ScrollArea>            
             )}
             
             {/* Employee management */}
