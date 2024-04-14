@@ -8,6 +8,7 @@ import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import BarChart from "@/components/ui/bar-chart"
 
 
 
@@ -28,6 +29,7 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
                 <div className="flex flex-col w-[14vw] space-y-8 justify-center items-center">
                     <h1 className="text-lg font-bold"> Trends </h1>
                     <Separator />
+                        <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
                         <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
                         <Button key={"Test2"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
                         <Button key={"Test3"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => router.push("/manager")}> {"Back to Manager"} </Button>
@@ -44,6 +46,11 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
                         The Restock Report displays all items that are below the minimum stock requirement.
                     </HoverCardContent>
                 </HoverCard>
+                {selectedTrend == "Sales Report" && (
+                    <div>
+                        <BarChart />
+                    </div>
+                )}
                 {selectedTrend == "Restock Report" && (
                     <div>
                         <DataTable columns={RestockReportColumns} data={restockReportData} />
