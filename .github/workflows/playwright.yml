@@ -6,6 +6,8 @@ on:
     branches: [ main, master ]
 jobs:
   test:
+    env:
+      DATABASE_URL : "postgresql://csce331_902_04_user:lard_budge@csce-315-db.engr.tamu.edu:5432/csce331_902_04_p3_db?schema=public"
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
