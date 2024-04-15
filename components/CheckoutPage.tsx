@@ -37,7 +37,7 @@ export default function CheckoutPage() {
                             <Button variant="default" color="primary" className="w-full" onClick={() => handlePaymentClick('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}>
                                 Pay with Dine In Dollars
                             </Button>
-                            <Button variant="default" color="secondary" className="w-full" onClick={() => handlePaymentClick('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}>
+                            <Button variant="default" color="secondary" className="w-full" onClick={() => handlePaymentClick('https://www.youtube.com/watch?v=xIKHCZl6bsY&pp=ygUlbmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXAgc2lnbiBsYW5ndWFnZQ%3D%3D')}>
                                 Pay with Credit Card
                             </Button>
                         </CardFooter>
