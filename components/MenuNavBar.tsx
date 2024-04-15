@@ -20,9 +20,15 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 
+import { useCartStore } from "@/lib/provider/cart-store-provider";
 
-export default function MenuNavBar({ username, is_manager, cart, setCart }: { username: string | undefined, is_manager: boolean | undefined, cart: Menu_Item[], setCart: any }) {
+
+export default function MenuNavBar({ username, is_manager }: { username: string | undefined, is_manager: boolean | undefined }) {
     const { theme, setTheme } = useTheme();
+
+    // get add to cart store
+    const cart = useCartStore((state) => state.cart);
+    const clearCart = useCartStore((state) => state.clearCart);
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
@@ -74,8 +80,8 @@ export default function MenuNavBar({ username, is_manager, cart, setCart }: { us
                                         </div>
                                     </div>
                                     <DrawerFooter>
-                                        <Button variant="default" className="p-4">Checkout</Button>
-                                        <Button variant="destructive" className="p-4" onClick={() => setCart([])}>Clear Cart</Button>
+                                        <Link href={"/checkout/"} className={buttonVariants({ variant : "default"})} >Checkout</Link>
+                                        <Button variant="destructive" className="p-4" onClick={() => clearCart()}>Clear Cart</Button>
                                     </DrawerFooter>
                                 </DrawerContent>
                             </Drawer>
