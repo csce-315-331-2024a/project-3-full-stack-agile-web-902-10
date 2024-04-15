@@ -1,6 +1,6 @@
 import ManagerTrends from "@/components/ManagerTrends";
 import { prisma } from "@/lib/db";
-import { RestockReportData, WhatSellsTogetherData, SalesReportData } from "@/app/manager_trends/columns"
+import { RestockReportData, WhatSellsTogetherData, SalesReportData, ProductUsageReportData } from "@/app/manager_trends/columns"
 import ManagerNavBar from "@/components/ManagerNavBar";
 import { getUserSession } from "@/lib/session";
 
@@ -11,6 +11,25 @@ export default async function ManagerTrendsPage() {
             email: user_session?.email ?? undefined
         }
     }) : null;
+    const productUsageReportData = await prisma.$queryRawUnsafe<ProductUsageReportData[]>(`SELECT
+            "Ingredient".NAME AS Ingredient,
+            SUM("Ingredients_Menu".QUANTITY) AS TotalQuantityUsed,
+            "Ingredient".CATEGORY
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        JOIN
+            "Ingredients_Menu" ON "Menu_Item".ID = "Ingredients_Menu".MENU_ID
+        JOIN
+            "Ingredient" ON "Ingredients_Menu".INGREDIENTS_ID = "Ingredient".ID
+        WHERE
+            "Order_Log".time BETWEEN '2024-01-01 00:00:00' AND '2024-01-31 23:59:59'
+        GROUP BY
+            "Ingredient".NAME, "Ingredient".CATEGORY
+        ORDER BY
+            TotalQuantityUsed DESC;`);
     const salesReportData = await prisma.$queryRawUnsafe<SalesReportData[]>(`SELECT
             "Menu_Item".NAME AS MenuItem,
             COUNT("Order_Log".ID) AS NumberOfOrders,
@@ -49,7 +68,7 @@ export default async function ManagerTrendsPage() {
     return (
         <>
         <ManagerNavBar username={user?.name}/>
-        <ManagerTrends salesReportData = {salesReportData} restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>
+        <ManagerTrends productUsageReportData = {productUsageReportData} salesReportData = {salesReportData} restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>
         </>
     );
 }

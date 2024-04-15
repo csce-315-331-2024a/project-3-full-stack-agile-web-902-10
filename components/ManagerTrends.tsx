@@ -3,7 +3,7 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns, SalesReportData } from "@/app/manager_trends/columns"
+import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns, SalesReportData, ProductUsageReportData } from "@/app/manager_trends/columns"
 import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ import BarChart from "@/components/ui/bar-chart"
 
 
 
-export default function ManagerTrends({ salesReportData ,restockReportData, whatSellsTogtherData }: {salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[]}) {
+export default function ManagerTrends({ productUsageReportData, salesReportData ,restockReportData, whatSellsTogtherData }: {productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[]}) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
@@ -29,6 +29,7 @@ export default function ManagerTrends({ salesReportData ,restockReportData, what
                 <div className="flex flex-col w-[14vw] space-y-8 justify-center items-center">
                     <h1 className="text-lg font-bold"> Trends </h1>
                     <Separator />
+                        <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Product Usage Chart")}> {"Product Usage Chart"} </Button>
                         <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
                         <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
                         <Button key={"Test2"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
@@ -46,6 +47,11 @@ export default function ManagerTrends({ salesReportData ,restockReportData, what
                         The Restock Report displays all items that are below the minimum stock requirement.
                     </HoverCardContent>
                 </HoverCard>
+                {selectedTrend == "Product Usage Chart" && (
+                    <div>
+                        <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsageReportData.map(a => a.ingredient)} data={productUsageReportData.map(b => Number(b.totalquantityused))}/>
+                    </div>
+                )}
                 {selectedTrend == "Sales Report" && (
                     <div>
                         <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReportData.map(a => a.menuitem)} data={salesReportData.map(b => Number(b.totalsales))}/>

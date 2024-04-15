@@ -23,6 +23,12 @@ export type WhatSellsTogetherData = {
     item2_name: string
     frequency: number
 }
+
+export type ProductUsageReportData = {
+  ingredient: string
+  totalquantityused: number
+  category: string
+}
  
 export const RestockReportColumns: ColumnDef<RestockReportData>[] = [
   {
