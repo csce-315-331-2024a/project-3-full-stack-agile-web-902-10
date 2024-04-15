@@ -7,14 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id          Int         @id @default(autoincrement())
-  email       String      @unique
-  name        String
-  avatar      String?
-  is_manager  Boolean
-  is_employee Boolean
-  login_log   Login_Log[]
+model Ingredient {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique
+  stock            Int
+  category         String
+  min_stock        Int
+  Ingredients_Menu Ingredients_Menu[]
+}
+
+model Ingredients_Menu {
+  id             Int        @id @default(autoincrement())
+  ingredients_id Int        @default(autoincrement())
+  menu_id        Int        @default(autoincrement())
+  quantity       Int
+  Ingredient     Ingredient @relation(fields: [ingredients_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Menu_Item      Menu_Item  @relation(fields: [menu_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Login_Log {
@@ -22,35 +30,16 @@ model Login_Log {
   time    DateTime @default(now())
   login   Boolean
   user_id Int
-  user    Users    @relation(fields: [user_id], references: [id])
-}
-
-model Ingredient {
-  id        Int                @id @default(autoincrement())
-  name      String             @unique
-  stock     Int
-  category  String
-  min_stock Int
-  menus     Menus_Ingredients?
+  Users   Users    @relation(fields: [user_id], references: [id])
 }
 
 model Menu_Item {
-  id          Int                @id @default(autoincrement())
-  name        String             @unique
-  price       Int
-  image_url   String
-  category    String
-  ingredients Menus_Ingredients?
-}
-
-model Menus_Ingredients {
-  ratio         Int
-  menu_item_id  Int        @unique
-  ingredient_id Int        @unique
-  ingredient    Ingredient @relation(fields: [ingredient_id], references: [id])
-  menu_item     Menu_Item  @relation(fields: [menu_item_id], references: [id])
-
-  @@id([menu_item_id, ingredient_id])
+  id               Int                @id @default(autoincrement())
+  name             String             @unique
+  price            Int
+  image_url        String
+  category         String
+  Ingredients_Menu Ingredients_Menu[]
 }
 
 model Order_Log {
@@ -59,4 +48,14 @@ model Order_Log {
   price       Int
   menu_items  String
   ingredients String
+}
+
+model Users {
+  id          Int         @id @default(autoincrement())
+  email       String      @unique
+  name        String
+  avatar      String?
+  is_manager  Boolean
+  is_employee Boolean
+  Login_Log   Login_Log[]
 }

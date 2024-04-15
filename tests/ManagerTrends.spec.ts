@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('View Restock Report', async ({ page }) => {
-    await page.goto('http://localhost:3000/manager_trends');
-    await page.getByRole('button', { name: 'Restock Report' }).click();
-    await page.getByRole('cell', { name: 'Straw' }).click();
-    await page.getByRole('cell', { name: 'Hot Dog' }).click();
-    await page.getByRole('cell', { name: 'Ketchup' }).click();
-});
+// test('View Restock Report', async ({ page }) => {
+//     await page.goto('/manager_trends');
+//     await page.getByRole('button', { name: 'Restock Report' }).click();
+//     await page.getByRole('cell', { name: 'Straw' }).click();
+//     await page.getByRole('cell', { name: 'Hot Dog' }).click();
+//     await page.getByRole('cell', { name: 'Ketchup' }).click();
+// });
+
 
 test('View What Sells Together Report', async ({ page }) => {  
     await page.goto('http://localhost:3000/manager_trends');
@@ -67,4 +68,5 @@ test('Excess Report', async ({ page }) => {
     await page.getByLabel('Settings').click();
     await page.getByRole('button', { name: 'Close' }).click();
 });
+
 

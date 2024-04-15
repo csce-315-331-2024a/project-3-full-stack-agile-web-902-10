@@ -1,11 +1,16 @@
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import CustomerMenu from "@/components/CustomerMenu";
 import { Menu_Item } from "@prisma/client";
+import CustomerMenu from "@/components/CustomerMenu";
 
 export const metadata = {
     title: "Menu | Rev's Grill",
 };
+
+async function getMenuItemsWithSufficientIngredients() {
+    const menuItems = await prisma.$queryRaw<Menu_Item[]>`     SELECT mi.*     FROM "Menu_Item" mi     WHERE NOT EXISTS (       SELECT 1       FROM "Ingredients_Menu" im       JOIN "Ingredient" i ON im."ingredients_id" = i."id"       WHERE im."menu_id" = mi."id"         AND i."stock" < im."quantity"     )   `;
+    return menuItems;
+}
 
 export default async function MenuPage() {
     const user_session = await getUserSession();
@@ -15,10 +20,8 @@ export default async function MenuPage() {
         }
     }) : null;
 
-    // const menu_items = await prisma.$queryRaw<Menu_Item[]>`SELECT DISTINCT mi.* FROM "Menu_Item" mi JOIN "Menus_Ingredients" mi_ing ON mi.id = mi_ing.menu_item_id JOIN "Ingredient" i ON mi_ing.ingredient_id = i.id WHERE i.stock > 0;`;
-    const menu_items = await prisma.menu_Item.findMany();
+    const menu_items = await getMenuItemsWithSufficientIngredients();
     const categories = Array.from(new Set(menu_items.map((item) => item.category)));
-    const ingredient = await prisma.ingredient.findMany();
 
     return (
         <CustomerMenu menu_items={menu_items} categories={categories} username={user?.name} is_manager={user?.is_manager} />
