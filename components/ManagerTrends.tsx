@@ -45,7 +45,36 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                         <Button variant="link">{selectedTrend}</Button>
                     </HoverCardTrigger>
                     <HoverCardContent className="w-200">
-                        The Restock Report displays all items that are below the minimum stock requirement.
+                    {selectedTrend == "Product Usage Chart" && (
+                    <div>
+                        The Product Usage Chart displays all ingredients based on the quantity used over a user defined time period.
+                    </div>
+                )}
+                {selectedTrend == "Sales Report" && (
+                    <div>
+                        The Sales Report displays all menu items based on the total profit of each item made over a user defined time period.
+                    </div>
+                )}
+                {selectedTrend == "Excess Report" && (
+                    <div>
+                        The Excess Report displays all ingredients that saw less than 10% use from a user defined time to the current time.
+                    </div>
+                )}
+                {selectedTrend == "Restock Report" && (
+                    <div>
+                        The Restock Report displays all ingredients whose current stock is under the minimum stock treshold.
+                    </div>
+                )}
+                {selectedTrend == "What Sells Together" && (
+                    <div>
+                        The What Sells Together Report displays pairs of items that are most popular sold together.
+                    </div>
+                )}
+                {selectedTrend == undefined && (
+                    <div>
+                        Select a trend using the buttons to the right
+                    </div>
+                )}
                     </HoverCardContent>
                 </HoverCard>
                 {selectedTrend == "Product Usage Chart" && (
