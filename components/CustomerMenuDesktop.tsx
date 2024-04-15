@@ -25,8 +25,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { useCartStore } from "@/lib/provider/cart-store-provider"
 
-export default function CustomerMenuDesktop({ menu_items, categories, setCart }: { menu_items: Menu_Item[], categories: string[], setCart: any }) {
+export default function CustomerMenuDesktop({ menu_items, categories }: { menu_items: Menu_Item[], categories: string[] }) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
 
@@ -38,9 +39,12 @@ export default function CustomerMenuDesktop({ menu_items, categories, setCart }:
         }
     }
 
+    // get add to cart store
+    const add = useCartStore((state) => state.addToCart);
+
     const onAddToCart = (menu_item: Menu_Item) => {
         // maybe we should validate here?
-        setCart((prevCart: Menu_Item[]) => [...prevCart, menu_item]);
+        add(menu_item);
     }
 
     return (

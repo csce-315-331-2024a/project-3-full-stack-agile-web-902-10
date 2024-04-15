@@ -25,7 +25,9 @@ import {
 } from "@/components/ui/dialog"
 import Image from "next/image"
 
-export default function CustomerMenuMobile({ menu_items, categories, setCart }: { menu_items: Menu_Item[], categories: string[], setCart: any }) {
+import { useCartStore } from "@/lib/provider/cart-store-provider"
+
+export default function CustomerMenuMobile({ menu_items, categories }: { menu_items: Menu_Item[], categories: string[] }) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
 
     const onCategoryClick = (category: string) => {
@@ -36,9 +38,12 @@ export default function CustomerMenuMobile({ menu_items, categories, setCart }: 
         }
     }
 
+    // get add to cart store
+    const add = useCartStore((state) => state.addToCart);
+
     const onAddToCart = (menu_item: Menu_Item) => {
         // maybe we should validate here?
-        setCart((prevCart: Menu_Item[]) => [...prevCart, menu_item]);
+        add(menu_item);
     }
 
     return (
