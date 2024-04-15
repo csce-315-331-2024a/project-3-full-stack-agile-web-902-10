@@ -3,7 +3,7 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns, SalesReportData, ProductUsageReportData } from "@/app/manager_trends/columns"
+import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns, SalesReportData, ProductUsageReportData, ExcessReportColumns, ExcessReportData } from "@/app/manager_trends/columns"
 import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ import BarChart from "@/components/ui/bar-chart"
 
 
 
-export default function ManagerTrends({ productUsageReportData, salesReportData ,restockReportData, whatSellsTogtherData }: {productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[]}) {
+export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData ,restockReportData, whatSellsTogtherData }: {excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[]}) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
@@ -31,6 +31,7 @@ export default function ManagerTrends({ productUsageReportData, salesReportData 
                     <Separator />
                         <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Product Usage Chart")}> {"Product Usage Chart"} </Button>
                         <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
+                        <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Excess Report")}> {"Excess Report"} </Button>
                         <Button key={"Test"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
                         <Button key={"Test2"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
                         <Button key={"Test3"} className="w-[14vw] h-[12vh] text-lg font-bold" onClick={() => router.push("/manager")}> {"Back to Manager"} </Button>
@@ -55,6 +56,11 @@ export default function ManagerTrends({ productUsageReportData, salesReportData 
                 {selectedTrend == "Sales Report" && (
                     <div>
                         <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReportData.map(a => a.menuitem)} data={salesReportData.map(b => Number(b.totalsales))}/>
+                    </div>
+                )}
+                {selectedTrend == "Excess Report" && (
+                    <div>
+                        <DataTable columns={ExcessReportColumns} data={excessReportData} />
                     </div>
                 )}
                 {selectedTrend == "Restock Report" && (
