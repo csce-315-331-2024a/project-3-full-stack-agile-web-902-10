@@ -50,7 +50,7 @@ export default function CashierMenuDesktop({ menu_items, categories, setCart }: 
                     <h1 className="text-lg font-bold"> Cart Item Total </h1>
                     <Separator />
                     <Separator />
-                    <p> 10 items </p>
+                    <p> 0 items </p>
                 </div>
                 <ScrollBar orientation="vertical" />
             </ScrollArea>
