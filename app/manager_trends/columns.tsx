@@ -12,11 +12,29 @@ export type RestockReportData = {
   min_stock: number
 }
 
+export type SalesReportData = {
+  menuitem: string
+  numberoforders: number
+  totalsales: number
+}
+
 export type WhatSellsTogetherData = {
     item1_name: string
     item2_name: string
     frequency: number
-  }
+}
+
+export type ProductUsageReportData = {
+  ingredient: string
+  totalquantityused: number
+  category: string
+}
+
+export type ExcessReportData = {
+  ingredient: string
+  totalquantityused: number
+  category: string
+}
  
 export const RestockReportColumns: ColumnDef<RestockReportData>[] = [
   {
@@ -38,16 +56,32 @@ export const RestockReportColumns: ColumnDef<RestockReportData>[] = [
 ]
 
 export const WhatSellsTogetherColumns: ColumnDef<WhatSellsTogetherData>[] = [
-    {
-      accessorKey: "item1_name",
-      header: "Item 1",
-    },
-    {
-      accessorKey: "item2_name",
-      header: "Item 2",
-    },
-    {
-      accessorKey: "frequency",
-      header: "Frequency",
-    },
-  ]
+  {
+    accessorKey: "item1_name",
+    header: "Item 1",
+  },
+  {
+    accessorKey: "item2_name",
+    header: "Item 2",
+  },
+  {
+    accessorKey: "frequency",
+    header: "Frequency",
+  },
+]
+
+export const ExcessReportColumns: ColumnDef<ExcessReportData>[] = [
+  {
+    accessorKey: "ingredient",
+    header: "Ingredient",
+  },
+  {
+    accessorKey: "totalquantityused",
+    header: "Total Quantity Used",
+  },
+  {
+    accessorKey: "category",
+    header: "Category",
+  },
+]
+
