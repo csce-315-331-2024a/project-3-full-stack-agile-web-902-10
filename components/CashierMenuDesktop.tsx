@@ -47,11 +47,10 @@ export default function CashierMenuDesktop({ menu_items, categories, setCart }: 
         <div className="hidden lg:flex flex-row">
             <ScrollArea className="h-[92vh] w-auto p-10  whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
-                    <h1 className="text-lg font-bold"> Category </h1>
+                    <h1 className="text-lg font-bold"> Cart Item Total </h1>
                     <Separator />
-                    {categories.map((cat) => (
-                        <Button key={cat} variant={selectedCategory === cat ? "default" : "secondary"} className="w-[8vw] h-[5vh] text-lg font-bold" onClick={() => onCategoryClick(cat)}> {cat} </Button>
-                    ))}
+                    <Separator />
+                    <p> 10 items </p>
                 </div>
                 <ScrollBar orientation="vertical" />
             </ScrollArea>
