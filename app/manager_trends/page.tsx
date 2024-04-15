@@ -1,8 +1,71 @@
 import ManagerTrends from "@/components/ManagerTrends";
 import { prisma } from "@/lib/db";
-import { RestockReportData, WhatSellsTogetherData } from "@/app/manager_trends/columns"
+import { RestockReportData, WhatSellsTogetherData, SalesReportData, ProductUsageReportData, ExcessReportData } from "@/app/manager_trends/columns"
+import ManagerNavBar from "@/components/ManagerNavBar";
+import { getUserSession } from "@/lib/session";
 
 export default async function ManagerTrendsPage() {
+    const user_session = await getUserSession();
+    const user = user_session ? await prisma.users.findUnique({
+        where: {
+            email: user_session?.email ?? undefined
+        }
+    }) : null;
+    const productUsageReportData = await prisma.$queryRawUnsafe<ProductUsageReportData[]>(`SELECT
+            "Ingredient".NAME AS Ingredient,
+            SUM("Ingredients_Menu".QUANTITY) AS TotalQuantityUsed,
+            "Ingredient".CATEGORY
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        JOIN
+            "Ingredients_Menu" ON "Menu_Item".ID = "Ingredients_Menu".MENU_ID
+        JOIN
+            "Ingredient" ON "Ingredients_Menu".INGREDIENTS_ID = "Ingredient".ID
+        WHERE
+            "Order_Log".time BETWEEN '2024-01-01 00:00:00' AND '2024-01-31 23:59:59'
+        GROUP BY
+            "Ingredient".NAME, "Ingredient".CATEGORY
+        ORDER BY
+            TotalQuantityUsed DESC;`);
+    const salesReportData = await prisma.$queryRawUnsafe<SalesReportData[]>(`SELECT
+            "Menu_Item".NAME AS MenuItem,
+            COUNT("Order_Log".ID) AS NumberOfOrders,
+            SUM("Order_Log".PRICE) AS TotalSales
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        WHERE
+            "Order_Log".time BETWEEN '2024-01-01 00:00:00' AND '2024-01-31 23:59:59'
+        GROUP BY
+            "Menu_Item".NAME
+        ORDER BY
+            TotalSales DESC;`);
+    const excessReportData = await prisma.$queryRawUnsafe<ExcessReportData[]>(`SELECT
+            "Ingredient".NAME AS Ingredient,
+            SUM("Ingredients_Menu".QUANTITY) AS TotalQuantityUsed,
+            "Ingredient".CATEGORY
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        JOIN
+            "Ingredients_Menu" ON "Menu_Item".ID = "Ingredients_Menu".MENU_ID
+        JOIN
+            "Ingredient" ON "Ingredients_Menu".INGREDIENTS_ID = "Ingredient".ID
+        WHERE
+            "Order_Log".time BETWEEN '2024-01-31 00:00:00' AND '2024-01-31 23:59:59'
+        GROUP BY
+            "Ingredient".NAME, "Ingredient".CATEGORY, "Ingredient".STOCK
+        HAVING
+            SUM("Ingredients_Menu".QUANTITY) <  0.1* ("Ingredient".STOCK + SUM("Ingredients_Menu".QUANTITY))
+        ORDER BY
+            TotalQuantityUsed DESC;`);
     const restockReportData = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE STOCK < 10000 ORDER BY STOCK;`);
     const whatSellsTogtherData = await prisma.$queryRawUnsafe<WhatSellsTogetherData[]>(`SELECT mi1.name AS item1_name, mi2.name AS item2_name, COUNT(*) AS frequency
         FROM (
@@ -23,5 +86,10 @@ export default async function ManagerTrendsPage() {
         GROUP BY item1_name, item2_name
         ORDER BY frequency DESC
         LIMIT 10;`);
-    return (<ManagerTrends restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>);
+    return (
+        <>
+        <ManagerNavBar username={user?.name}/>
+        <ManagerTrends excessReportData = {excessReportData} productUsageReportData = {productUsageReportData} salesReportData = {salesReportData} restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>
+        </>
+    );
 }
