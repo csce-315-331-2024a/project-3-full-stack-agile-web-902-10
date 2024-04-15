@@ -4,11 +4,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 
 import { useCartStore } from "@/lib/provider/cart-store-provider";
-import CheckoutNavBar from "@/components/CheckoutNavBar";
 
 export default function CheckoutPage() {
     const cart = useCartStore((state) => state.cart);
     const totalPrice = cart.reduce((acc, item) => acc + item.price, 0);
+
+    const handlePaymentClick = (url: string) => {
+        window.open(url, "_blank");
+    };
 
     return (
         <>
@@ -26,9 +29,17 @@ export default function CheckoutPage() {
                                 </div>
                             ))}
                         </CardContent>
-                        <CardFooter className="flex justify-between items-center font-bold p-4">
-                            <p>Total</p>
-                            <p>${totalPrice.toFixed(2)}</p>
+                        <CardFooter className="flex flex-col items-center space-y-4 font-bold p-4">
+                            <div className="flex justify-between w-full">
+                                <p>Total</p>
+                                <p>${totalPrice.toFixed(2)}</p>
+                            </div>
+                            <Button variant="default" color="primary" className="w-full" onClick={() => handlePaymentClick('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}>
+                                Pay with Dine In Dollars
+                            </Button>
+                            <Button variant="default" color="secondary" className="w-full" onClick={() => handlePaymentClick('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}>
+                                Pay with Credit Card
+                            </Button>
                         </CardFooter>
                     </Card>
                 </div>
