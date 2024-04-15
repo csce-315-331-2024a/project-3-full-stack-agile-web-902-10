@@ -50,13 +50,17 @@ import UsersList from "./UsersList";
 
 
 
-export default function ManagerFunctions({ menu_items, categories, ingredients, users }: { menu_items: Menu_Item[], categories: unknown[], menuIngredients: Ingredients_Menu[], ingredients: Ingredient[], users: Users[]}) {
+export default function ManagerFunctions({ menu_items, categories, menuIngredients, ingredients, users }: { menu_items: Menu_Item[], categories: unknown[], menuIngredients: Ingredients_Menu[], ingredients: Ingredient[], users: Users[]}) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined); 
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);
     const [showEmployeeDiv, setShowEmployeeDiv] = useState(false);
     const [date, setDate] = useState<Date>();
     const router = useRouter();
+    const [itemName, setItemName] = useState('');
+    const [category, setCategory] = useState('');
+    const [price, setPrice] = useState('');
+    let ingredientsMenuList: Ingredients_Menu[] = [];
 
     const toggleEditMenuDiv = () => {
         setShowEmployeeDiv(false);
@@ -85,12 +89,34 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
 
     }
 
-    const addItem = () => {
-
+    const handleInputChange = (e: any, setter: any) => {
+        setter(e.target.value);
     }
 
+    const handleCheckboxAddMenu = (item: Ingredient, menu_name: string) => {
+        const newLink: Ingredients_Menu = {
+            id: menuIngredients[menuIngredients.length].id + 1,
+            ingredients_id: item.id,
+            menu_id: menu_items[menu_items.length].id + 1,
+            quantity: 1,
+        };
+        ingredientsMenuList.push(newLink)
+    };
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        const formData = {
+            itemName,
+            category,
+            price,
+            ingredientsMenuList
+        };
+        //const result = await prisma.$queryRawUnsafe('INSERT INTO Menu_Item (name, price, image_url, category, ) VALUES (${itemName}, ${price}, https://thumbs.dreamstime.com/b/heart-shape-various-vegetables-fruits-healthy-food-concept-isolated-white-background-140287808.jpg, ${category}, ${ingredientsMenuList});');
+        ingredientsMenuList = [];
+    };
+
     async function deleteItem(menu_item: Menu_Item) {
-       const result = await prisma.$queryRawUnsafe('DELETE FROM Menu_Item WHERE id = ${menu_item.id};');
+       const result = null//await prisma.$queryRawUnsafe('DELETE FROM Menu_Item WHERE id = ${menu_item.id};');
        return result
     }
 
@@ -125,70 +151,90 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
                                 <DialogTitle className="text-lg font-bold">Add New Item</DialogTitle>
                             </DialogHeader>
 
-                            <div className="">
-                                <Label htmlFor="message">Enter Item Name</Label>
-                                <Input className="w-64" placeholder="Type item name here." id="message" />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="message">Enter Category</Label>
-                                <Input className="w-64" placeholder="Type item category here." id="message" />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="message">Enter Price</Label>
-                                <Input className="w-64" placeholder="Type item price here." id="message" />
-                            </div>
-
-                            <div className="">
-                                <Label htmlFor="message">Enter Seasonal Item End Date</Label>
-                                <Popover modal={true}>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                          variant={"outline"}
-                                          className={cn(
-                                            "w-[280px] justify-start text-left font-normal",
-                                            !date && "text-muted-foreground"
-                                          )}
-                                        >
-                                          <CalendarIcon className="mr-2 h-4 w-4" />
-                                          {date ? format(date, "PPP") : <span>Select Date</span>}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0">
-                                        <Calendar
-                                          mode="single"
-                                          selected={date}
-                                          onSelect={setDate}
-                                          initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                            </div>
-                                      
-                            <ScrollArea className="h-[40vh] w-100 p-2 whitespace-nowrap overflow-auto border-2 rounded-lg">
-                                <div className="flex-col space-y-4">
-                                    {ingredients.map((item, index) => (
-                                        <div key={index} className="flex items-center">
-                                            <Checkbox id={(item.id).toString()}/>
-                                            <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>                                          
-                                        </div>
-                                        ))}
+                            <form onSubmit={handleSubmit}>
+                                <div className="">
+                                    <Label htmlFor="itemName">Enter Item Name</Label>
+                                    <Input 
+                                        className="w-64" 
+                                        placeholder="Type item name here." 
+                                        id="itemName" 
+                                        value={itemName}
+                                        onChange={(e) => handleInputChange(e, setItemName)}
+                                    />
                                 </div>
-                            </ScrollArea>
-                                    
 
-                            <div className="flex items-center gap-4">
-                                <DialogClose asChild>
-                                    <Button variant="default" onClick={() => addItem}>Add Item</Button>
-                                </DialogClose>
-                                <DialogClose asChild>
-                                    <Button variant={"destructive"} >Cancel</Button>
-                                </DialogClose>
-                            </div>
-                            <DialogFooter>
-                                    
-                            </DialogFooter>                        
+                                <div>
+                                    <Label htmlFor="category">Enter Category</Label>
+                                    <Input 
+                                        className="w-64" 
+                                        placeholder="Type item category here." 
+                                        id="category" 
+                                        value={category}
+                                        onChange={(e) => handleInputChange(e, setCategory)}
+                                    />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="price">Enter Price</Label>
+                                    <Input 
+                                        className="w-64" 
+                                        placeholder="Type item price here." 
+                                        id="price" 
+                                        value={price}
+                                        onChange={(e) => handleInputChange(e, setPrice)}
+                                    />
+                                </div>
+
+                                <div className="">
+                                    <Label htmlFor="date">Enter Seasonal Item End Date</Label>
+                                    <Popover modal={true}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                              variant={"outline"}
+                                              className={cn(
+                                                "w-[280px] justify-start text-left font-normal",
+                                                !date && "text-muted-foreground"
+                                              )}
+                                            >
+                                              <CalendarIcon className="mr-2 h-4 w-4" />
+                                              {date ? format(date, "PPP") : <span>Select Date</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0">
+                                            <Calendar
+                                              mode="single"
+                                              selected={date}
+                                              onSelect={setDate}
+                                              initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                          
+                                <ScrollArea className="h-[40vh] w-100 p-2 whitespace-nowrap overflow-auto border-2 rounded-lg">
+                                    <div className="flex-col space-y-4">
+                                        {ingredients.map((item, index) => (
+                                            <div key={index} className="flex items-center">
+                                                <Checkbox 
+                                                    id={(item.id).toString()}
+                                                    onChange={() => handleCheckboxAddMenu(item, itemName)}
+                                                />
+                                                <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>                                          
+                                            </div>
+                                            ))}
+                                    </div>
+                                </ScrollArea>                                    
+
+                                <div className="flex items-center gap-4">
+                                    <DialogClose asChild>
+                                        <Button variant="default" type="submit">Add Item</Button>
+                                    </DialogClose>
+                                    <DialogClose asChild>
+                                        <Button variant={"destructive"} >Cancel</Button>
+                                    </DialogClose>
+                                </div>
+
+                            </form>                       
                         </DialogContent>                  
                     </Dialog>
                 </div>
