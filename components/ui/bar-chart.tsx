@@ -30,7 +30,7 @@ export default function BarChart({ title, label, labels, data }:
 
     const [chartData, setChartData] = useState({
         datasets: [],
-    });
+    } as any);
 
     const [chartOptions, setChartOptions] = useState({});
 
