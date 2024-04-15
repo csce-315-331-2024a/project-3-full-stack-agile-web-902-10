@@ -12,11 +12,17 @@ export type RestockReportData = {
   min_stock: number
 }
 
+export type SalesReportData = {
+  menuitem: string
+  numberoforders: number
+  totalsales: number
+}
+
 export type WhatSellsTogetherData = {
     item1_name: string
     item2_name: string
     frequency: number
-  }
+}
  
 export const RestockReportColumns: ColumnDef<RestockReportData>[] = [
   {

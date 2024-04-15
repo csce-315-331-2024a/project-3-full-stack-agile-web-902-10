@@ -1,6 +1,6 @@
 import ManagerTrends from "@/components/ManagerTrends";
 import { prisma } from "@/lib/db";
-import { RestockReportData, WhatSellsTogetherData } from "@/app/manager_trends/columns"
+import { RestockReportData, WhatSellsTogetherData, SalesReportData } from "@/app/manager_trends/columns"
 import ManagerNavBar from "@/components/ManagerNavBar";
 import { getUserSession } from "@/lib/session";
 
@@ -11,7 +11,21 @@ export default async function ManagerTrendsPage() {
             email: user_session?.email ?? undefined
         }
     }) : null;
-
+    const salesReportData = await prisma.$queryRawUnsafe<SalesReportData[]>(`SELECT
+            "Menu_Item".NAME AS MenuItem,
+            COUNT("Order_Log".ID) AS NumberOfOrders,
+            SUM("Order_Log".PRICE) AS TotalSales
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        WHERE
+            "Order_Log".time BETWEEN '2024-01-01 00:00:00' AND '2024-01-31 23:59:59'
+        GROUP BY
+            "Menu_Item".NAME
+        ORDER BY
+            TotalSales DESC;`);
     const restockReportData = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE STOCK < 10000 ORDER BY STOCK;`);
     const whatSellsTogtherData = await prisma.$queryRawUnsafe<WhatSellsTogetherData[]>(`SELECT mi1.name AS item1_name, mi2.name AS item2_name, COUNT(*) AS frequency
         FROM (
@@ -35,7 +49,7 @@ export default async function ManagerTrendsPage() {
     return (
         <>
         <ManagerNavBar username={user?.name}/>
-        <ManagerTrends restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>
+        <ManagerTrends salesReportData = {salesReportData} restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>
         </>
     );
 }

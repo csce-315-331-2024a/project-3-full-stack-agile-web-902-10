@@ -3,7 +3,7 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns } from "@/app/manager_trends/columns"
+import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns, SalesReportData } from "@/app/manager_trends/columns"
 import { DataTable } from "@/components/ui/data-table"
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ import BarChart from "@/components/ui/bar-chart"
 
 
 
-export default function ManagerTrends({ restockReportData, whatSellsTogtherData }: {restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[]}) {
+export default function ManagerTrends({ salesReportData ,restockReportData, whatSellsTogtherData }: {salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[]}) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
@@ -48,7 +48,7 @@ export default function ManagerTrends({ restockReportData, whatSellsTogtherData 
                 </HoverCard>
                 {selectedTrend == "Sales Report" && (
                     <div>
-                        <BarChart title={"Test"} label={"hello"} labels={["1", "2"]} data={[3.4, 12]}/>
+                        <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReportData.map(a => a.menuitem)} data={salesReportData.map(b => Number(b.totalsales))}/>
                     </div>
                 )}
                 {selectedTrend == "Restock Report" && (
