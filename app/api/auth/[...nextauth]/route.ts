@@ -19,7 +19,7 @@ const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ profile }) {
             if (!profile?.email || !profile?.name) {
-                return "/login";
+                return "/menu";
             }
 
             const user = await prisma.users.upsert({
@@ -40,6 +40,19 @@ const authOptions: NextAuthOptions = {
             });
 
             return true;
+        },
+        async jwt ({ token, user }) {
+            const id = Math.floor(Math.random() * 1000000) + 1;
+            console.log("JWT", id);
+            await prisma.users.update({where: {email: user.email ?? undefined}, data: {jwt: id.toString() }});
+            if (user) {
+                token.user = user;
+            }
+            return token;
+        },
+        async session ({ session, token } : { session: any, token: any }) {
+            session.user = token.user;
+            return session;
         },
     },
     events: {

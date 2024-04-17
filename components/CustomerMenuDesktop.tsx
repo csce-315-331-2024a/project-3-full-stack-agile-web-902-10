@@ -1,19 +1,11 @@
 "use client";
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
 import { Menu_Item } from "@prisma/client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Dialog,
     DialogClose,
@@ -24,12 +16,15 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { useCartStore } from "@/lib/provider/cart-store-provider"
 
-export default function CustomerMenuDesktop({ menu_items, categories }: { menu_items: Menu_Item[], categories: string[] }) {
+import { useCartStore } from "@/lib/provider/cart-store-provider"
+import { useSocket } from "@/lib/socket";
+
+export default function CustomerMenuDesktop({ menu_items_init, categories_init }: { menu_items_init: Menu_Item[], categories_init: string[] }) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+    const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
+    const [categories, setCategories] = useState<string[]>(categories_init);
 
     const onCategoryClick = (category: string) => {
         if (selectedCategory === category) {
@@ -39,13 +34,23 @@ export default function CustomerMenuDesktop({ menu_items, categories }: { menu_i
         }
     }
 
-    // get add to cart store
     const add = useCartStore((state) => state.addToCart);
-
     const onAddToCart = (menu_item: Menu_Item) => {
         // maybe we should validate here?
         add(menu_item);
     }
+
+    // listen for changes to the menu items
+    const socket: any = useSocket();
+    useEffect(() => {
+        if (socket) {
+            socket.on("Menu_Item", (menu_items_changed: string) => {
+                const parsed: Menu_Item[] = JSON.parse(menu_items_changed);
+                setMenuItems(parsed);
+                setCategories(Array.from(new Set(parsed.map((item) => item.category))));
+            });
+        }
+    }, [socket]);
 
     return (
         <div className="hidden lg:flex flex-row">

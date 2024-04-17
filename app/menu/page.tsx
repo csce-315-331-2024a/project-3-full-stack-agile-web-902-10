@@ -1,16 +1,14 @@
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { Menu_Item } from "@prisma/client";
-import CustomerMenu from "@/components/CustomerMenu";
+
+import MenuNavBar from "@/components/MenuNavBar";
+import CustomerMenuDesktop from "@/components/CustomerMenuDesktop";
+import CustomerMenuMobile from "@/components/CustomerMenuMobile";
 
 export const metadata = {
     title: "Menu | Rev's Grill",
 };
 
-async function getMenuItemsWithSufficientIngredients() {
-    const menuItems = await prisma.$queryRaw<Menu_Item[]>`     SELECT mi.*     FROM "Menu_Item" mi     WHERE NOT EXISTS (       SELECT 1       FROM "Ingredients_Menu" im       JOIN "Ingredient" i ON im."ingredients_id" = i."id"       WHERE im."menu_id" = mi."id"         AND i."stock" < im."quantity"     )   `;
-    return menuItems;
-}
 
 export default async function MenuPage() {
     const user_session = await getUserSession();
@@ -20,10 +18,14 @@ export default async function MenuPage() {
         }
     }) : null;
 
-    const menu_items = await getMenuItemsWithSufficientIngredients();
+    const menu_items = await prisma.menu_Item.findMany();
     const categories = Array.from(new Set(menu_items.map((item) => item.category)));
 
     return (
-        <CustomerMenu menu_items={menu_items} categories={categories} username={user?.name} is_manager={user?.is_manager} />
+        <>
+            <MenuNavBar username={user?.name.split(" ")[0]} is_manager={user?.is_manager} />
+            <CustomerMenuDesktop menu_items_init={menu_items} categories_init={categories} />
+            <CustomerMenuMobile menu_items={menu_items} categories={categories} />
+        </>
     );
 }

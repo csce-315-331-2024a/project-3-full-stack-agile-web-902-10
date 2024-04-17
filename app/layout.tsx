@@ -1,3 +1,5 @@
+"use client";
+
 import { Overpass_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 
