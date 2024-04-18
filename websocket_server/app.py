@@ -219,7 +219,7 @@ async def Users_update(sid, packet):
     parsed_packet = json.loads(packet)
     if not await authorized(parsed_packet['email'], parsed_packet['jwt']):
         return
-    await prisma.users.update(parsed_packet['data'])
+    await prisma.users.update(where=parsed_packet['data']['where'], data=parsed_packet['data']['data'])
     users = await prisma.users.find_many()
     await sio.emit('Users', jsonable(users))
 

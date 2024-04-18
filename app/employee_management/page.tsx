@@ -1,11 +1,14 @@
-import Link from "next/link";
-import React from 'react'
+"use server";
+
 import { prisma } from "@/lib/db";
-import { Users } from '@prisma/client';
 import UsersList from "@/components/UsersList";
 
-export default async function UsersPage(){
+import { getUserSession } from "@/lib/session";
+
+export default async function UsersPage() {
     const users = await prisma.users.findMany();
-    
-    return <UsersList users={users} />;
+    const session = await getUserSession();
+    const session_info = await prisma.users.findUnique({ where: { email: session?.email ?? undefined } });
+
+    return <UsersList users={users} session_info={session_info} />;
 }
