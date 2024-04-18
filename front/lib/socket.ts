@@ -8,7 +8,7 @@ export function useSocket() {
 
     useEffect(() => {
         // localhost if local, and the server's IP if on vercel
-        const ip = process.env.NODE_ENV === 'development' ? 'localhost:5000' : 'ws://revs-websocket-26f326ba64e2.herokuapp.com/'
+        const ip = process.env.NODE_ENV === 'development' ? 'localhost:5000' : 'https://revs-websocket-26f326ba64e2.herokuapp.com/'
         const socketIo: any = io(ip)
 
         setSocket(socketIo)
