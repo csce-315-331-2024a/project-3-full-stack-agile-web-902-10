@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 
+export type AuthPacket<T> = {
+    email: string;
+    jwt: string;
+    data: T;
+}
+
+
 export function useSocket() {
     const [socket, setSocket] = useState(null)
 

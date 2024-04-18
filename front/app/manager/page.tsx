@@ -26,7 +26,7 @@ export default async function ManagerPage() {
     return (
         <>
             <ManagerNavBar username={user?.name} />
-            <ManagerFunctions menu_items={menu_items} categories={categories} menuIngredients={menuIngredients} ingredients={ingredients} users={users} user={user} />
+            <ManagerFunctions menu_items_init={menu_items} categories_init={categories} menuIngredients_init={menuIngredients} ingredients_init={ingredients} users_init={users} user={user} />
         </>
     );
 }

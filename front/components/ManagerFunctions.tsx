@@ -33,7 +33,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -44,10 +44,10 @@ import {
 } from "@/components/ui/popover"
 import UsersList from "./UsersList";
 
-import { useSocket } from "@/lib/socket";
+import { useSocket, AuthPacket } from "@/lib/socket";
 
 
-export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients, users, user }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Ingredients_Menu[], users: Users[], user: Users | null }) {
+export default function ManagerFunctions({ menu_items_init, categories_init, ingredients_init, menuIngredients_init, users_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], ingredients_init: Ingredient[], menuIngredients_init: Ingredients_Menu[], users_init: Users[], user: Users | null }) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);
@@ -59,15 +59,27 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
     const [price, setPrice] = useState('');
     let ingredientsMenuList: Ingredients_Menu[] = [];
 
+    const [menu_items, setMenuItems] = useState(menu_items_init);
+    const [categories, setCategories] = useState(categories_init);
+    const [ingredients, setIngredients] = useState(ingredients_init);
+    const [menuIngredients, setMenuIngredients] = useState(menuIngredients_init);
+    const [users, setUsers] = useState(users_init);
+
     // in case we need to listen to something
     const socket: any = useSocket();
     useEffect(() => {
         if (socket) {
-            socket.on('Menu_Item', (menu_items_changed: string) => {
-                return;
+            socket.on('menuItem', (menu_items_changed: string) => {
+                setMenuItems(JSON.parse(menu_items_changed));
             });
-            socket.on('Ingredient', (menu_items_changed: string) => {
-                return;
+            socket.on('ingredient', (menu_items_changed: string) => {
+                setIngredients(JSON.parse(menu_items_changed));
+            });
+            socket.on('menuIngredient', (menu_items_changed: string) => {
+                setMenuIngredients(JSON.parse(menu_items_changed));
+            });
+            socket.on('user', (menu_items_changed: string) => {
+                setUsers(JSON.parse(menu_items_changed));
             });
         }
     }, [socket]);
@@ -126,8 +138,14 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
     };
 
     async function deleteItem(menu_item: Menu_Item) {
-        const result = null//await prisma.$queryRawUnsafe('DELETE FROM Menu_Item WHERE id = ${menu_item.id};');
-        return result
+        const payload: any = {
+            email: user?.email,
+            jwt: user?.jwt,
+            data: {
+                id: menu_item.id
+            }
+        }
+        socket.emit('menuItem:delete', JSON.stringify(payload));
     }
 
     return (
@@ -148,7 +166,7 @@ export default function ManagerFunctions({ menu_items, categories, ingredients, 
 
             {/* if editing menu items */}
             {showEditDiv && (
-                <ScrollArea className="flex-col w-auto items-center">
+                <ScrollArea className="flex-col w-auto items-center h-[91vh]">
                     <div className="grid grid-cols-1 gap-4 p-4">
                         <Dialog>
                             <div className="flex flex-col w-auto justify-center items-center">
