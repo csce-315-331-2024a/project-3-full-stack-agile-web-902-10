@@ -22,199 +22,299 @@ async function cacheData() {
     cachedOrderLogs = await prisma.order_Log.findMany();
     cachedUsers = await prisma.users.findMany();
 }
-cacheData();
+try {
+    cacheData();
+}
+catch {
+    console.log("Unable to cache data");
+    process.exit(1);
+}
 function verifyToken(email, jwt) {
     return cachedUsers.some((user) => {
         return user.email === email && user.jwt === jwt;
     });
 }
 async function ingredientCreate(packet) {
-    const ingredient = JSON.parse(packet);
-    if (!verifyToken(ingredient.email, ingredient.jwt)) {
-        return;
+    try {
+        const ingredient = JSON.parse(packet);
+        if (!verifyToken(ingredient.email, ingredient.jwt)) {
+            return;
+        }
+        const newIngredient = await prisma.ingredient.create({
+            ...ingredient.data,
+        });
+        cachedIngredients.push(newIngredient);
+        io.emit("ingredient", JSON.stringify(cachedIngredients));
     }
-    const newIngredient = await prisma.ingredient.create({
-        data: ingredient.data,
-    });
-    cachedIngredients.push(newIngredient);
-    io.emit("ingredient", JSON.stringify(cachedIngredients));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
+// Apply similar modifications to the other async functions
 async function ingredientRead(packet) {
-    io.emit("ingredient", JSON.stringify(cachedIngredients));
+    try {
+        return JSON.stringify(cachedIngredients);
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function ingredientUpdate(packet) {
-    const ingredient = JSON.parse(packet);
-    if (!verifyToken(ingredient.email, ingredient.jwt)) {
-        return;
+    try {
+        const ingredient = JSON.parse(packet);
+        if (!verifyToken(ingredient.email, ingredient.jwt)) {
+            return;
+        }
+        const updatedIngredient = await prisma.ingredient.update({
+            ...ingredient.data,
+        });
+        const index = cachedIngredients.findIndex((i) => i.id === updatedIngredient.id);
+        cachedIngredients[index] = updatedIngredient;
+        io.emit("ingredient", JSON.stringify(cachedIngredients));
     }
-    const updatedIngredient = await prisma.ingredient.update({
-        where: { id: ingredient.data.id },
-        data: ingredient.data,
-    });
-    const index = cachedIngredients.findIndex((i) => i.id === updatedIngredient.id);
-    cachedIngredients[index] = updatedIngredient;
-    io.emit("ingredient", JSON.stringify(cachedIngredients));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function ingredientDelete(packet) {
-    const ingredient = JSON.parse(packet);
-    if (!verifyToken(ingredient.email, ingredient.jwt)) {
-        return;
+    try {
+        const ingredient = JSON.parse(packet);
+        if (!verifyToken(ingredient.email, ingredient.jwt)) {
+            return;
+        }
+        await prisma.ingredient.delete({
+            ...ingredient.data,
+        });
+        cachedIngredients = cachedIngredients.filter((i) => i.id !== ingredient.data.id);
     }
-    await prisma.ingredient.delete({
-        where: { id: ingredient.data.id },
-    });
-    cachedIngredients = cachedIngredients.filter((i) => i.id !== ingredient.data.id);
-    io.emit("ingredient", JSON.stringify(cachedIngredients));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function loginLogCreate(packet) {
-    const loginLog = JSON.parse(packet);
-    if (!verifyToken(loginLog.email, loginLog.jwt)) {
-        return;
+    try {
+        const loginLog = JSON.parse(packet);
+        if (!verifyToken(loginLog.email, loginLog.jwt)) {
+            return;
+        }
+        const newLoginLog = await prisma.login_Log.create({
+            ...loginLog.data,
+        });
+        cachedLoginLogs.push(newLoginLog);
+        io.emit("loginLog", JSON.stringify(cachedLoginLogs));
     }
-    const newLoginLog = await prisma.login_Log.create({
-        data: loginLog.data,
-    });
-    cachedLoginLogs.push(newLoginLog);
-    io.emit("loginLog", JSON.stringify(cachedLoginLogs));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function loginLogRead(packet) {
-    io.emit("loginLog", JSON.stringify(cachedLoginLogs));
+    try {
+        return JSON.stringify(cachedLoginLogs);
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function loginLogUpdate(packet) {
-    const loginLog = JSON.parse(packet);
-    if (!verifyToken(loginLog.email, loginLog.jwt)) {
-        return;
+    try {
+        const loginLog = JSON.parse(packet);
+        if (!verifyToken(loginLog.email, loginLog.jwt)) {
+            return;
+        }
+        const updatedLoginLog = await prisma.login_Log.update({
+            ...loginLog.data,
+        });
+        const index = cachedLoginLogs.findIndex((i) => i.id === updatedLoginLog.id);
+        cachedLoginLogs[index] = updatedLoginLog;
+        io.emit("loginLog", JSON.stringify(cachedLoginLogs));
     }
-    const updatedLoginLog = await prisma.login_Log.update({
-        where: { id: loginLog.data.id },
-        data: loginLog.data,
-    });
-    const index = cachedLoginLogs.findIndex((i) => i.id === updatedLoginLog.id);
-    cachedLoginLogs[index] = updatedLoginLog;
-    io.emit("loginLog", JSON.stringify(cachedLoginLogs));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function loginLogDelete(packet) {
-    const loginLog = JSON.parse(packet);
-    if (!verifyToken(loginLog.email, loginLog.jwt)) {
-        return;
+    try {
+        const loginLog = JSON.parse(packet);
+        if (!verifyToken(loginLog.email, loginLog.jwt)) {
+            return;
+        }
+        await prisma.login_Log.delete({
+            ...loginLog.data,
+        });
+        cachedLoginLogs = cachedLoginLogs.filter((i) => i.id !== loginLog.data.id);
+        io.emit("loginLog", JSON.stringify(cachedLoginLogs));
     }
-    await prisma.login_Log.delete({
-        where: { id: loginLog.data.id },
-    });
-    cachedLoginLogs = cachedLoginLogs.filter((i) => i.id !== loginLog.data.id);
-    io.emit("loginLog", JSON.stringify(cachedLoginLogs));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function menuItemCreate(packet) {
-    const menuItem = JSON.parse(packet);
-    console.log(menuItem);
-    if (!verifyToken(menuItem.email, menuItem.jwt)) {
-        return;
+    try {
+        const menuItem = JSON.parse(packet);
+        if (!verifyToken(menuItem.email, menuItem.jwt)) {
+            return;
+        }
+        const newMenuItem = await prisma.menu_Item.create({
+            ...menuItem.data,
+        });
+        cachedMenuItems.push(newMenuItem);
+        io.emit("menuItem", JSON.stringify(cachedMenuItems));
     }
-    const newMenuItem = await prisma.menu_Item.create({
-        data: menuItem.data,
-    });
-    cachedMenuItems.push(newMenuItem);
-    io.emit("menuItem", JSON.stringify(cachedMenuItems));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function menuItemRead(packet) {
-    io.emit("menuItem", JSON.stringify(cachedMenuItems));
+    try {
+        return JSON.stringify(cachedMenuItems);
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function menuItemUpdate(packet) {
-    const menuItem = JSON.parse(packet);
-    if (!verifyToken(menuItem.email, menuItem.jwt)) {
-        return;
+    try {
+        const menuItem = JSON.parse(packet);
+        if (!verifyToken(menuItem.email, menuItem.jwt)) {
+            return;
+        }
+        const updatedMenuItem = await prisma.menu_Item.update({
+            ...menuItem.data,
+        });
+        const index = cachedMenuItems.findIndex((i) => i.id === updatedMenuItem.id);
+        cachedMenuItems[index] = updatedMenuItem;
+        io.emit("menuItem", JSON.stringify(cachedMenuItems));
     }
-    const updatedMenuItem = await prisma.menu_Item.update({
-        where: { id: menuItem.data.id },
-        data: menuItem.data,
-    });
-    const index = cachedMenuItems.findIndex((i) => i.id === updatedMenuItem.id);
-    cachedMenuItems[index] = updatedMenuItem;
-    io.emit("menuItem", JSON.stringify(cachedMenuItems));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function menuItemDelete(packet) {
-    const menuItem = JSON.parse(packet);
-    if (!verifyToken(menuItem.email, menuItem.jwt)) {
-        return;
+    try {
+        const menuItem = JSON.parse(packet);
+        if (!verifyToken(menuItem.email, menuItem.jwt)) {
+            return;
+        }
+        await prisma.menu_Item.delete({
+            ...menuItem.data,
+        });
+        cachedMenuItems = cachedMenuItems.filter((i) => i.id !== menuItem.data.id);
+        io.emit("menuItem", JSON.stringify(cachedMenuItems));
     }
-    await prisma.menu_Item.delete({
-        where: { id: menuItem.data.id },
-    });
-    cachedMenuItems = cachedMenuItems.filter((i) => i.id !== menuItem.data.id);
-    io.emit("menuItem", JSON.stringify(cachedMenuItems));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function orderLogCreate(packet) {
-    const orderLog = JSON.parse(packet);
-    await prisma.order_Log.create({
-        data: orderLog.data,
-    });
-    cachedOrderLogs.push(orderLog.data);
-    io.emit("orderLog", JSON.stringify(cachedOrderLogs));
+    try {
+        const orderLog = JSON.parse(packet);
+        await prisma.order_Log.create({
+            ...orderLog.data,
+        });
+        cachedOrderLogs.push(orderLog.data);
+        io.emit("orderLog", JSON.stringify(cachedOrderLogs));
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function orderLogRead(packet) {
-    io.emit("orderLog", JSON.stringify(cachedOrderLogs));
+    try {
+        return JSON.stringify(cachedOrderLogs);
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function orderLogUpdate(packet) {
-    const orderLog = JSON.parse(packet);
-    if (!verifyToken(orderLog.email, orderLog.jwt)) {
-        return;
+    try {
+        const orderLog = JSON.parse(packet);
+        if (!verifyToken(orderLog.email, orderLog.jwt)) {
+            return;
+        }
+        const updatedOrderLog = await prisma.order_Log.update({
+            ...orderLog.data,
+        });
+        const index = cachedOrderLogs.findIndex((i) => i.id === updatedOrderLog.id);
+        cachedOrderLogs[index] = updatedOrderLog;
+        io.emit("orderLog", JSON.stringify(cachedOrderLogs));
     }
-    const updatedOrderLog = await prisma.order_Log.update({
-        where: { id: orderLog.data.id },
-        data: orderLog.data,
-    });
-    const index = cachedOrderLogs.findIndex((i) => i.id === updatedOrderLog.id);
-    cachedOrderLogs[index] = updatedOrderLog;
-    io.emit("orderLog", JSON.stringify(cachedOrderLogs));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function orderLogDelete(packet) {
-    const orderLog = JSON.parse(packet);
-    if (!verifyToken(orderLog.email, orderLog.jwt)) {
-        return;
+    try {
+        const orderLog = JSON.parse(packet);
+        if (!verifyToken(orderLog.email, orderLog.jwt)) {
+            return;
+        }
+        await prisma.order_Log.delete({
+            ...orderLog.data,
+        });
+        cachedOrderLogs = cachedOrderLogs.filter((i) => i.id !== orderLog.data.id);
+        io.emit("orderLog", JSON.stringify(cachedOrderLogs));
     }
-    await prisma.order_Log.delete({
-        where: { id: orderLog.data.id },
-    });
-    cachedOrderLogs = cachedOrderLogs.filter((i) => i.id !== orderLog.data.id);
-    io.emit("orderLog", JSON.stringify(cachedOrderLogs));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function usersCreate(packet) {
-    const user = JSON.parse(packet);
-    if (!verifyToken(user.email, user.jwt)) {
-        return;
+    try {
+        const user = JSON.parse(packet);
+        if (!verifyToken(user.email, user.jwt)) {
+            return;
+        }
+        const newUser = await prisma.users.create({
+            ...user.data,
+        });
+        cachedUsers.push(newUser);
+        io.emit("users", JSON.stringify(cachedUsers));
     }
-    const newUser = await prisma.users.create({
-        data: user.data,
-    });
-    cachedUsers.push(newUser);
-    io.emit("users", JSON.stringify(cachedUsers));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function usersRead(packet) {
-    io.emit("users", JSON.stringify(cachedUsers));
+    try {
+        return JSON.stringify(cachedUsers);
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function usersUpdate(packet) {
-    const user = JSON.parse(packet);
-    if (!verifyToken(user.email, user.jwt)) {
-        return;
+    try {
+        const user = JSON.parse(packet);
+        if (!verifyToken(user.email, user.jwt)) {
+            return;
+        }
+        const updatedUser = await prisma.users.update({
+            ...user.data,
+        });
+        const index = cachedUsers.findIndex((i) => i.id === updatedUser.id);
+        cachedUsers[index] = updatedUser;
+        io.emit("users", JSON.stringify(cachedUsers));
     }
-    const updatedUser = await prisma.users.update({
-        where: { id: user.data.id },
-        data: user.data,
-    });
-    const index = cachedUsers.findIndex((i) => i.id === updatedUser.id);
-    cachedUsers[index] = updatedUser;
-    io.emit("users", JSON.stringify(cachedUsers));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function usersDelete(packet) {
-    const user = JSON.parse(packet);
-    if (!verifyToken(user.email, user.jwt)) {
-        return;
+    try {
+        const user = JSON.parse(packet);
+        if (!verifyToken(user.email, user.jwt)) {
+            return;
+        }
+        await prisma.users.delete({
+            ...user.data,
+        });
+        cachedUsers = cachedUsers.filter((i) => i.id !== user.data.id);
+        io.emit("users", JSON.stringify(cachedUsers));
     }
-    await prisma.users.delete({
-        where: { id: user.data.id },
-    });
-    cachedUsers = cachedUsers.filter((i) => i.id !== user.data.id);
-    io.emit("users", JSON.stringify(cachedUsers));
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
 }
 async function verifyCartAndCreateOrder(packet) {
     const cart = JSON.parse(packet);

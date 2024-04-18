@@ -20,7 +20,7 @@ import {
 import { useCartStore } from "@/lib/provider/cart-store-provider"
 import { useSocket } from "@/lib/socket";
 
-export default function CustomerMenuDesktop({ menu_items_init, categories_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], user: Users | null}) {
+export default function CustomerMenuDesktop({ menu_items_init, categories_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], user: Users | null }) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);

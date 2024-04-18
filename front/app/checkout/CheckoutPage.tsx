@@ -72,7 +72,7 @@ export default function CheckoutPage({
         }
     
         // If there's enough stock, proceed with the payment process
-        socket.emit("orderLog:create", JSON.stringify(cart));
+        // socket.emit("orderLog:create", JSON.stringify(cart));
     };
     
 

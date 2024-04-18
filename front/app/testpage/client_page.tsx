@@ -7,7 +7,7 @@ import { Menu_Item, Ingredient, Order_Log, Users} from "@prisma/client";
 
 
 export default function TestPageClient({ user_info }: { user_info: Users }) {
-    const [menu_items, setMenuItems] = useState<Menu_Item[]>([]);
+    const [menu_items, setMenuItems] = useState<Menu_Item[]>();
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
     // Create the socket and listen for changes
@@ -23,6 +23,12 @@ export default function TestPageClient({ user_info }: { user_info: Users }) {
                 const parsed: Ingredient[] = JSON.parse(ingredients_changed);
                 setIngredients(parsed);
             });
+            socket.on("connect", () => {
+                // setMenuItems(JSON.parse(socket.emit("menuItem:read")));
+                // setIngredients(JSON.parse(socket.emit("ingredient:read")));
+                socket.emit("menuItem:read", (data: string) => { setMenuItems(JSON.parse(data)); });
+                socket.emit("ingredient:read", (data: string) => { setIngredients(JSON.parse(data)); });
+            });
         }
     }, [socket]);
 
@@ -36,26 +42,16 @@ export default function TestPageClient({ user_info }: { user_info: Users }) {
             email : user_info.email,
             jwt : user_info.jwt,
             data : {
-                name: name,
-                price: price,
-                image_url: image_url,
-                category: category,
+                data : {
+                    name : name,
+                    price : price,
+                    image_url : image_url,
+                    category : category
+                }
             }
         }
         // Modifications to the table are table name_CRUD_OPERATION
         socket.emit("menuItem:create", JSON.stringify(packet));
-    }
-
-    const delete_menu_item = async (id: number) => {
-        const packet = {
-            email : user_info.email,
-            jwt : user_info.jwt,
-            data : {
-                id: id,
-            }
-        }
-        // Modifications to the table are table name_CRUD_OPERATION
-        socket.emit("menuItem:delete", JSON.stringify(packet));
     }
 
     return (
@@ -65,7 +61,7 @@ export default function TestPageClient({ user_info }: { user_info: Users }) {
             <p>Socket: {socket ? "Connected" : "Not Connected"}</p>
             <h2>Menu Items</h2>
             <ul>
-                {menu_items.map((item) => (
+                {menu_items?.map((item) => (
                     <li key={item.id}>{item.name}</li>
                 ))}
             </ul>

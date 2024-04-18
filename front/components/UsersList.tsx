@@ -12,27 +12,34 @@ export default function UsersList({ users, user }:
         users: Users[],
         user: Users | null
     }) {
-    // const [users, setUsers] = useState<Users[]>(users);
-    const filteredUsers = users.filter(user => user.is_manager);
+    const [filteredUsers, setFilteredUsers] = useState<Users[]>(users.filter(user => user.is_manager));
 
     const socket: any = useSocket();
+    useEffect(() => {
+        if (socket) {
+            socket.on("users", (users_changed: string) => {
+                const parsed: Users[] = JSON.parse(users_changed);
+                setFilteredUsers(parsed.filter(user => user.is_manager));
+            });
+        }
+    }, [socket]);
+
     const onFireEmployee = (user: Users) => {
         // Need to construct the packet that prisma would want, as well as the auth
-        user.is_manager = false;
-        user.is_employee = false;
         const packet = {
             email: user.email,
             jwt: user.jwt,
             data: {
-                where : {
-                    id : user.id
+                where :{
+                    id: user.id
                 },
-                data : {
-                    ...user
+                data: {
+                    is_manager: false,
+                    is_employee: false
+                
                 }
             }
         };
-        console.log(JSON.stringify(packet));
         socket.emit("users:update", JSON.stringify(packet));
     }
 

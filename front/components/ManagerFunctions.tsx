@@ -45,6 +45,7 @@ import {
 import UsersList from "./UsersList";
 
 import { useSocket, AuthPacket } from "@/lib/socket";
+import { revalidatePath } from "next/cache";
 
 
 export default function ManagerFunctions({ menu_items_init, categories_init, ingredients_init, menuIngredients_init, users_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], ingredients_init: Ingredient[], menuIngredients_init: Ingredients_Menu[], users_init: Users[], user: Users | null }) {
@@ -133,19 +134,33 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             price,
             ingredientsMenuList
         };
-        //const result = await prisma.$queryRawUnsafe('INSERT INTO Menu_Item (name, price, image_url, category, ) VALUES (${itemName}, ${price}, https://thumbs.dreamstime.com/b/heart-shape-various-vegetables-fruits-healthy-food-concept-isolated-white-background-140287808.jpg, ${category}, ${ingredientsMenuList});');
-        ingredientsMenuList = [];
-    };
 
-    async function deleteItem(menu_item: Menu_Item) {
         const payload: any = {
             email: user?.email,
             jwt: user?.jwt,
             data: {
-                id: menu_item.id
+                name: itemName,
+                category: category,
+                price: price,
+                ingredients: ingredientsMenuList
+            }
+        }
+        ingredientsMenuList = [];
+    };
+
+    function deleteItem(menu_item: Menu_Item) {
+        const payload: any = {
+            email: user?.email,
+            jwt: user?.jwt,
+            data: {
+                where : {
+                    id: menu_item.id
+                }
             }
         }
         socket.emit('menuItem:delete', JSON.stringify(payload));
+        // revalidate current page
+        router.refresh();
     }
 
     return (

@@ -9,7 +9,6 @@ export type AuthPacket<T> = {
     data: T;
 }
 
-
 export function useSocket() {
     const [socket, setSocket] = useState(null)
 

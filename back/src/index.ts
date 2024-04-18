@@ -53,13 +53,13 @@ function verifyToken(email: string, jwt: string): boolean {
 
 async function ingredientCreate(packet: string) {
     try {
-        const ingredient = JSON.parse(packet) as AuthPacket<Ingredient>;
+        const ingredient = JSON.parse(packet) as AuthPacket<Ingredient> | any;
         if (!verifyToken(ingredient.email, ingredient.jwt)) {
             return;
         }
 
         const newIngredient = await prisma.ingredient.create({
-            data: ingredient.data,
+            ...ingredient.data,
         });
 
         cachedIngredients.push(newIngredient);
@@ -73,7 +73,7 @@ async function ingredientCreate(packet: string) {
 
 async function ingredientRead(packet: string) {
     try {
-        io.emit("ingredient", JSON.stringify(cachedIngredients));
+        return JSON.stringify(cachedIngredients);
     } catch (error) {
         console.error("ERROR: " + error);
     }
@@ -81,14 +81,13 @@ async function ingredientRead(packet: string) {
 
 async function ingredientUpdate(packet: string) {
     try {
-        const ingredient = JSON.parse(packet) as AuthPacket<Ingredient>;
+        const ingredient = JSON.parse(packet) as AuthPacket<Ingredient> | any;
         if (!verifyToken(ingredient.email, ingredient.jwt)) {
             return;
         }
 
         const updatedIngredient = await prisma.ingredient.update({
-            where: { id: ingredient.data.id },
-            data: ingredient.data,
+            ...ingredient.data,
         });
 
         const index = cachedIngredients.findIndex((i) => i.id === updatedIngredient.id);
@@ -101,13 +100,13 @@ async function ingredientUpdate(packet: string) {
 
 async function ingredientDelete(packet: string) {
     try {
-        const ingredient = JSON.parse(packet) as AuthPacket<Ingredient>;
+        const ingredient = JSON.parse(packet) as AuthPacket<Ingredient> | any;
         if (!verifyToken(ingredient.email, ingredient.jwt)) {
             return;
         }
 
         await prisma.ingredient.delete({
-            where: { id: ingredient.data.id },
+            ...ingredient.data,
         });
 
         cachedIngredients = cachedIngredients.filter((i) => i.id !== ingredient.data.id);
@@ -118,13 +117,13 @@ async function ingredientDelete(packet: string) {
 
 async function loginLogCreate(packet: string) {
     try {
-        const loginLog = JSON.parse(packet) as AuthPacket<Login_Log>;
+        const loginLog = JSON.parse(packet) as AuthPacket<Login_Log> | any;
         if (!verifyToken(loginLog.email, loginLog.jwt)) {
             return;
         }
 
         const newLoginLog = await prisma.login_Log.create({
-            data: loginLog.data,
+            ...loginLog.data,
         });
 
         cachedLoginLogs.push(newLoginLog);
@@ -136,7 +135,7 @@ async function loginLogCreate(packet: string) {
 
 async function loginLogRead(packet: string) {
     try {
-        io.emit("loginLog", JSON.stringify(cachedLoginLogs));
+        return JSON.stringify(cachedLoginLogs);
     } catch (error) {
         console.error("ERROR: " + error);
     }
@@ -144,14 +143,13 @@ async function loginLogRead(packet: string) {
 
 async function loginLogUpdate(packet: string) {
     try {
-        const loginLog = JSON.parse(packet) as AuthPacket<Login_Log>;
+        const loginLog = JSON.parse(packet) as AuthPacket<Login_Log> | any;
         if (!verifyToken(loginLog.email, loginLog.jwt)) {
             return;
         }
 
         const updatedLoginLog = await prisma.login_Log.update({
-            where: { id: loginLog.data.id },
-            data: loginLog.data,
+            ...loginLog.data,
         });
 
         const index = cachedLoginLogs.findIndex((i) => i.id === updatedLoginLog.id);
@@ -164,13 +162,13 @@ async function loginLogUpdate(packet: string) {
 
 async function loginLogDelete(packet: string) {
     try {
-        const loginLog = JSON.parse(packet) as AuthPacket<Login_Log>;
+        const loginLog = JSON.parse(packet) as AuthPacket<Login_Log> | any;
         if (!verifyToken(loginLog.email, loginLog.jwt)) {
             return;
         }
 
         await prisma.login_Log.delete({
-            where: { id: loginLog.data.id },
+            ...loginLog.data,
         });
 
         cachedLoginLogs = cachedLoginLogs.filter((i) => i.id !== loginLog.data.id);
@@ -182,14 +180,13 @@ async function loginLogDelete(packet: string) {
 
 async function menuItemCreate(packet: string) {
     try {
-        const menuItem = JSON.parse(packet) as AuthPacket<Menu_Item>;
-        console.log(menuItem);
+        const menuItem = JSON.parse(packet) as AuthPacket<Menu_Item> | any;
         if (!verifyToken(menuItem.email, menuItem.jwt)) {
             return;
         }
 
         const newMenuItem = await prisma.menu_Item.create({
-            data: menuItem.data,
+            ...menuItem.data,
         });
 
         cachedMenuItems.push(newMenuItem);
@@ -201,7 +198,7 @@ async function menuItemCreate(packet: string) {
 
 async function menuItemRead(packet: string) {
     try {
-        io.emit("menuItem", JSON.stringify(cachedMenuItems));
+        return JSON.stringify(cachedMenuItems);
     } catch (error) {
         console.error("ERROR: " + error);
     }
@@ -209,14 +206,13 @@ async function menuItemRead(packet: string) {
 
 async function menuItemUpdate(packet: string) {
     try {
-        const menuItem = JSON.parse(packet) as AuthPacket<Menu_Item>;
+        const menuItem = JSON.parse(packet) as AuthPacket<Menu_Item> | any;
         if (!verifyToken(menuItem.email, menuItem.jwt)) {
             return;
         }
 
         const updatedMenuItem = await prisma.menu_Item.update({
-            where: { id: menuItem.data.id },
-            data: menuItem.data,
+            ...menuItem.data,
         });
 
         const index = cachedMenuItems.findIndex((i) => i.id === updatedMenuItem.id);
@@ -229,13 +225,13 @@ async function menuItemUpdate(packet: string) {
 
 async function menuItemDelete(packet: string) {
     try {
-        const menuItem = JSON.parse(packet) as AuthPacket<Menu_Item>;
+        const menuItem = JSON.parse(packet) as AuthPacket<Menu_Item> | any;
         if (!verifyToken(menuItem.email, menuItem.jwt)) {
             return;
         }
 
         await prisma.menu_Item.delete({
-            where: { id: menuItem.data.id },
+            ...menuItem.data,
         });
 
         cachedMenuItems = cachedMenuItems.filter((i) => i.id !== menuItem.data.id);
@@ -247,9 +243,9 @@ async function menuItemDelete(packet: string) {
 
 async function orderLogCreate(packet: string) {
     try {
-        const orderLog = JSON.parse(packet) as AuthPacket<Order_Log>;
+        const orderLog = JSON.parse(packet) as AuthPacket<Order_Log> | any;
         await prisma.order_Log.create({
-            data: orderLog.data,
+            ...orderLog.data,
         });
 
         cachedOrderLogs.push(orderLog.data);
@@ -261,7 +257,7 @@ async function orderLogCreate(packet: string) {
 
 async function orderLogRead(packet: string) {
     try {
-        io.emit("orderLog", JSON.stringify(cachedOrderLogs));
+        return JSON.stringify(cachedOrderLogs);
     } catch (error) {
         console.error("ERROR: " + error);
     }
@@ -269,14 +265,13 @@ async function orderLogRead(packet: string) {
 
 async function orderLogUpdate(packet: string) {
     try {
-        const orderLog = JSON.parse(packet) as AuthPacket<Order_Log>;
+        const orderLog = JSON.parse(packet) as AuthPacket<Order_Log> | any;
         if (!verifyToken(orderLog.email, orderLog.jwt)) {
             return;
         }
 
         const updatedOrderLog = await prisma.order_Log.update({
-            where: { id: orderLog.data.id },
-            data: orderLog.data,
+            ...orderLog.data,
         });
 
         const index = cachedOrderLogs.findIndex((i) => i.id === updatedOrderLog.id);
@@ -289,13 +284,13 @@ async function orderLogUpdate(packet: string) {
 
 async function orderLogDelete(packet: string) {
     try {
-        const orderLog = JSON.parse(packet) as AuthPacket<Order_Log>;
+        const orderLog = JSON.parse(packet) as AuthPacket<Order_Log> | any;
         if (!verifyToken(orderLog.email, orderLog.jwt)) {
             return;
         }
 
         await prisma.order_Log.delete({
-            where: { id: orderLog.data.id },
+            ...orderLog.data,
         });
 
         cachedOrderLogs = cachedOrderLogs.filter((i) => i.id !== orderLog.data.id);
@@ -307,13 +302,13 @@ async function orderLogDelete(packet: string) {
 
 async function usersCreate(packet: string) {
     try {
-        const user = JSON.parse(packet) as AuthPacket<Users>;
+        const user = JSON.parse(packet) as AuthPacket<Users> | any;
         if (!verifyToken(user.email, user.jwt)) {
             return;
         }
 
         const newUser = await prisma.users.create({
-            data: user.data,
+            ...user.data,
         });
 
         cachedUsers.push(newUser);
@@ -325,7 +320,7 @@ async function usersCreate(packet: string) {
 
 async function usersRead(packet: string) {
     try {
-        io.emit("users", JSON.stringify(cachedUsers));
+        return JSON.stringify(cachedUsers);
     } catch (error) {
         console.error("ERROR: " + error);
     }
@@ -333,14 +328,13 @@ async function usersRead(packet: string) {
 
 async function usersUpdate(packet: string) {
     try {
-        const user = JSON.parse(packet) as AuthPacket<Users>;
+        const user = JSON.parse(packet) as AuthPacket<Users> | any;
         if (!verifyToken(user.email, user.jwt)) {
             return;
         }
 
         const updatedUser = await prisma.users.update({
-            where: { id: user.data.id },
-            data: user.data,
+            ...user.data,
         });
 
         const index = cachedUsers.findIndex((i) => i.id === updatedUser.id);
@@ -353,13 +347,13 @@ async function usersUpdate(packet: string) {
 
 async function usersDelete(packet: string) {
     try {
-        const user = JSON.parse(packet) as AuthPacket<Users>;
+        const user = JSON.parse(packet) as AuthPacket<Users> | any;
         if (!verifyToken(user.email, user.jwt)) {
             return;
         }
 
         await prisma.users.delete({
-            where: { id: user.data.id },
+            ...user.data,
         });
 
         cachedUsers = cachedUsers.filter((i) => i.id !== user.data.id);
