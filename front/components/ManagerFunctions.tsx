@@ -47,7 +47,7 @@ import UsersList from "./UsersList";
 import { useSocket } from "@/lib/socket";
 
 
-export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients, users, user }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Ingredients_Menu[], users: Users[], user: Users }) {
+export default function ManagerFunctions({ menu_items, categories, ingredients, menuIngredients, users, user }: { menu_items: Menu_Item[], categories: string[], ingredients: Ingredient[], menuIngredients: Ingredients_Menu[], users: Users[], user: Users | null }) {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);

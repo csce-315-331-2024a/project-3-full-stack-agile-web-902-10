@@ -1,35 +1,10 @@
-// import { createStore } from 'zustand/vanilla'
-
-// export type CounterState = {
-//   count: number
-// }
-
-// export type CounterActions = {
-//   decrementCount: () => void
-//   incrementCount: () => void
-// }
-
-// export type CounterStore = CounterState & CounterActions
-
-// export const defaultInitState: CounterState = {
-//   count: 0,
-// }
-
-// export const createCounterStore = (
-//   initState: CounterState = defaultInitState,
-// ) => {
-//   return createStore<CounterStore>()((set) => ({
-//     ...initState,
-//     decrementCount: () => set((state) => ({ count: state.count - 1 })),
-//     incrementCount: () => set((state) => ({ count: state.count + 1 })),
-//   }))
-// }
-
 import { createStore } from 'zustand/vanilla';
 import { Menu_Item } from '@prisma/client';
 
+type CartItem = Menu_Item & { quantity: number };
+
 export type CartState = {
-    cart: Menu_Item[];
+    cart: CartItem[];
 };
 
 export type CartActions = {
@@ -49,7 +24,13 @@ export const createCartStore = (initState: CartState = defaultCartState) => {
         ...initState,
         addToCart: (item) =>
             set((state) => {
-                return { cart: [...state.cart, item] };
+                const index = state.cart.findIndex((i) => i.id === item.id);
+                if (index === -1) {
+                    return { cart: [...state.cart, { ...item, quantity: 1 }] };
+                }
+                const newCart = [...state.cart];
+                newCart[index].quantity += 1;
+                return { cart: newCart };
             }),
         removeFromCart: (item) =>
             set((state) => {

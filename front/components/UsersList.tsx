@@ -10,9 +10,9 @@ import { useSocket } from '@/lib/socket';
 export default function UsersList({ users, user }:
     {
         users: Users[],
-        user: Users
+        user: Users | null
     }) {
-    const [users, setUsers] = useState<Users[]>(users);
+    // const [users, setUsers] = useState<Users[]>(users);
     const filteredUsers = users.filter(user => user.is_manager);
 
     const socket: any = useSocket();

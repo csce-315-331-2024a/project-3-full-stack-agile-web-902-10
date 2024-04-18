@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import { signIn, signOut } from 'next-auth/react';
-import * as React from "react";
 import { useTheme } from "next-themes";
+import { Users } from "@prisma/client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
 
-export default function CheckoutNavBar({ username, is_manager }: { username: string | undefined, is_manager: boolean | undefined }) {
+export default function CheckoutNavBar({ user }: { user: Users | null }) {
     const { theme, setTheme } = useTheme();
 
     const toggleTheme = () => {
@@ -30,7 +30,7 @@ export default function CheckoutNavBar({ username, is_manager }: { username: str
                         </Link>
                     </div>
                     <div className="flex justify-center flex-grow">
-                        <p className="text-lg font-bold text-center">{username === undefined ? "Rev's Grill" : "Welcome, " + username.split(" ")[0]}</p>
+                        <p className="text-lg font-bold text-center">{user?.name === undefined ? "Rev's Grill" : "Welcome, " + user.name.split(" ")[0]}</p>
                     </div>
                     <div className="flex justify-end">
                         <Dialog>
@@ -50,7 +50,7 @@ export default function CheckoutNavBar({ username, is_manager }: { username: str
                                         <Label htmlFor="another-setting">another setting</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        {username === undefined ?
+                                        {user?.name === undefined ?
                                             <Button variant={"outline"} onClick={() => signIn('google', { callbackUrl: "/menu" })}>Sign In</Button> :
                                             <Button variant={"destructive"} onClick={() => signOut()}>Sign Out</Button>
                                         }

@@ -23,7 +23,7 @@ import {
 import { useCartStore } from "@/lib/provider/cart-store-provider";
 
 
-export default function MenuNavBar({ user }: { user: Users | null }) {
+export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
     const { theme, setTheme } = useTheme();
 
     // get add to cart store
@@ -71,6 +71,7 @@ export default function MenuNavBar({ user }: { user: Users | null }) {
                                             <div key={item.id} className="flex justify-between">
                                                 <p>{item.name}</p>
                                                 <p>${item.price}</p>
+                                                <p>${item.quantity}</p>
                                             </div>
                                         ))}
                                         {/* Calculate total */}

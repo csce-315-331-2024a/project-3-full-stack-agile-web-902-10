@@ -6,7 +6,7 @@ import Redirect from "@/components/Redirect";
 export default async function TestPage() {
     // Get the user session info, need this to authenticate to the websocket later
 
-    const user = await getUserSession();
+    const user = await getUserSession() as any;
     if (!user) {
         return <Redirect to="/menu" />;
     }

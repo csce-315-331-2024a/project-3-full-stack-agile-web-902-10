@@ -17,7 +17,7 @@ async function cacheData() {
     cachedIngredients = await prisma.ingredient.findMany();
     cachedLoginLogs = await prisma.login_Log.findMany();
     cachedMenuItems = await prisma.menu_Item.findMany();
-    // cachedOrderLogs = await prisma.order_Log.findMany();
+    cachedOrderLogs = await prisma.order_Log.findMany();
     cachedUsers = await prisma.users.findMany();
 }
 cacheData();
@@ -35,10 +35,10 @@ async function ingredientCreate(packet) {
         data: ingredient.data,
     });
     cachedIngredients.push(newIngredient);
-    io.emit("ingredient", cachedIngredients);
+    io.emit("ingredient", JSON.stringify(cachedIngredients));
 }
 async function ingredientRead(packet) {
-    io.emit("ingredient", cachedIngredients);
+    io.emit("ingredient", JSON.stringify(cachedIngredients));
 }
 async function ingredientUpdate(packet) {
     const ingredient = JSON.parse(packet);
@@ -51,7 +51,7 @@ async function ingredientUpdate(packet) {
     });
     const index = cachedIngredients.findIndex((i) => i.id === updatedIngredient.id);
     cachedIngredients[index] = updatedIngredient;
-    io.emit("ingredient", cachedIngredients);
+    io.emit("ingredient", JSON.stringify(cachedIngredients));
 }
 async function ingredientDelete(packet) {
     const ingredient = JSON.parse(packet);
@@ -62,7 +62,7 @@ async function ingredientDelete(packet) {
         where: { id: ingredient.data.id },
     });
     cachedIngredients = cachedIngredients.filter((i) => i.id !== ingredient.data.id);
-    io.emit("ingredient", cachedIngredients);
+    io.emit("ingredient", JSON.stringify(cachedIngredients));
 }
 async function loginLogCreate(packet) {
     const loginLog = JSON.parse(packet);
@@ -73,10 +73,10 @@ async function loginLogCreate(packet) {
         data: loginLog.data,
     });
     cachedLoginLogs.push(newLoginLog);
-    io.emit("loginLog", cachedLoginLogs);
+    io.emit("loginLog", JSON.stringify(cachedLoginLogs));
 }
 async function loginLogRead(packet) {
-    io.emit("loginLog", cachedLoginLogs);
+    io.emit("loginLog", JSON.stringify(cachedLoginLogs));
 }
 async function loginLogUpdate(packet) {
     const loginLog = JSON.parse(packet);
@@ -89,7 +89,7 @@ async function loginLogUpdate(packet) {
     });
     const index = cachedLoginLogs.findIndex((i) => i.id === updatedLoginLog.id);
     cachedLoginLogs[index] = updatedLoginLog;
-    io.emit("loginLog", cachedLoginLogs);
+    io.emit("loginLog", JSON.stringify(cachedLoginLogs));
 }
 async function loginLogDelete(packet) {
     const loginLog = JSON.parse(packet);
@@ -100,7 +100,7 @@ async function loginLogDelete(packet) {
         where: { id: loginLog.data.id },
     });
     cachedLoginLogs = cachedLoginLogs.filter((i) => i.id !== loginLog.data.id);
-    io.emit("loginLog", cachedLoginLogs);
+    io.emit("loginLog", JSON.stringify(cachedLoginLogs));
 }
 async function menuItemCreate(packet) {
     const menuItem = JSON.parse(packet);
@@ -114,7 +114,7 @@ async function menuItemCreate(packet) {
     io.emit("menuItem", JSON.stringify(cachedMenuItems));
 }
 async function menuItemRead(packet) {
-    io.emit("menuItem", cachedMenuItems);
+    io.emit("menuItem", JSON.stringify(cachedMenuItems));
 }
 async function menuItemUpdate(packet) {
     const menuItem = JSON.parse(packet);
@@ -127,7 +127,7 @@ async function menuItemUpdate(packet) {
     });
     const index = cachedMenuItems.findIndex((i) => i.id === updatedMenuItem.id);
     cachedMenuItems[index] = updatedMenuItem;
-    io.emit("menuItem", cachedMenuItems);
+    io.emit("menuItem", JSON.stringify(cachedMenuItems));
 }
 async function menuItemDelete(packet) {
     const menuItem = JSON.parse(packet);
@@ -146,10 +146,10 @@ async function orderLogCreate(packet) {
         data: orderLog.data,
     });
     cachedOrderLogs.push(orderLog.data);
-    io.emit("orderLog", cachedOrderLogs);
+    io.emit("orderLog", JSON.stringify(cachedOrderLogs));
 }
 async function orderLogRead(packet) {
-    io.emit("orderLog", cachedOrderLogs);
+    io.emit("orderLog", JSON.stringify(cachedOrderLogs));
 }
 async function orderLogUpdate(packet) {
     const orderLog = JSON.parse(packet);
@@ -162,7 +162,7 @@ async function orderLogUpdate(packet) {
     });
     const index = cachedOrderLogs.findIndex((i) => i.id === updatedOrderLog.id);
     cachedOrderLogs[index] = updatedOrderLog;
-    io.emit("orderLog", cachedOrderLogs);
+    io.emit("orderLog", JSON.stringify(cachedOrderLogs));
 }
 async function orderLogDelete(packet) {
     const orderLog = JSON.parse(packet);
@@ -173,7 +173,7 @@ async function orderLogDelete(packet) {
         where: { id: orderLog.data.id },
     });
     cachedOrderLogs = cachedOrderLogs.filter((i) => i.id !== orderLog.data.id);
-    io.emit("orderLog", cachedOrderLogs);
+    io.emit("orderLog", JSON.stringify(cachedOrderLogs));
 }
 async function usersCreate(packet) {
     const user = JSON.parse(packet);
@@ -184,10 +184,10 @@ async function usersCreate(packet) {
         data: user.data,
     });
     cachedUsers.push(newUser);
-    io.emit("users", cachedUsers);
+    io.emit("users", JSON.stringify(cachedUsers));
 }
 async function usersRead(packet) {
-    io.emit("users", cachedUsers);
+    io.emit("users", JSON.stringify(cachedUsers));
 }
 async function usersUpdate(packet) {
     const user = JSON.parse(packet);
@@ -200,7 +200,7 @@ async function usersUpdate(packet) {
     });
     const index = cachedUsers.findIndex((i) => i.id === updatedUser.id);
     cachedUsers[index] = updatedUser;
-    io.emit("users", cachedUsers);
+    io.emit("users", JSON.stringify(cachedUsers));
 }
 async function usersDelete(packet) {
     const user = JSON.parse(packet);
@@ -211,7 +211,7 @@ async function usersDelete(packet) {
         where: { id: user.data.id },
     });
     cachedUsers = cachedUsers.filter((i) => i.id !== user.data.id);
-    io.emit("users", cachedUsers);
+    io.emit("users", JSON.stringify(cachedUsers));
 }
 io.on("connect", (socket) => {
     console.log("Connected: " + socket.id);
@@ -235,9 +235,9 @@ io.on("connect", (socket) => {
     socket.on("users:read", usersRead);
     socket.on("users:update", usersUpdate);
     socket.on("users:delete", usersDelete);
-    // socket.onAny((event, ...args) => {
-    //     console.log("Event: " + event);
-    // });
+    socket.onAny((event, ...args) => {
+        console.log("Event: " + event);
+    });
     socket.on("disconnect", (reason) => {
         console.log("Disconnected: " + socket.id + " (" + reason + ")");
     });

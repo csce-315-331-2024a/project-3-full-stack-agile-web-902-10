@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { getUserSession } from "@/lib/session";
-import CheckoutPage from "@/components/CheckoutPage";
-import CheckoutNavBar from "@/components/CheckoutNavBar";
+import CheckoutPage from "./CheckoutPage";
+import CheckoutNavBar from "./CheckoutNavBar";
 
 export default async function Checkout() {
     const user_session = await getUserSession();
@@ -11,10 +11,14 @@ export default async function Checkout() {
         }
     }) : null;
 
+    const menu_items_initial = await prisma.menu_Item.findMany();
+    const ingredients_initial = await prisma.ingredient.findMany();
+    const ingredients_menu_item_initial = await prisma.ingredients_Menu.findMany();
+
     return (
         <>
-            <CheckoutNavBar username={user?.name} is_manager={user?.is_manager} />
-            <CheckoutPage />
+            <CheckoutNavBar user={user} />
+            <CheckoutPage user={user} menu_items_inital={menu_items_initial} ingredients_initial={ingredients_initial} ingredients_menu_item_initial={ingredients_menu_item_initial} />
         </>
     );
 }
