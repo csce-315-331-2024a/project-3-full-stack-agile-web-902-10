@@ -401,7 +401,7 @@ io.on("disconnect", (socket) => {
     console.log("Disconnected: " + socket.id);
 });
 
-console.log("Listening on port 5000");
+console.log("Listening on port" + process.env.PORT);
 
 if (process.env.PORT) {
     io.listen(parseInt(process.env.PORT));
