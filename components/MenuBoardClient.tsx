@@ -262,7 +262,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
     return (
         <div className="flex justify-between" >
             <div className="w-1/4 p-2 flex flex-col justify-end">
-                <div className="p-2">
+                <div className="h-1/2 p-2 flex flex-col justify-end">
                     <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
                         <h1> Weather:</h1>
                         <h1>{temperature}</h1>
@@ -270,7 +270,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                         
                     </div>
                 </div>
-                <div className="p-2 " style={{ height: '50vh' }}>
+                <div className="h-1/2 p-2">
                         <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
                             <h1>{currentMenuItems1[imgIndex1]}</h1>
                             <img 
@@ -282,7 +282,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                 </div>
             </div>
             <div className="w-1/4 p-2 flex flex-col justify-center">
-                <div className="border-2 border-black p-4 m-4 flex flex-col justify-start items-center object-cover rounded-3xl" style={{ height: '80vh' }}>
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-start items-center object-cover rounded-3xl" style={{ height: '90vh' }}>
                     <h1>{currentCategory1}</h1>
                     <br/>
                     {currentMenuItems1.map((mi) => (
@@ -290,8 +290,8 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                     ))}
                 </div>
             </div>
-            <div className="w-1/4 p-2 flex flex-col justify-center">
-                <div className="border-2 border-black p-4 m-4 flex flex-col justify-start items-center object-cover rounded-3xl" style={{ height: '80vh' }}>
+            <div className="w-1/4 p-2 flex flex-col justify-end">
+                <div className="border-2 border-black p-4 m-4 flex flex-col justify-start items-center object-cover rounded-3xl" style={{ height: '90vh' }}>
                     <h1>{currentCategory2}</h1>
                     <br/>
                     {currentMenuItems2.map((mi) => (
@@ -301,7 +301,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                 </div>
             </div>
             <div className="w-1/4 p-2 flex flex-col justify-end">
-                <div className="p-2">
+                <div className="h-1/2 p-2 flex flex-col justify-end">
                     <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
                         <h1> Recomended Item:</h1>
                         <h1>{hotCold[weatherIndex]}</h1>
@@ -312,7 +312,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                         />
                     </div>
                 </div>
-                <div className="p-2" style={{ height: '50vh' }}>
+                <div className="h-1/2 p-2">
                     <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
                         <h1>{currentMenuItems2[imgIndex2]}</h1>
                         <img 
