@@ -8,11 +8,12 @@ import { useEffect } from "react";
 
 
 
-export default function MenuBoardClient({ menu_items, categories, temperature}://categories1}:
+export default function MenuBoardClient({ menu_items, categories, temperature, condition}://categories1}:
     {
         menu_items: Menu_Item[],
         categories: string[],
-        temperature: number
+        temperature: number,
+        condition: string
     }) {
     const menuItemToString = (item: Menu_Item) => {
         return item.name + ": $"+ item.price.toString();
@@ -259,9 +260,15 @@ export default function MenuBoardClient({ menu_items, categories, temperature}:/
     
     //output
     return (
-        <div className="flex justify-between">
-            <div className="w-1/4 p-2">
-                <div className="p-2" style={{ height: '50vh' }}>
+        <div className="flex justify-between" >
+            <div className="w-1/4 p-2 flex flex-col justify-end">
+                <div className="p-2">
+                    <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
+                        <h1> Weather:</h1>
+                        <h1>{temperature}</h1>
+                        <h1>{condition}</h1>
+                        
+                    </div>
                 </div>
                 <div className="p-2 " style={{ height: '50vh' }}>
                         <div className="border-2 border-black p-2 m-4 flex flex-col justify-center items-center object-cover rounded-3xl">
