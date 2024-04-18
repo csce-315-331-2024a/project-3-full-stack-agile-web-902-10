@@ -66,7 +66,7 @@ export default async function ManagerTrendsPage() {
             SUM("Ingredients_Menu".QUANTITY) <  0.1* ("Ingredient".STOCK + SUM("Ingredients_Menu".QUANTITY))
         ORDER BY
             TotalQuantityUsed DESC;`);
-    const restockReportData = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE STOCK < 10000 ORDER BY STOCK;`);
+    const restockReportData = await prisma.$queryRawUnsafe<RestockReportData[]>(`SELECT * FROM "Ingredient" WHERE is_active = True AND STOCK < 10000 ORDER BY STOCK;`);
     const whatSellsTogtherData = await prisma.$queryRawUnsafe<WhatSellsTogetherData[]>(`SELECT mi1.name AS item1_name, mi2.name AS item2_name, COUNT(*) AS frequency
         FROM (
             SELECT t1.item AS item1, t2.item AS item2
