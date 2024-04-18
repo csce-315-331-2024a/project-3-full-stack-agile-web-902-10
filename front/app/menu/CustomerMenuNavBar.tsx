@@ -39,20 +39,20 @@ export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
                     <div className="flex justify-start">
-                        <Link
+                        <a
                             href={user?.is_manager === undefined ? "https://www.weather.gov/" : "/manager"}
                             className="text-lg font-bold transition-colors hover:text-primary"
                         >
                             {user?.is_manager === undefined ? "68 F" : "Manager"}
-                        </Link>
+                        </a>
                     </div>
                     <div className="flex justify-between px-10">
-                        <Link
+                        <a
                             href={user?.is_employee === undefined ? "" : "/cashier"}
                             className="text-lg font-bold transition-colors hover:text-primary"
                         >
                             {user?.is_employee ? "" : "Cashier"}
-                        </Link>
+                        </a>
                     </div>
                     <div className="flex justify-center flex-grow">
                         {cart.length <= 0 ?
@@ -81,7 +81,7 @@ export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
                                         </div>
                                     </div>
                                     <DrawerFooter>
-                                        <Link href={"/checkout/"} className={buttonVariants({ variant: "default" })} >Checkout</Link>
+                                        <a href={"/checkout/"} className={buttonVariants({ variant: "default" })} >Checkout</a>
                                         <Button variant="destructive" className="p-4" onClick={() => clearCart()}>Clear Cart</Button>
                                     </DrawerFooter>
                                 </DrawerContent>

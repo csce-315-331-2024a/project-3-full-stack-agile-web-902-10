@@ -35,7 +35,7 @@ export default function ManagerNavBar({ username }: {
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
                     <div className="flex justify-left">
-                        <p className="text-lg font-bold transition-colors hover:text-primary" onClick={() => {router.push("/menu")}}>To Menu</p>
+                        <a href="/menu" className="text-lg font-bold transition-colors hover:text-primary">To Menu</a>
                     </div>
 
 

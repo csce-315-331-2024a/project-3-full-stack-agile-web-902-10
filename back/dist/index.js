@@ -106,6 +106,7 @@ async function loginLogDelete(packet) {
 }
 async function menuItemCreate(packet) {
     const menuItem = JSON.parse(packet);
+    console.log(menuItem);
     if (!verifyToken(menuItem.email, menuItem.jwt)) {
         return;
     }
@@ -313,11 +314,16 @@ io.on("connect", (socket) => {
 io.on("disconnect", (socket) => {
     console.log("Disconnected: " + socket.id);
 });
-if (process.env.PORT) {
-    io.listen(parseInt(process.env.PORT));
-    console.log("Listening on port" + process.env.PORT);
+try {
+    if (process.env.PORT) {
+        io.listen(parseInt(process.env.PORT));
+        console.log("Listening on port" + process.env.PORT);
+    }
+    else {
+        io.listen(5000);
+        console.log("Listening on port 5000");
+    }
 }
-else {
-    io.listen(5000);
-    console.log("Listening on port 5000");
+catch (error) {
+    console.error(error);
 }
