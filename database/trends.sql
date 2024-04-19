@@ -76,10 +76,10 @@ GROUP BY
 HAVING
     SUM("Ingredients_Menu".QUANTITY) <  0.1* ("Ingredient".STOCK + SUM("Ingredients_Menu".QUANTITY))
 ORDER BY
-    TotalQuantityUsed DESC;
+    TotalQuantityUsed;
 
 --Restock Report
-SELECT * FROM "Ingredient" WHERE STOCK < 10000 ORDER BY STOCK;
+SELECT * FROM "Ingredient" WHERE is_active = True AND STOCK < 10000 ORDER BY STOCK;
 
 --What Sells Together Chart
 SELECT mi1.name AS item1_name, mi2.name AS item2_name, COUNT(*) AS frequency

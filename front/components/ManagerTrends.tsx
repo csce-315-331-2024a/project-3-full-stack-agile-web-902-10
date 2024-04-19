@@ -42,7 +42,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
             <ScrollArea className="h-[92vh] w-[80vw] p-8 whitespace-nowrap">
                 <HoverCard>
                     <HoverCardTrigger>
-                        <Button variant="link">{selectedTrend}</Button>
+                        <Button variant="link">{selectedTrend}(ℹ️)</Button>
                     </HoverCardTrigger>
                     <HoverCardContent className="w-200">
                     {selectedTrend == "Product Usage Chart" && (
