@@ -8,6 +8,9 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { useLanguageStore } from "@/lib/provider/language-store-provider";
+import { useEffect, useState } from "react";
+import { useSocket } from "@/lib/socket";
 
 
 export default function CheckoutNavBar({ user }: { user: Users | null }) {
@@ -16,6 +19,29 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
     }
+
+    const language = useLanguageStore((state) => state.language);
+    let [translated, setTranslated] = useState({
+        back: "Back to menu",
+        settings: "Settings",
+        make_changes: "Make changes to your session here.",
+        dark_mode: "Dark Mode",
+        another_setting: "another setting",
+        sign_in: "Sign In",
+        sign_out: "Sign Out"
+    });
+
+    const socket = useSocket();
+    useEffect(() => {
+        if (socket) {
+            if (language !== "en") {
+                socket.emit("translateJSON", translated, language, (new_translated: typeof translated) => {
+                    setTranslated(new_translated);
+                });
+            }
+        }
+    }, [socket, language]);
+
 
     return (
         <div className="border-b">
@@ -26,7 +52,7 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
                             href="/menu"
                             className="text-lg font-bold transition-colors hover:text-primary"
                         >
-                            Back to Menu
+                            {translated.back}
                         </Link>
                     </div>
                     <div className="flex justify-center flex-grow">
@@ -34,25 +60,25 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
                     </div>
                     <div className="flex justify-end">
                         <Dialog>
-                            <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">Settings</DialogTrigger>
+                            <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>Settings</DialogTitle>
-                                    <DialogDescription>Make changes to your session here.</DialogDescription>
+                                    <DialogTitle>{translated.settings}</DialogTitle>
+                                    <DialogDescription>{translated.make_changes}</DialogDescription>
                                 </DialogHeader>
                                 <div className="flex-col space-y-4">
                                     <div className="flex items-center gap-4">
                                         <Switch checked={theme === "dark" ? true : false} onCheckedChange={toggleTheme} id="dark-mode" />
-                                        <Label htmlFor="dark-mode">Dark Mode</Label>
+                                        <Label htmlFor="dark-mode">{translated.dark_mode}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <Switch id="another-setting" />
-                                        <Label htmlFor="another-setting">another setting</Label>
+                                        <Label htmlFor="another-setting">{translated.another_setting}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         {user?.name === undefined ?
-                                            <Button variant={"outline"} onClick={() => signIn('google', { callbackUrl: "/menu" })}>Sign In</Button> :
-                                            <Button variant={"destructive"} onClick={() => signOut()}>Sign Out</Button>
+                                            <Button variant={"outline"} onClick={() => signIn('google', { callbackUrl: "/menu" })}>{translated.sign_in}</Button> :
+                                            <Button variant={"destructive"} onClick={() => signOut()}>{translated.sign_out}</Button>
                                         }
                                     </div>
                                 </div>

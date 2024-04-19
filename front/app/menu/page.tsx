@@ -19,13 +19,12 @@ export default async function MenuPage() {
     }) : null;
 
     const menu_items = await prisma.menu_Item.findMany();
-    const categories = Array.from(new Set(menu_items.map((item) => item.category)));
 
     return (
         <>
             <CustomerMenuNavBar user={user} />
-            <CustomerMenuDesktop menu_items_init={menu_items} categories_init={categories} user={user}/>
-            <CustomerMenuMobile menu_items_init={menu_items} categories_init={categories} user={user}/>
+            <CustomerMenuDesktop menu_items_init={menu_items} user={user}/>
+            {/* <CustomerMenuMobile menu_items_init={menu_items} categories_init={categories} user={user}/> */}
         </>
     );
 }

@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const socket_io_1 = require("socket.io");
+const google_translate_api_x_1 = __importDefault(require("google-translate-api-x"));
 const client_1 = require("@prisma/client");
 const io = new socket_io_1.Server({
     cors: {
@@ -8,309 +12,251 @@ const io = new socket_io_1.Server({
     },
 });
 const prisma = new client_1.PrismaClient();
-var cachedIngredients = [];
-var cachedIngredientsMenu = [];
-var cachedLoginLogs = [];
-var cachedMenuItems = [];
-var cachedOrderLogs = [];
-var cachedUsers = [];
-async function cacheData() {
-    cachedIngredients = await prisma.ingredient.findMany();
-    cachedIngredientsMenu = await prisma.ingredients_Menu.findMany();
-    cachedLoginLogs = await prisma.login_Log.findMany();
-    cachedMenuItems = await prisma.menu_Item.findMany();
-    cachedOrderLogs = await prisma.order_Log.findMany();
-    cachedUsers = await prisma.users.findMany();
-}
-try {
-    cacheData();
-}
-catch {
-    console.log("Unable to cache data");
-    process.exit(1);
-}
-function verifyToken(email, jwt) {
-    return cachedUsers.some((user) => {
+async function verifyToken(email, jwt) {
+    const users = await prisma.users.findMany();
+    return users.some((user) => {
         return user.email === email && user.jwt === jwt;
     });
 }
-async function ingredientCreate(packet) {
+async function ingredientCreate(auth, create_query) {
     try {
-        const ingredient = JSON.parse(packet);
-        if (!verifyToken(ingredient.email, ingredient.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const newIngredient = await prisma.ingredient.create({
-            ...ingredient.data,
-        });
-        cachedIngredients.push(newIngredient);
-        io.emit("ingredient", JSON.stringify(cachedIngredients));
+        const newIngredient = await prisma.ingredient.create(create_query);
+        io.emit("ingredient", await prisma.ingredient.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-// Apply similar modifications to the other async functions
-async function ingredientRead(packet) {
+async function ingredientRead(read_query, callback) {
     try {
-        return JSON.stringify(cachedIngredients);
+        callback(await prisma.ingredient.findMany(read_query || {}));
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function ingredientUpdate(packet) {
+async function ingredientUpdate(auth, update_query) {
     try {
-        const ingredient = JSON.parse(packet);
-        if (!verifyToken(ingredient.email, ingredient.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const updatedIngredient = await prisma.ingredient.update({
-            ...ingredient.data,
-        });
-        const index = cachedIngredients.findIndex((i) => i.id === updatedIngredient.id);
-        cachedIngredients[index] = updatedIngredient;
-        io.emit("ingredient", JSON.stringify(cachedIngredients));
+        const updatedIngredient = await prisma.ingredient.update(update_query);
+        io.emit("ingredient", await prisma.ingredient.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function ingredientDelete(packet) {
+async function ingredientDelete(auth, delete_query) {
     try {
-        const ingredient = JSON.parse(packet);
-        if (!verifyToken(ingredient.email, ingredient.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        await prisma.ingredient.delete({
-            ...ingredient.data,
-        });
-        cachedIngredients = cachedIngredients.filter((i) => i.id !== ingredient.data.id);
+        await prisma.ingredient.delete(delete_query);
+        io.emit("ingredient", await prisma.ingredient.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function loginLogCreate(packet) {
+async function loginLogCreate(auth, create_query) {
     try {
-        const loginLog = JSON.parse(packet);
-        if (!verifyToken(loginLog.email, loginLog.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const newLoginLog = await prisma.login_Log.create({
-            ...loginLog.data,
-        });
-        cachedLoginLogs.push(newLoginLog);
-        io.emit("loginLog", JSON.stringify(cachedLoginLogs));
+        const newLoginLog = await prisma.login_Log.create(create_query);
+        io.emit("loginLog", await prisma.login_Log.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function loginLogRead(packet) {
+async function loginLogRead(read_query, callback) {
     try {
-        return JSON.stringify(cachedLoginLogs);
+        callback(await prisma.login_Log.findMany(read_query || {}));
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function loginLogUpdate(packet) {
+async function loginLogUpdate(auth, update_query) {
     try {
-        const loginLog = JSON.parse(packet);
-        if (!verifyToken(loginLog.email, loginLog.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const updatedLoginLog = await prisma.login_Log.update({
-            ...loginLog.data,
-        });
-        const index = cachedLoginLogs.findIndex((i) => i.id === updatedLoginLog.id);
-        cachedLoginLogs[index] = updatedLoginLog;
-        io.emit("loginLog", JSON.stringify(cachedLoginLogs));
+        const updatedLoginLog = await prisma.login_Log.update(update_query);
+        io.emit("loginLog", await prisma.login_Log.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function loginLogDelete(packet) {
+async function loginLogDelete(auth, delete_query) {
     try {
-        const loginLog = JSON.parse(packet);
-        if (!verifyToken(loginLog.email, loginLog.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        await prisma.login_Log.delete({
-            ...loginLog.data,
-        });
-        cachedLoginLogs = cachedLoginLogs.filter((i) => i.id !== loginLog.data.id);
-        io.emit("loginLog", JSON.stringify(cachedLoginLogs));
+        await prisma.login_Log.delete(delete_query);
+        io.emit("loginLog", await prisma.login_Log.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function menuItemCreate(packet) {
+async function menuItemCreate(auth, create_query) {
     try {
-        const menuItem = JSON.parse(packet);
-        if (!verifyToken(menuItem.email, menuItem.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const newMenuItem = await prisma.menu_Item.create({
-            ...menuItem.data,
-        });
-        cachedMenuItems.push(newMenuItem);
-        io.emit("menuItem", JSON.stringify(cachedMenuItems));
+        const newMenuItem = await prisma.menu_Item.create(create_query);
+        io.emit("menuItem", await prisma.menu_Item.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function menuItemRead(packet) {
+async function menuItemRead(read_query, callback) {
     try {
-        return JSON.stringify(cachedMenuItems);
+        callback(await prisma.menu_Item.findMany(read_query || {}));
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function menuItemUpdate(packet) {
+async function menuItemUpdate(auth, update_query) {
     try {
-        const menuItem = JSON.parse(packet);
-        if (!verifyToken(menuItem.email, menuItem.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const updatedMenuItem = await prisma.menu_Item.update({
-            ...menuItem.data,
-        });
-        const index = cachedMenuItems.findIndex((i) => i.id === updatedMenuItem.id);
-        cachedMenuItems[index] = updatedMenuItem;
-        io.emit("menuItem", JSON.stringify(cachedMenuItems));
+        const updatedMenuItem = await prisma.menu_Item.update(update_query);
+        io.emit("menuItem", await prisma.menu_Item.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function menuItemDelete(packet) {
+async function menuItemDelete(auth, delete_query) {
     try {
-        const menuItem = JSON.parse(packet);
-        if (!verifyToken(menuItem.email, menuItem.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        await prisma.menu_Item.delete({
-            ...menuItem.data,
-        });
-        cachedMenuItems = cachedMenuItems.filter((i) => i.id !== menuItem.data.id);
-        io.emit("menuItem", JSON.stringify(cachedMenuItems));
+        await prisma.menu_Item.delete(delete_query);
+        io.emit("menuItem", await prisma.menu_Item.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function orderLogCreate(packet) {
+async function orderLogCreate(auth, create_query) {
     try {
-        const orderLog = JSON.parse(packet);
-        await prisma.order_Log.create({
-            ...orderLog.data,
-        });
-        cachedOrderLogs.push(orderLog.data);
-        io.emit("orderLog", JSON.stringify(cachedOrderLogs));
-    }
-    catch (error) {
-        console.error("ERROR: " + error);
-    }
-}
-async function orderLogRead(packet) {
-    try {
-        return JSON.stringify(cachedOrderLogs);
-    }
-    catch (error) {
-        console.error("ERROR: " + error);
-    }
-}
-async function orderLogUpdate(packet) {
-    try {
-        const orderLog = JSON.parse(packet);
-        if (!verifyToken(orderLog.email, orderLog.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const updatedOrderLog = await prisma.order_Log.update({
-            ...orderLog.data,
-        });
-        const index = cachedOrderLogs.findIndex((i) => i.id === updatedOrderLog.id);
-        cachedOrderLogs[index] = updatedOrderLog;
-        io.emit("orderLog", JSON.stringify(cachedOrderLogs));
+        const newOrderLog = await prisma.order_Log.create(create_query);
+        io.emit("orderLog", await prisma.order_Log.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function orderLogDelete(packet) {
+async function orderLogRead(read_query, callback) {
     try {
-        const orderLog = JSON.parse(packet);
-        if (!verifyToken(orderLog.email, orderLog.jwt)) {
+        callback(await prisma.order_Log.findMany(read_query || {}));
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+async function orderLogUpdate(auth, update_query) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        await prisma.order_Log.delete({
-            ...orderLog.data,
-        });
-        cachedOrderLogs = cachedOrderLogs.filter((i) => i.id !== orderLog.data.id);
-        io.emit("orderLog", JSON.stringify(cachedOrderLogs));
+        const updatedOrderLog = await prisma.order_Log.update(update_query);
+        io.emit("orderLog", await prisma.order_Log.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function usersCreate(packet) {
+async function orderLogDelete(auth, delete_query) {
     try {
-        const user = JSON.parse(packet);
-        if (!verifyToken(user.email, user.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const newUser = await prisma.users.create({
-            ...user.data,
-        });
-        cachedUsers.push(newUser);
-        io.emit("users", JSON.stringify(cachedUsers));
+        await prisma.order_Log.delete(delete_query);
+        io.emit("orderLog", await prisma.order_Log.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function usersRead(packet) {
+async function usersCreate(auth, create_query) {
     try {
-        return JSON.stringify(cachedUsers);
-    }
-    catch (error) {
-        console.error("ERROR: " + error);
-    }
-}
-async function usersUpdate(packet) {
-    try {
-        const user = JSON.parse(packet);
-        if (!verifyToken(user.email, user.jwt)) {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const updatedUser = await prisma.users.update({
-            ...user.data,
-        });
-        const index = cachedUsers.findIndex((i) => i.id === updatedUser.id);
-        cachedUsers[index] = updatedUser;
-        io.emit("users", JSON.stringify(cachedUsers));
+        const newUser = await prisma.users.create(create_query);
+        io.emit("users", await prisma.users.findMany());
     }
     catch (error) {
         console.error("ERROR: " + error);
     }
 }
-async function usersDelete(packet) {
+async function usersRead(read_query, callback) {
     try {
-        const user = JSON.parse(packet);
-        if (!verifyToken(user.email, user.jwt)) {
+        callback(await prisma.users.findMany(read_query || {}));
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+async function usersUpdate(auth, update_query) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        await prisma.users.delete({
-            ...user.data,
-        });
-        cachedUsers = cachedUsers.filter((i) => i.id !== user.data.id);
-        io.emit("users", JSON.stringify(cachedUsers));
+        const updatedUser = await prisma.users.update(update_query);
+        io.emit("users", await prisma.users.findMany());
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+async function usersDelete(auth, delete_query) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        await prisma.users.delete(delete_query);
+        io.emit("users", await prisma.users.findMany());
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+async function translateJSON(obj, to, callback) {
+    try {
+        const translated = await (0, google_translate_api_x_1.default)(obj, { to: to });
+        for (const key in obj) {
+            obj[key] = translated[key].text;
+        }
+        callback(obj);
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+async function translateArray(arr, to, callback) {
+    try {
+        const translated = await (0, google_translate_api_x_1.default)(arr, { to: to });
+        for (let i = 0; i < arr.length; i++) {
+            arr[i] = translated[i].text;
+        }
+        callback(arr);
     }
     catch (error) {
         console.error("ERROR: " + error);
@@ -318,69 +264,6 @@ async function usersDelete(packet) {
 }
 async function verifyCartAndCreateOrder(packet) {
     const cart = JSON.parse(packet);
-    // decrement stock
-    for (const cartItem of cart) {
-        const menuItemIngredients = cachedIngredientsMenu.filter(i => i.menu_id === cartItem.id);
-        for (const item of menuItemIngredients) {
-            const requiredQuantity = item.quantity * cartItem.quantity; // item.quantity from ingredients_menu_item multiplied by the quantity in the cart
-            const ingredientInStock = cachedIngredients.find(ing => ing.id === item.ingredients_id);
-            if (!ingredientInStock || ingredientInStock.stock < requiredQuantity) {
-                return;
-            }
-        }
-    }
-    for (const cartItem of cart) {
-        const menuItemIngredients = cachedIngredientsMenu.filter(i => i.menu_id === cartItem.id);
-        for (const item of menuItemIngredients) {
-            const requiredQuantity = item.quantity * cartItem.quantity; // item.quantity from ingredients_menu_item multiplied by the quantity in the cart
-            const ingredientInStock = cachedIngredients.find(ing => ing.id === item.ingredients_id);
-            if (!ingredientInStock || ingredientInStock.stock < requiredQuantity) {
-                return;
-            }
-            await prisma.ingredient.update({
-                where: { id: item.ingredients_id },
-                data: { stock: ingredientInStock.stock - requiredQuantity },
-            });
-        }
-    }
-    // create order, where price is the total price, menu_items is an array of menu_item ids with duplicates for quantity, and ingredients with ids, with duplicates for quantity
-    let order = {
-        price: cart.reduce((acc, curr) => acc + curr.price * curr.quantity, 0),
-        menu_items: (cart.flatMap((item) => Array(item.quantity).fill(item.id))).toString(),
-        ingredients: (cart.flatMap((item) => cachedIngredientsMenu.filter(i => i.menu_id === item.id).flatMap(i => Array(i.quantity * item.quantity).fill(i.ingredients_id)))).toString(),
-    };
-    await prisma.order_Log.create({ data: order });
-    // let isStockSufficient = true;
-    // let insufficientItems = [];
-    // for (const cartItem of cart) {
-    //     const menuItemIngredients = cachedIngredientsMenu.filter(i => i.menu_id === cartItem.id);
-    //     for (const item of menuItemIngredients) {
-    //         const requiredQuantity = item.quantity * cartItem.quantity; // item.quantity from ingredients_menu_item multiplied by the quantity in the cart
-    //         const ingredientInStock = cachedIngredients.find(ing => ing.id === item.ingredients_id);
-    //         if (!ingredientInStock || ingredientInStock.stock < requiredQuantity) {
-    //             isStockSufficient = false;
-    //             insufficientItems.push(`${ingredientInStock ? ingredientInStock.name : 'Unknown ingredient'} for ${cartItem.name}`);
-    //             break;
-    //         }
-    //     }
-    //     if (!isStockSufficient) {
-    //         break;
-    //     }
-    // }
-    // if (!isStockSufficient) {
-    //     return;
-    // }
-    // for (const cartItem of cart) {
-    //     const menuItemIngredients = cachedIngredientsMenu.filter(i => i.menu_id === cartItem.id);
-    //     for (const item of menuItemIngredients) {
-    //         const requiredQuantity = item.quantity * cartItem.quantity; // item.quantity from ingredients_menu_item multiplied by the quantity in the cart
-    //         const ingredientInStock = cachedIngredients.find(ing => ing.id === item.ingredients_id);
-    //         await prisma.ingredient.update({
-    //             where: { id: item.ingredients_id },
-    //             data: { stock: ingredientInStock.stock - requiredQuantity },
-    //         });
-    //     }
-    // }
 }
 io.on("connect", (socket) => {
     console.log("Connected: " + socket.id);
@@ -404,6 +287,8 @@ io.on("connect", (socket) => {
     socket.on("users:read", usersRead);
     socket.on("users:update", usersUpdate);
     socket.on("users:delete", usersDelete);
+    socket.on("translateJSON", translateJSON);
+    socket.on("translateArray", translateArray);
     socket.onAny((event, ...args) => {
         console.log("Event: " + event);
     });

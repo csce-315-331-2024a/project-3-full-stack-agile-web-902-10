@@ -1,19 +1,10 @@
 "use client";
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
 import { Menu_Item } from "@prisma/client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Dialog,
     DialogClose,
@@ -24,24 +15,27 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
+import { useCartStore } from "@/lib/provider/cart-store-provider";
+import { useSocket } from "@/lib/socket";
 
-export default function CashierMenuDesktop({ menu_items, categories, setCart }: { menu_items: Menu_Item[], categories: string[], setCart: any }) {
+export default function CashierMenuDesktop({ menu_items_init }: { menu_items_init: Menu_Item[] }) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+    const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
 
-    const onCategoryClick = (category: string) => {
-        if (selectedCategory === category) {
-            setSelectedCategory(undefined);
-        } else {
-            setSelectedCategory(category);
+    const socket = useSocket();
+    useEffect(() => {
+        if (socket) {
+            socket.emit("menuItem:read", undefined, (new_menu_items: Menu_Item[]) => {
+                setMenuItems(new_menu_items);
+            });
+            socket.on("menuItem", (new_menu_items: Menu_Item[]) => {
+                setMenuItems(new_menu_items);
+            });
         }
-    }
+    }, [socket]);
 
-    const onAddToCart = (menu_item: Menu_Item) => {
-        // maybe we should validate here?
-        setCart((prevCart: Menu_Item[]) => [...prevCart, menu_item]);
-    }
+    const addToCart = useCartStore((state) => state.addToCart);
 
     return (
         <div className="hidden lg:flex flex-row">
@@ -71,7 +65,7 @@ export default function CashierMenuDesktop({ menu_items, categories, setCart }: 
                                 </DialogHeader>
                                 <DialogFooter>
                                     <DialogClose asChild>
-                                        <Button variant="default" onClick={() => onAddToCart(menu_item)}>Add to Cart</Button>
+                                        <Button variant="default" onClick={() => addToCart(menu_item)}>Add to Cart</Button>
                                     </DialogClose>
                                 </DialogFooter>
                             </DialogContent>

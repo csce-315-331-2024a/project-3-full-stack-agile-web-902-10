@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Button } from './ui/button';
 
-import { useSocket } from '@/lib/socket';
+import { AuthPacket, useSocket } from '@/lib/socket';
+import { ScrollArea } from './ui/scroll-area';
 
 export default function UsersList({ users, user }:
     {
@@ -14,39 +15,30 @@ export default function UsersList({ users, user }:
     }) {
     const [filteredUsers, setFilteredUsers] = useState<Users[]>(users.filter(user => user.is_manager));
 
-    const socket: any = useSocket();
+    const socket = useSocket();
     useEffect(() => {
         if (socket) {
-            socket.on("users", (users_changed: string) => {
-                const parsed: Users[] = JSON.parse(users_changed);
-                setFilteredUsers(parsed.filter(user => user.is_manager));
+            socket.emit("users:read", undefined, (new_users: Users[]) => {
+                setFilteredUsers(new_users.filter(user => user.is_manager));
+            });
+            socket.on("users", (new_users: Users[]) => {
+                setFilteredUsers(new_users.filter(user => user.is_manager));
             });
         }
     }, [socket]);
 
+    const auth: AuthPacket = {
+        email: user?.email ?? "",
+        jwt: user?.jwt ?? ""
+    };
     const onFireEmployee = (user: Users) => {
-        // Need to construct the packet that prisma would want, as well as the auth
-        const packet = {
-            email: user.email,
-            jwt: user.jwt,
-            data: {
-                where :{
-                    id: user.id
-                },
-                data: {
-                    is_manager: false,
-                    is_employee: false
-                
-                }
-            }
-        };
-        socket.emit("users:update", JSON.stringify(packet));
+        socket?.emit("users:update", auth, user);
     }
 
     return (
-        <div>
-            {/* <h1>Users</h1> */}
-            <ul>
+        <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
+            <div className="grid grid-cols-3 gap-4">
+                {/* <h1>Users</h1> */}
                 {filteredUsers.map(user => (
                     <Dialog key={user.id}>
                         <DialogTrigger asChild>
@@ -83,7 +75,7 @@ export default function UsersList({ users, user }:
                         </DialogContent>
                     </Dialog>
                 ))}
-            </ul>
-        </div>
+            </div>
+        </ScrollArea>
     );
 }

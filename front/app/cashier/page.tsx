@@ -1,7 +1,9 @@
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import Cashier from "@/components/Cashier";
-import { Menu_Item } from "@prisma/client";
+
+import CashierNavBar from "@/components/CashierNavBar";
+import CashierMenuDesktop from "@/components/CashierMenuDesktop";
+import Redirect from "@/components/Redirect";
 
 export const metadata = {
     title: "Menu | Rev's Grill",
@@ -15,13 +17,17 @@ export default async function CashierPage() {
         }
     }) : null;
 
-    // const menu_items = await prisma.$queryRaw<Menu_Item[]>`SELECT DISTINCT mi.* FROM "Menu_Item" mi JOIN "Menus_Ingredients" mi_ing ON mi.id = mi_ing.menu_item_id JOIN "Ingredient" i ON mi_ing.ingredient_id = i.id WHERE i.stock > 0;`;
     const menu_items = await prisma.menu_Item.findMany();
-    const categories = Array.from(new Set(menu_items.map((item) => item.category)));
-    const ingredient = await prisma.ingredient.findMany();
+
+    if (!user || user.is_manager === false) {
+        return <Redirect to="/menu" />;
+    };
 
     return (
-        <Cashier menu_items={menu_items} categories={categories} username={user?.name} is_manager={user?.is_manager} />
+        <>
+            <CashierNavBar user={user} />
+            <CashierMenuDesktop menu_items_init={menu_items} />
+        </>
     );
 }
 
