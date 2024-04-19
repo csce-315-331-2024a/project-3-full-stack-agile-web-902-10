@@ -4,8 +4,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
-import { Menu_Item, Users } from "@prisma/client"
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import {
     Dialog,
     DialogClose,
@@ -18,13 +17,20 @@ import {
 } from "@/components/ui/dialog"
 
 import { useCartStore } from "@/lib/provider/cart-store-provider"
-import { useSocket } from "@/lib/socket";
+import { Menu_Item, Users } from "@prisma/client"
+import { MenuItemRead, useSocket } from "@/lib/socket";
+import { useLanguageStore } from "@/lib/provider/language-store-provider";
 
-export default function CustomerMenuDesktop({ menu_items_init, categories_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], user: Users | null }) {
+const static_text = {
+    category: "Category",
+    add_to_cart: "Add to Cart",
+}
+
+export default function CustomerMenuDesktop({ menu_items_init, user }: { menu_items_init: Menu_Item[], user: Users | null }) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
-    const [categories, setCategories] = useState<string[]>(categories_init);
+    const [categories, setCategories] = useState<string[]>(Array.from(new Set(menu_items_init.map((item) => item.category))));
 
     const onCategoryClick = (category: string) => {
         if (selectedCategory === category) {
@@ -39,32 +45,81 @@ export default function CustomerMenuDesktop({ menu_items_init, categories_init, 
         add(menu_item);
     }
 
-    // listen for changes to the menu items
-    const socket: any = useSocket();
+    // All data that needs to be processed by the server should be sent through the socket
+    const language = useLanguageStore((state) => state.language);
+    const [current_language, setCurrentLanguage] = useState(language);
+    let [translated, setTranslated] = useState(static_text);
+
+    const socket = useSocket();
     useEffect(() => {
         if (socket) {
-            socket.on("menuItem", (menu_items_changed: string) => {
-                const parsed: Menu_Item[] = JSON.parse(menu_items_changed);
-                setMenuItems(parsed);
-                setCategories(Array.from(new Set(parsed.map((item) => item.category))));
+            socket.emit("menuItem:read", undefined, (new_menu_items: Menu_Item[]) => {
+                if (language !== "English") {
+                    socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
+                        new_menu_items.forEach((item, index) => {
+                            item.name = translated_names[index];
+                        });
+                        socket.emit("translateArray", new_menu_items.map((item) => item.category), language, (translated_categories: string[]) => {
+                            new_menu_items.forEach((item, index) => {
+                                item.category = translated_categories[index];
+                            });
+                            setMenuItems(new_menu_items);
+                            setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
+                            setCurrentLanguage(language);
+                        });
+                    });
+                }
+                else {
+                    setMenuItems(new_menu_items);
+                    setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
+                }
             });
+            socket.on("menuItem", (new_menu_items: Menu_Item[]) => {
+                if (language !== "English") {
+                    socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
+                        new_menu_items.forEach((item, index) => {
+                            item.name = translated_names[index];
+                        });
+                        socket.emit("translateArray", new_menu_items.map((item) => item.category), language, (translated_categories: string[]) => {
+                            new_menu_items.forEach((item, index) => {
+                                item.category = translated_categories[index];
+                            });
+                            setMenuItems(new_menu_items);
+                            setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
+                        });
+                    });
+                }
+                else {
+                    setMenuItems(new_menu_items);
+                    setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
+                }
+            });
+
+            if (language !== "English") {
+                socket.emit("translateJSON", translated, language, (new_translated: typeof translated) => {
+                    setTranslated(new_translated);
+                });
+            }
+            else {
+                setTranslated(static_text);
+            }
         }
-    }, [socket]);
+    }, [socket, language]);
 
     return (
         <div className="hidden lg:flex flex-row">
-            <ScrollArea className="h-[92vh] w-auto p-10  whitespace-nowrap">
-                <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
-                    <h1 className="text-lg font-bold"> Category </h1>
+            <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
+                <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center transition-all">
+                    <h1 className="text-lg font-bold"> {translated.category} </h1>
                     <Separator />
                     {categories.map((cat) => (
-                        <Button key={cat} variant={selectedCategory === cat ? "default" : "secondary"} className="w-[8vw] h-[5vh] text-lg font-bold" onClick={() => onCategoryClick(cat)}> {cat} </Button>
+                        <Button key={cat} variant={selectedCategory === cat ? "default" : "secondary"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onCategoryClick(cat)}> {cat} </Button>
                     ))}
                 </div>
                 <ScrollBar orientation="vertical" />
             </ScrollArea>
             <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-4 transition-all">
                     {menu_items.filter((menu_item) => selectedCategory === undefined || menu_item.category === selectedCategory).map((menu_item) => (
                         <Dialog key={menu_item.id}>
                             <DialogTrigger asChild>
@@ -94,7 +149,7 @@ export default function CustomerMenuDesktop({ menu_items_init, categories_init, 
                                 />
                                 <DialogFooter>
                                     <DialogClose asChild>
-                                        <Button variant="default" onClick={() => onAddToCart(menu_item)}>Add to Cart</Button>
+                                        <Button variant="default" onClick={() => onAddToCart(menu_item)}> {translated.add_to_cart} </Button>
                                     </DialogClose>
                                 </DialogFooter>
                             </DialogContent>

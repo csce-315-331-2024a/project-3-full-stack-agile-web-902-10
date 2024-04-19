@@ -8,7 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
-import { Menu_Item } from "@prisma/client";
+import { Menu_Item, Users } from "@prisma/client";
 import {
     Drawer,
     DrawerClose,
@@ -20,13 +20,18 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 
+import { useCartStore } from "@/lib/provider/cart-store-provider"
 
-export default function CashierNavBar({ username, is_manager, cart, setCart }: { username: string | undefined, is_manager: boolean | undefined, cart: Menu_Item[], setCart: any }) {
+
+export default function CashierNavBar({ user }: { user: Users | null }) {
     const { theme, setTheme } = useTheme();
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
     }
+
+    const cart = useCartStore((state) => state.cart);
+    const clearCart = useCartStore((state) => state.clearCart);
 
     return (
         <div className="border-b">
@@ -34,15 +39,23 @@ export default function CashierNavBar({ username, is_manager, cart, setCart }: {
                 <nav className="flex w-full item-center justify-center md:mx-12">
                     <div className="flex justify-start">
                         <Link
-                            href={is_manager === undefined ? "https://www.weather.gov/" : "/manager"}
+                            href={user?.is_manager === undefined ? "https://www.weather.gov/" : "/manager"}
                             className="text-lg font-bold transition-colors hover:text-primary"
                         >
-                            {is_manager === undefined ? "68 F" : "Manager"}
+                            {user?.is_manager === undefined ? "68 F" : "Manager"}
+                        </Link>
+                    </div>
+                    <div className="flex justify-between px-10">
+                        <Link
+                            href={user?.is_employee === true ? "/menu" : ""}
+                            className="text-lg font-bold transition-colors hover:text-primary"
+                        >
+                            Customer
                         </Link>
                     </div>
                     <div className="flex justify-center flex-grow">
                         {cart.length <= 0 ?
-                            <p className="text-lg font-bold text-center">{username === undefined ? "Rev's Grill" : "Welcome, " + username.split(" ")[0]}</p> :
+                            <p className="text-lg font-bold text-center">{user?.name === undefined ? "Rev's Grill" : "Welcome, " + user?.name.split(" ")[0]}</p> :
                             <Drawer direction="bottom">
                                 <DrawerTrigger>
                                     <Button variant="default" className="text-lg font-bold">{cart.length} items in cart</Button>
@@ -67,7 +80,7 @@ export default function CashierNavBar({ username, is_manager, cart, setCart }: {
                                     </div>
                                     <DrawerFooter>
                                         <Button variant="default" className="p-4">Checkout</Button>
-                                        <Button variant="destructive" className="p-4" onClick={() => setCart([])}>Clear Cart</Button>
+                                        <Button variant="destructive" className="p-4" onClick={() => clearCart()}>Clear Cart</Button>
                                     </DrawerFooter>
                                 </DrawerContent>
                             </Drawer>
@@ -91,7 +104,7 @@ export default function CashierNavBar({ username, is_manager, cart, setCart }: {
                                         <Label htmlFor="another-setting">another setting</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        {username === undefined ?
+                                        {user?.name === undefined ?
                                             <Button variant={"outline"} onClick={() => signIn('google', { callbackUrl: "/menu" })}>Sign In</Button> :
                                             <Button variant={"destructive"} onClick={() => signOut()}>Sign Out</Button>
                                         }

@@ -2,6 +2,7 @@ import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import ManagerNavBar from "@/components/ManagerNavBar";
 import ManagerFunctions from "@/components/ManagerFunctions";
+import Redirect from "@/components/Redirect";
 import { Ingredients_Menu, Menu_Item } from "@prisma/client";
 
 export const metadata = {
@@ -22,6 +23,10 @@ export default async function ManagerPage() {
     const ingredients = await prisma.ingredient.findMany();
     const menuIngredients = await prisma.ingredients_Menu.findMany();
     const users = await prisma.users.findMany();
+
+    if (!user || user.is_manager === false) {
+        return <Redirect to="/menu" />;
+    };
 
     return (
         <>

@@ -88,8 +88,8 @@ export default async function ManagerTrendsPage() {
         LIMIT 10;`);
     return (
         <>
-        <ManagerNavBar username={user?.name}/>
-        <ManagerTrends excessReportData = {excessReportData} productUsageReportData = {productUsageReportData} salesReportData = {salesReportData} restockReportData ={restockReportData} whatSellsTogtherData = {whatSellsTogtherData}/>
+            <ManagerNavBar username={user?.name} />
+            <ManagerTrends excessReportData={excessReportData} productUsageReportData={productUsageReportData} salesReportData={salesReportData} restockReportData={restockReportData} whatSellsTogtherData={whatSellsTogtherData} />
         </>
     );
 }

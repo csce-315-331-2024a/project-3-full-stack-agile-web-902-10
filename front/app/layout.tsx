@@ -4,6 +4,7 @@ import { Overpass_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import { CartStoreProvider } from "@/lib/provider/cart-store-provider";
+import { LanguageStoreProvider } from "@/lib/provider/language-store-provider";
 
 import "@/app/globals.css"
 
@@ -21,7 +22,9 @@ export default function HomeLayout({ children, }: Readonly<{ children: React.Rea
                     defaultTheme="light"
                 >
                     <CartStoreProvider>
-                        {children}
+                        <LanguageStoreProvider>
+                            {children}
+                        </LanguageStoreProvider>
                     </CartStoreProvider>
                 </ThemeProvider>
             </body>

@@ -1,7 +1,7 @@
 "use client";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Menu_Item, Ingredient, Ingredients_Menu, Users } from "@prisma/client";
 import { useState, useEffect } from "react";
@@ -44,8 +44,7 @@ import {
 } from "@/components/ui/popover"
 import UsersList from "./UsersList";
 
-import { useSocket, AuthPacket } from "@/lib/socket";
-import { revalidatePath } from "next/cache";
+import { AuthPacket, useSocket, MenuItemCreate, MenuItemDelete } from "@/lib/socket";
 
 
 export default function ManagerFunctions({ menu_items_init, categories_init, ingredients_init, menuIngredients_init, users_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], ingredients_init: Ingredient[], menuIngredients_init: Ingredients_Menu[], users_init: Users[], user: Users | null }) {
@@ -61,26 +60,42 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     let ingredientsMenuList: Ingredients_Menu[] = [];
 
     const [menu_items, setMenuItems] = useState(menu_items_init);
-    const [categories, setCategories] = useState(categories_init);
     const [ingredients, setIngredients] = useState(ingredients_init);
     const [menuIngredients, setMenuIngredients] = useState(menuIngredients_init);
     const [users, setUsers] = useState(users_init);
 
     // in case we need to listen to something
-    const socket: any = useSocket();
+    const socket = useSocket();
     useEffect(() => {
         if (socket) {
-            socket.on('menuItem', (menu_items_changed: string) => {
-                setMenuItems(JSON.parse(menu_items_changed));
+            socket.emit("menuItem:read", undefined, (new_menu_items: Menu_Item[]) => {
+                setMenuItems(new_menu_items);
             });
-            socket.on('ingredient', (menu_items_changed: string) => {
-                setIngredients(JSON.parse(menu_items_changed));
+
+            socket.on("menuItem", (new_menu_items: Menu_Item[]) => {
+                setMenuItems(new_menu_items);
             });
-            socket.on('menuIngredient', (menu_items_changed: string) => {
-                setMenuIngredients(JSON.parse(menu_items_changed));
+
+            socket.emit('ingredient:read', undefined, (new_ingredients: Ingredient[]) => {
+                setIngredients(new_ingredients);
             });
-            socket.on('user', (menu_items_changed: string) => {
-                setUsers(JSON.parse(menu_items_changed));
+
+            socket.on('ingredient', (new_ingredients: Ingredient[]) => {
+                setIngredients(new_ingredients);
+            });
+
+            // havent implmented this in the api yet
+            // socket.emit('menuIngredient:read');
+            // socket.on('menuIngredient', (data: string) => {
+            //     setMenuIngredients(JSON.parse(data));
+            // });
+
+            socket.emit('users:read', undefined, (new_users: Users[]) => {
+                setUsers(new_users);
+            });
+
+            socket.on('users', (new_users: Users[]) => {
+                setUsers(new_users);
             });
         }
     }, [socket]);
@@ -134,48 +149,34 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             price,
             ingredientsMenuList
         };
-
-        const payload: any = {
-            email: user?.email,
-            jwt: user?.jwt,
-            data: {
-                name: itemName,
-                category: category,
-                price: price,
-                ingredients: ingredientsMenuList
-            }
-        }
         ingredientsMenuList = [];
     };
 
+    const auth: AuthPacket = {
+        email: user?.email ?? "",
+        jwt: user?.jwt ?? ""
+    };
+    
     function deleteItem(menu_item: Menu_Item) {
-        const payload: any = {
-            email: user?.email,
-            jwt: user?.jwt,
-            data: {
-                where : {
-                    id: menu_item.id
-                }
+        const update_query: MenuItemDelete = {
+            where: {
+                id: menu_item.id
             }
-        }
-        socket.emit('menuItem:delete', JSON.stringify(payload));
-        // revalidate current page
-        router.refresh();
+        };
+        socket?.emit('menuItem:delete', auth, update_query);
     }
 
     return (
-        <div className="hidden lg:flex flex-row gap-4">
+        <div className="flex flex-row gap-4">
             {/* Manager Options */}
-            <ScrollArea className="h-[92vh] w-auto whitespace-nowrap">
-                <div className="flex flex-col w-[10vw] space-y-8 m-8">
+            <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
+                <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
                     <p className="text-lg font-bold"> Options </p>
                     <Separator />
-
-                    <Button className="text-md font-bold w-[7vw]" variant={"secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
-                    <Button className="text-md font-bold w-[7vw]" variant={"secondary"} onClick={toggleTrends}>Trends</Button>
-                    <Button className="text-md font-bold w-[7vw]" variant={"secondary"} onClick={toggleEmployee}>Employees</Button>
-                    <Button className="text-md font-bold w-[7vw]" variant={"secondary"} onClick={toggleBoard}>Menu Board</Button>
-
+                    <Button className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
+                    <Button className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>
+                    <Button className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" variant="destructive" onClick={toggleTrends}>Trends</Button>
+                    <Button className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" variant="destructive" onClick={toggleBoard}>Menu Board</Button>
                 </div>
             </ScrollArea>
 
@@ -283,11 +284,10 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     </div>
 
                     <div className="grid grid-cols-3 gap-4">
-                        {menu_items.filter((menu_item) => selectedCategory === undefined || menu_item.category === selectedCategory).map((menu_item) => (
+                        {menu_items.map((menu_item) => (
                             <Dialog key={menu_item.id}>
-
-                                <div className="flex-col w-[25vw] h-[10vh] border-solid border-2 rounded-lg">
-                                    <div className="flex flex-col w-[25vw] h-[10vh] justify-center items-center">
+                                <div className="flex flex-col w-[25vw] h-[12vh] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
+                                    <div className="flex flex-col w-[25vw] h-[12vh] justify-center items-center">
                                         <h2 className="text-base font-bold snap-center">{menu_item.name}</h2>
                                         <div className="flex justify-center items-center gap-4">
                                             <DialogTrigger asChild>

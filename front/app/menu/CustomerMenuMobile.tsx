@@ -19,12 +19,13 @@ import Image from "next/image"
 
 import { useCartStore } from "@/lib/provider/cart-store-provider"
 import { useSocket } from "@/lib/socket";
+import { useLanguageStore } from "@/lib/provider/language-store-provider";
 
 export default function CustomerMenuMobile({ menu_items_init, categories_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], user: Users | null }) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
-    const [categories, setCategories] = useState<string[]>(categories_init);
+    const [categories, setCategories] = useState<string[]>(Array.from(new Set(menu_items_init.map((item) => item.category))));
 
     const onCategoryClick = (category: string) => {
         if (selectedCategory === category) {
@@ -39,15 +40,34 @@ export default function CustomerMenuMobile({ menu_items_init, categories_init, u
         add(menu_item);
     }
 
-    // listen for changes to the menu items
-    const socket: any = useSocket();
+    // All data that needs to be processed by the server should be sent through the socket
+    const language = useLanguageStore((state) => state.language);
+    let [translated, setTranslated] = useState({
+        to: language,
+        text: {
+            category: "Category",
+            add_to_cart: "Add to Cart"
+        }
+    });
+
+    const socket= useSocket();
     useEffect(() => {
         if (socket) {
-            socket.on("menuItem", (menu_items_changed: string) => {
-                const parsed: Menu_Item[] = JSON.parse(menu_items_changed);
-                setMenuItems(parsed);
-                setCategories(Array.from(new Set(parsed.map((item) => item.category))));
+            socket.emit("menuItem:read", undefined, (new_menu_items: Menu_Item[]) => {
+                setMenuItems(new_menu_items);
+                setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
             });
+            socket.on("menuItem", (new_menu_items: Menu_Item[]) => {
+                setMenuItems(new_menu_items);
+                setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
+            });
+
+            // if (translated.to != "en") {
+            //     socket.emit("translateJSON", JSON.stringify(translated), (data: string) => {
+            //         let parsed = JSON.parse(data);
+            //         setTranslated(parsed);
+            //     });
+            // }
         }
     }, [socket]);
 
