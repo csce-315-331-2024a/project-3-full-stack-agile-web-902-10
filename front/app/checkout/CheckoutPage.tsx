@@ -10,6 +10,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguageStore } from "@/lib/provider/language-store-provider";
 
+const static_translated = {
+    checkout: "Checkout",
+    total: "Total",
+    back: "Back",
+    pay: "Pay"
+};
+
 export default function CheckoutPage({
     user,
     menu_items_inital,
@@ -28,12 +35,7 @@ export default function CheckoutPage({
     const [ingredients_menu_item, setIngredientsMenuItem] = useState<Ingredients_Menu[]>(ingredients_menu_item_initial);
 
     const language = useLanguageStore((state) => state.language);
-    let [translated, setTranslated] = useState({
-        checkout: "Checkout",
-        total: "Total",
-        back: "Back",
-        pay: "Pay"
-    });
+    let [translated, setTranslated] = useState(static_translated);
 
     useEffect(() => {
         if (socket) {
@@ -55,11 +57,14 @@ export default function CheckoutPage({
                     setTranslated(new_translated);
                 });
             }
+            else {
+                setTranslated(static_translated);
+            }
         }
     }, [socket, language]);
 
     const cart = useCartStore((state) => state.cart);
-    const totalPrice = cart.reduce((acc, item) => acc + item.price, 0);
+    const totalPrice = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     const handlePaymentClick = () => {
         let isStockSufficient = true;
@@ -107,9 +112,9 @@ export default function CheckoutPage({
                         <CardContent className="p-4">
                             {cart.map((item, index) => (
                                 <div key={index} className="flex justify-between items-center mb-4">
-                                    <div className="flex-1">{item.name}</div>
-                                    <div className="flex-1 text-center">Qty: {item.quantity}</div>
-                                    <div className="flex-1 text-right">${item.price.toFixed(2)}</div>
+                                    <div className="">Qty: {item.quantity}</div>
+                                    <div className="justify-center">{item.name}</div>
+                                    <div className="justify-end">${ (item.price * item.quantity ) }</div>
                                 </div>
                             ))}
                         </CardContent>

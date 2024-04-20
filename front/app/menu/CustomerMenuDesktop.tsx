@@ -110,10 +110,10 @@ export default function CustomerMenuDesktop({ menu_items_init, user }: { menu_it
         <div className="hidden lg:flex flex-row">
             <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center transition-all">
-                    <h1 className="text-lg font-bold"> {translated.category} </h1>
+                    <h1 className="text-xl font-bold"> {translated.category} </h1>
                     <Separator />
                     {categories.map((cat) => (
-                        <Button key={cat} variant={selectedCategory === cat ? "default" : "secondary"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onCategoryClick(cat)}> {cat} </Button>
+                        <Button key={cat} variant={selectedCategory === cat ? "default" : "secondary"} className="w-[8vw] h-[9vh] text-xl font-bold whitespace-normal" onClick={() => onCategoryClick(cat)}> {cat} </Button>
                     ))}
                 </div>
                 <ScrollBar orientation="vertical" />
@@ -135,21 +135,21 @@ export default function CustomerMenuDesktop({ menu_items_init, user }: { menu_it
                                     <h2 className="text-2xl">${menu_item.price}</h2>
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className=" min-w-[80vw]">
                                 <DialogHeader>
-                                    <DialogTitle>{menu_item.name}</DialogTitle>
-                                    <DialogDescription>${menu_item.price}</DialogDescription>
+                                    <DialogTitle className="text-2xl font-bold">{menu_item.name}</DialogTitle>
+                                    <DialogDescription className="text-2xl font-bold">${menu_item.price}</DialogDescription>
                                 </DialogHeader>
                                 <Image
                                     src={menu_item.image_url}
-                                    width={200}
-                                    height={200}
+                                    width={500}
+                                    height={500}
                                     alt={menu_item.name}
-                                    className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                                    className="aspect-[1/1] h-[500px] w-[500px] object-cover rounded-3xl border"
                                 />
                                 <DialogFooter>
                                     <DialogClose asChild>
-                                        <Button variant="default" onClick={() => onAddToCart(menu_item)}> {translated.add_to_cart} </Button>
+                                        <Button variant="default" className="p-8 text-2xl" onClick={() => onAddToCart(menu_item)}> {translated.add_to_cart} </Button>
                                     </DialogClose>
                                 </DialogFooter>
                             </DialogContent>

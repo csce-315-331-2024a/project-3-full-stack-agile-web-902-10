@@ -21,14 +21,13 @@ export default function LanguageSelector({ translated }: { translated: any} ) {
 
     return (
         <Select onValueChange={setLanguage} defaultValue={language}>
-            <SelectTrigger>
+            <SelectTrigger className="text-lg p-4 border-4">
                 <SelectValue>{language}</SelectValue>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="w-[16vw]">
                 <SelectGroup>
-                    <SelectLabel> {translated.welcome} </SelectLabel>
                     {Object.keys(language_name_code).map((lang) => (
-                        <SelectItem value={lang} key={lang}>
+                        <SelectItem value={lang} key={lang} className="text-lg">
                             {lang}
                         </SelectItem>
                     ))}
