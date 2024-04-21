@@ -2,6 +2,13 @@
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+  } from "@/components/ui/accordion"
+
 
 import { Users, Menu_Item, Ingredient, Ingredients_Menu } from "@prisma/client";
 import { useSocket } from "@/lib/socket";
@@ -64,41 +71,11 @@ export default function CheckoutPage({
     }, [socket, language]);
 
     const cart = useCartStore((state) => state.cart);
-    const totalPrice = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const totalPrice = cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0);
 
     const handlePaymentClick = () => {
-        let isStockSufficient = true;
-        let insufficientItems = [];
-
-        for (const cartItem of cart) {
-            const menuItemIngredients = ingredients_menu_item.filter(i => i.menu_id === cartItem.id);
-
-            for (const item of menuItemIngredients) {
-                const requiredQuantity = item.quantity * cartItem.quantity; // item.quantity from ingredients_menu_item multiplied by the quantity in the cart
-                const ingredientInStock = ingredients.find(ing => ing.id === item.ingredients_id);
-
-                if (!ingredientInStock || ingredientInStock.stock < requiredQuantity) {
-                    isStockSufficient = false;
-                    insufficientItems.push(`${ingredientInStock ? ingredientInStock.name : 'Unknown ingredient'} for ${cartItem.name}`);
-                    break;
-                }
-            }
-
-            if (!isStockSufficient) {
-                break;
-            }
-        }
-
-        if (!isStockSufficient) {
-            alert(`Not enough stock for: ${insufficientItems.join(", ")}. Please adjust your cart items.`);
-            return;
-        }
-
-        // If there's enough stock, proceed with the payment process
-        // socket.emit("orderLog:create", JSON.stringify(cart));
+        console.log(cart);
     };
-
-
 
     const router = useRouter();
     return (
@@ -113,8 +90,8 @@ export default function CheckoutPage({
                             {cart.map((item, index) => (
                                 <div key={index} className="flex justify-between items-center mb-4">
                                     <div className="">Qty: {item.quantity}</div>
-                                    <div className="justify-center">{item.name}</div>
-                                    <div className="justify-end">${ (item.price * item.quantity ) }</div>
+                                    <div className="justify-center">{item.menu_item.name}</div>
+                                    <div className="justify-end">${(item.menu_item.price * item.quantity)}</div>
                                 </div>
                             ))}
                         </CardContent>
