@@ -62,6 +62,50 @@ async function ingredientDelete(auth, delete_query) {
         console.error("ERROR: " + error);
     }
 }
+async function ingredientsMenuCreate(auth, create_query) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        const newIngredientsMenu = await prisma.ingredients_Menu.create(create_query);
+        io.emit("ingredientsMenu", await prisma.ingredients_Menu.findMany());
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+async function ingredientsMenuRead(read_query, callback) {
+    try {
+        callback(await prisma.ingredients_Menu.findMany(read_query || {}));
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+async function ingredientsMenuUpdate(auth, update_query) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        const updatedIngredientsMenu = await prisma.ingredients_Menu.update(update_query);
+        io.emit("ingredientsMenu", await prisma.ingredients_Menu.findMany());
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+async function ingredientsMenuDelete(auth, delete_query) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        await prisma.ingredients_Menu.delete(delete_query);
+        io.emit("ingredientsMenu", await prisma.ingredients_Menu.findMany());
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
 async function loginLogCreate(auth, create_query) {
     try {
         if (!verifyToken(auth.email, auth.jwt)) {
@@ -271,6 +315,10 @@ io.on("connect", (socket) => {
     socket.on("ingredient:read", ingredientRead);
     socket.on("ingredient:update", ingredientUpdate);
     socket.on("ingredient:delete", ingredientDelete);
+    socket.on("ingredientsMenu:create", ingredientsMenuCreate);
+    socket.on("ingredientsMenu:read", ingredientsMenuRead);
+    socket.on("ingredientsMenu:update", ingredientsMenuUpdate);
+    socket.on("ingredientsMenu:delete", ingredientsMenuDelete);
     socket.on("loginLog:create", loginLogCreate);
     socket.on("loginLog:read", loginLogRead);
     socket.on("loginLog:update", loginLogUpdate);

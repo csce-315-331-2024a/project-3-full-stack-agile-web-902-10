@@ -31,6 +31,9 @@ import {
     SelectLabel
 } from "@/components/ui/select"
 
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator";
+
 
 import { useCartStore } from "@/lib/provider/cart-store-provider";
 import { useLanguageStore } from "@/lib/provider/language-store-provider";
@@ -57,6 +60,7 @@ export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
 
     // get add to cart store
     const cart = useCartStore((state) => state.cart);
+    const setCart = useCartStore((state) => state.setCart);
     const clearCart = useCartStore((state) => state.clearCart);
 
     const toggleTheme = () => {
@@ -104,30 +108,30 @@ export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
                     <div className="flex justify-center flex-grow">
                         {cart.length <= 0 ?
                             <p className="text-xl font-bold text-center">{user?.name === undefined ? "Rev's Grill" : translated.welcome + ", " + user.name.split(" ")[0]}</p> :
-                            <Drawer direction="bottom">
+                            <Drawer direction="right">
                                 <DrawerTrigger>
-                                    <Button variant="default" className="text-lg font-bold">{ "Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
+                                    <Button variant="default" className="text-lg font-bold">{"Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
                                 </DrawerTrigger>
-                                <DrawerContent>
+                                <DrawerContent showBar={false} className="h-screen top-0 right-0 left-auto mt-0 w-auto rounded-none">
                                     <DrawerHeader>
                                         <DrawerTitle>{translated.cart}</DrawerTitle>
                                         <DrawerDescription>{translated.review_order}</DrawerDescription>
                                     </DrawerHeader>
-                                    <div className="flex-col space-y-4 p-4">
+                                    <ScrollArea className="flex-col space-y-8 m-8">
                                         {cart.map((item) => (
-                                            <div key={item.id} className="flex justify-between">
-                                                <p>{item.name}</p>
-                                                <p>${item.price}</p>
-                                                <p>${item.quantity}</p>
+                                            <div key={item.menu_item.id} className="flex justify-between space-x-12">
+                                                <p className="text-xl py-4 m-4">Qty: {item.quantity}</p>
+                                                <p className="text-xl py-4 m-4">{item.menu_item.name}</p>
+                                                <p className="text-xl py-4 m-4">${item.menu_item.price}</p>
                                             </div>
                                         ))}
+                                    </ScrollArea>
+                                    <DrawerFooter>
                                         {/* Calculate total */}
                                         <div className="flex justify-between">
                                             <p>{translated.total}</p>
-                                            <p>${cart.reduce((acc, item) => acc + item.price * item.quantity, 0)}</p>
+                                            <p>${cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0)}</p>
                                         </div>
-                                    </div>
-                                    <DrawerFooter>
                                         <Link href={"/checkout/"} className={buttonVariants({ variant: "default" })} >{translated.checkout}</Link>
                                         <Button variant="destructive" className="p-4" onClick={() => clearCart()}>{translated.clear_cart}</Button>
                                     </DrawerFooter>

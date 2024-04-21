@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 
 import CustomerMenuNavBar from "./CustomerMenuNavBar";
 import CustomerMenuDesktop from "./CustomerMenuDesktop";
-import CustomerMenuMobile from "./CustomerMenuMobile";
 
 export const metadata = {
     title: "Menu | Rev's Grill",
@@ -19,12 +18,13 @@ export default async function MenuPage() {
     }) : null;
 
     const menu_items = await prisma.menu_Item.findMany();
+    const ingredients = await prisma.ingredient.findMany();
+    const ingredients_menus = await prisma.ingredients_Menu.findMany();
 
     return (
         <>
             <CustomerMenuNavBar user={user} />
-            <CustomerMenuDesktop menu_items_init={menu_items} user={user}/>
-            {/* <CustomerMenuMobile menu_items_init={menu_items} categories_init={categories} user={user}/> */}
+            <CustomerMenuDesktop menu_items_init={menu_items} ingredients_init={ingredients} ingredient_menus_init={ingredients_menus} user={user}/>
         </>
     );
 }

@@ -3,7 +3,7 @@
 import { type ReactNode, createContext, useRef, useContext } from 'react'
 import { type StoreApi, useStore } from 'zustand'
 
-import { type CartStore, createCartStore } from '@/lib//stores/cart-store'
+import { type CartStore, createCartStore } from '@/lib/stores/cart-store'
 
 export const CartStoreContext = createContext<StoreApi<CartStore> | null>(
     null,
