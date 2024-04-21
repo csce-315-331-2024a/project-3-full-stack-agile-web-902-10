@@ -67,15 +67,15 @@ export default function CashierNavBar({ user }: { user: Users | null }) {
                                     </DrawerHeader>
                                     <div className="flex-col space-y-4 p-4">
                                         {cart.map((item) => (
-                                            <div key={item.id} className="flex justify-between">
-                                                <p>{item.name}</p>
-                                                <p>${item.price}</p>
+                                            <div key={item.menu_item.id} className="flex justify-between">
+                                                <p>{item.menu_item.name}</p>
+                                                <p>${item.menu_item.price}</p>
                                             </div>
                                         ))}
                                         {/* Calculate total */}
                                         <div className="flex justify-between">
                                             <p>Total</p>
-                                            <p>${cart.reduce((acc, item) => acc + item.price, 0)}</p>
+                                            <p>${cart.reduce((acc, item) => acc + item.menu_item.price, 0)}</p>
                                         </div>
                                     </div>
                                     <DrawerFooter>
