@@ -243,6 +243,7 @@ async function menuItemAdd(auth: AuthPacket, menu_item: Menu_Item, ingredients: 
             });
         }
         io.emit("menuItem", await prisma.menu_Item.findMany());
+        io.emit("ingredientMenu", await prisma.ingredients_Menu.findMany());
     
     } catch (error) {
         console.error("ERROR: " + error);
@@ -255,8 +256,19 @@ async function menuItemDelete(auth: AuthPacket, delete_query: MenuItemDelete) {
         if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
+        const menu_id = await prisma.menu_Item.findUnique({
+            where: {
+                name: delete_query.where.name,
+            },
+        });
+        await prisma.ingredients_Menu.deleteMany({
+            where: {
+                menu_id: menu_id?.id,
+            },
+        });
         await prisma.menu_Item.delete(delete_query);
         io.emit("menuItem", await prisma.menu_Item.findMany());
+        io.emit("ingredientMenu", await prisma.ingredients_Menu.findMany());
     } catch (error) {
         console.error("ERROR: " + error);
     }
@@ -386,10 +398,10 @@ io.on("connect", (socket) => {
     socket.on("ingredient:read", ingredientRead);
     socket.on("ingredient:update", ingredientUpdate);
     socket.on("ingredient:delete", ingredientDelete);
-    socket.on("ingredientsMenu:create", ingredientsMenuCreate);
-    socket.on("ingredientsMenu:read", ingredientsMenuRead);
-    socket.on("ingredientsMenu:update", ingredientsMenuUpdate);
-    socket.on("ingredientsMenu:delete", ingredientsMenuDelete);
+    socket.on("ingredientMenu:create", ingredientsMenuCreate);
+    socket.on("ingredientMenu:read", ingredientsMenuRead);
+    socket.on("ingredientMenu:update", ingredientsMenuUpdate);
+    socket.on("ingredientMenu:delete", ingredientsMenuDelete);
     socket.on("loginLog:create", loginLogCreate);
     socket.on("loginLog:read", loginLogRead);
     socket.on("loginLog:update", loginLogUpdate);

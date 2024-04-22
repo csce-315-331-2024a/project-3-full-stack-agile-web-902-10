@@ -20,7 +20,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
     const [ingredients, setIngredients] = useState<Ingredient[]>(ingredients_init);
-    const [ingredient_menus, setIngredientMenus] = useState<Ingredients_Menu[]>(ingredient_menus_init);
+    const [ingredient_menus, setIngredientMenus] = useState<Ingredients_Menu[]>([]);
     const [categories, setCategories] = useState<string[]>(Array.from(new Set(menu_items_init.map((item) => item.category))));
 
     const onCategoryClick = (category: string) => {
@@ -41,6 +41,13 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
     const socket = useSocket();
     useEffect(() => {
         if (socket) {
+            socket.emit("ingredientMenu:read", undefined, (new_ingredient_menus: Ingredients_Menu[]) => {
+                setIngredientMenus(new_ingredient_menus);
+            });
+            socket.on("ingredientMenu", (new_ingredient_menus: Ingredients_Menu[]) => {
+                setIngredientMenus(new_ingredient_menus);
+            });
+
             socket.emit("menuItem:read", undefined, (new_menu_items: Menu_Item[]) => {
                 if (language !== "English") {
                     socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
@@ -82,7 +89,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
                     setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
                 }
             });
-            socket.on("ingredient:read", (new_ingredients: Ingredient[]) => {
+            socket.emit("ingredient:read", undefined, (new_ingredients: Ingredient[]) => {
                 if (language !== "English") {
                     socket.emit("translateArray", new_ingredients.map((item) => item.name), language, (translated_names: string[]) => {
                         new_ingredients.forEach((item, index) => {
