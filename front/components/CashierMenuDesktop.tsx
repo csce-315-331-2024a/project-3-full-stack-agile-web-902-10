@@ -35,8 +35,6 @@ export default function CashierMenuDesktop({ menu_items_init }: { menu_items_ini
         }
     }, [socket]);
 
-    const addToCart = useCartStore((state) => state.addToCart);
-
     return (
         <div className="hidden lg:flex flex-row">
             <ScrollArea className="h-[92vh] w-auto p-10  whitespace-nowrap">
@@ -65,7 +63,7 @@ export default function CashierMenuDesktop({ menu_items_init }: { menu_items_ini
                                 </DialogHeader>
                                 <DialogFooter>
                                     <DialogClose asChild>
-                                        <Button variant="default" onClick={() => addToCart(menu_item)}>Add to Cart</Button>
+                                        <Button variant="default">Add to Cart</Button>
                                     </DialogClose>
                                 </DialogFooter>
                             </DialogContent>

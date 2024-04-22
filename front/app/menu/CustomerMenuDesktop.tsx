@@ -134,7 +134,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
             <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
                 <div className="grid grid-cols-3 gap-4 transition-all">
                     {menu_items.filter((menu_item) => selectedCategory === undefined || menu_item.category === selectedCategory).map((menu_item) => (
-                        <CustomerMenuItem menu_item={menu_item} ingredients={ingredients} ingredient_menus={ingredient_menus} translated={translated} />
+                        <CustomerMenuItem key={menu_item.name} menu_item={menu_item} ingredients={ingredients} ingredient_menus={ingredient_menus} translated={translated} />
                     ))}
                 </div>
             </ScrollArea>
