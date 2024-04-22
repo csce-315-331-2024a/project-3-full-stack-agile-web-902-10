@@ -19,27 +19,24 @@ GROUP BY
 ORDER BY
     TotalQuantityUsed DESC;
 
---Sales Report
 SELECT
-    "Ingredient".NAME AS Ingredient,
-    SUM("Ingredients_Menu".QUANTITY) AS TotalQuantityUsed,
+    "Ingredient".NAME AS MenuItem,
+    COUNT("Order_Log".ID) AS NumberOfOrders,
     "Ingredient".CATEGORY
 FROM
     "Order_Log"
 JOIN
     --string to array needs to change after transposition of order_menu.menu_item_id
-    "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
-JOIN
-    "Ingredients_Menu" ON "Menu_Item".ID = "Ingredients_Menu".MENU_ID
-JOIN
-    "Ingredient" ON "Ingredients_Menu".INGREDIENTS_ID = "Ingredient".ID
+    "Ingredient" ON "Ingredient".ID = (STRING_TO_ARRAY("Order_Log"."ingredients", ',')::INTEGER[])
 WHERE
     "Order_Log".time BETWEEN '2024-01-01 00:00:00' AND '2024-01-31 23:59:59'
 GROUP BY
     "Ingredient".NAME, "Ingredient".CATEGORY
 ORDER BY
-    TotalQuantityUsed DESC;`);
-const salesReportData = await prisma.$queryRawUnsafe<SalesReportData[]>(`SELECT
+    NumberOfOrders DESC;
+
+--Sales Report
+SELECT
     "Menu_Item".NAME AS MenuItem,
     COUNT("Order_Log".ID) AS NumberOfOrders,
     SUM("Order_Log".PRICE) AS TotalSales
