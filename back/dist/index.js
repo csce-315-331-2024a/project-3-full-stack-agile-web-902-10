@@ -182,6 +182,36 @@ async function menuItemUpdate(auth, update_query) {
         console.error("ERROR: " + error);
     }
 }
+async function menuItemAdd(auth, menu_item, ingredients, ratios, callback) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        const newMenuItem = await prisma.menu_Item.create({
+            data: {
+                name: menu_item.name,
+                price: menu_item.price,
+                image_url: menu_item.image_url,
+                category: menu_item.category,
+                is_active: menu_item.is_active,
+            },
+        });
+        for (let i = 0; i < ingredients.length; i++) {
+            await prisma.ingredients_Menu.create({
+                data: {
+                    ingredients_id: ingredients[i].id,
+                    menu_id: newMenuItem.id,
+                    quantity: ratios[i],
+                },
+            });
+        }
+        io.emit("menuItem", await prisma.menu_Item.findMany());
+    }
+    catch (error) {
+        console.error("ERROR: " + error);
+        callback(error);
+    }
+}
 async function menuItemDelete(auth, delete_query) {
     try {
         if (!verifyToken(auth.email, auth.jwt)) {
@@ -324,6 +354,7 @@ io.on("connect", (socket) => {
     socket.on("loginLog:update", loginLogUpdate);
     socket.on("loginLog:delete", loginLogDelete);
     socket.on("menuItem:create", menuItemCreate);
+    socket.on("menuItem:add", menuItemAdd);
     socket.on("menuItem:read", menuItemRead);
     socket.on("menuItem:update", menuItemUpdate);
     socket.on("menuItem:delete", menuItemDelete);
