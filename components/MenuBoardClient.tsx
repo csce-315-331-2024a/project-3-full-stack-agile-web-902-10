@@ -239,17 +239,21 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
             setCurrentMI2(preMenu2[next2]);
             setCurrentMImg2(preMenuImages2[next2]);
 
-            setimgIndex1(Math.floor(Math.random() * (preMenu1[next1].length)));
-            setimgIndex2(Math.floor(Math.random() * (preMenu2[next2].length)));
+            let img1_temp = Math.floor(Math.random() * (preMenu1[next1].length));
+            let img2_temp = Math.floor(Math.random() * (preMenu2[next2].length));
+
+
+            setimgIndex1(img1_temp);
+            setimgIndex2(img2_temp);
 
             let img12_temp = Math.floor(Math.random() * (preMenu1[next1].length));
             let img22_temp = Math.floor(Math.random() * (preMenu2[next2].length));
 
-            if(imgIndex1 == imgIndex12){
-                img12_temp = (img12_temp+1)%(preMenu1[next1].length);
+           if(img1_temp == img12_temp){
+                img12_temp = (img1_temp+1)%(preMenu1[next1].length);
             }
-            if(imgIndex2 == imgIndex22){
-                img22_temp = (img22_temp+1)%(preMenu2[next2].length);
+            if(img2_temp == img22_temp){
+                img22_temp = (img2_temp+1)%(preMenu2[next2].length);
             }
 
             setimgIndex12(img12_temp);
@@ -340,7 +344,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                 </div>
                 <div className="h-1/3 p-2">
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
-                        <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex2]}  {imgIndex2}</h1>
+                        <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex2]}</h1>
                         <img 
                             src = {currentMenuItemImages2[imgIndex2]}
                             height={200}
@@ -350,7 +354,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                 </div>
                 <div className="h-1/3 p-2">
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
-                        <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex22]}    {imgIndex22}</h1>
+                        <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex22]}</h1>
                         <img 
                             src = {currentMenuItemImages2[imgIndex22]}
                             height={200}
