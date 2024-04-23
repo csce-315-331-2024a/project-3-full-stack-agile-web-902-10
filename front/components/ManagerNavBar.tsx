@@ -31,7 +31,7 @@ export default function ManagerNavBar({ username }: {
     }
 
     return (
-        <div className="border-b">
+        <div className="border-b overflow-hidden">
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
                     <div className="flex justify-left">
