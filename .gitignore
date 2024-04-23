@@ -3681,3 +3681,10 @@ back/coverage/lcov-report/src/socket.ts.html
 back/dist/db.js
 back/dist/index.js
 back/dist/ingredient.js
+back/dist/__tests__/index.test.js
+back/dist/src/client.js
+back/dist/src/index.js
+back/dist/src/routes.js
+back/dist/src/singleton.js
+back/dist/src/socket.js
+back/dist/src/socketmock.js

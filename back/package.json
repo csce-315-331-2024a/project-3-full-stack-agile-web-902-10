@@ -4,7 +4,7 @@
     "description": "## Preface Instead of using the traditional REST api of even something like tRPC,  the fastest and easiest method was WebSockets. We were already looking into them for having client's be updated when the databse was modified. However it turned out to be a very pleasant experience for even simple data fetching.",
     "main": "index.js",
     "scripts": {
-        "start": "node dist/index.js",
+        "start": "node dist/src/index.js",
         "build": "tsc",
         "dev": "tsc && nodemon dist/index.js"
     },
