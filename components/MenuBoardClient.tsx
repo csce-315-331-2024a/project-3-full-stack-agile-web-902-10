@@ -198,6 +198,8 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
 
     const [imgIndex1, setimgIndex1] = useState(0);
     const [imgIndex2, setimgIndex2] = useState(0);
+    const [imgIndex12, setimgIndex12] = useState(0);
+    const [imgIndex22, setimgIndex22] = useState(0);
 
     let x = 0;
     if (temperature >= temperature_threshold){//if hot
@@ -240,6 +242,20 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
             setimgIndex1(Math.floor(Math.random() * (preMenu1[next1].length)));
             setimgIndex2(Math.floor(Math.random() * (preMenu2[next2].length)));
 
+            let img12_temp = Math.floor(Math.random() * (preMenu1[next1].length));
+            let img22_temp = Math.floor(Math.random() * (preMenu2[next2].length));
+
+            if(imgIndex1 == imgIndex12){
+                img12_temp = (img12_temp+1)%(preMenu1[next1].length);
+            }
+            if(imgIndex2 == imgIndex22){
+                img22_temp = (img22_temp+1)%(preMenu2[next2].length);
+            }
+
+            setimgIndex12(img12_temp);
+            setimgIndex22((img22_temp));
+
+
 
             if (temperature >= temperature_threshold){//if hot
                 x = 1;
@@ -253,7 +269,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
             setWIndex(Math.floor(Math.random() * (weather_items[x].length)));
         };
 
-        const intervalId = setInterval(scroll, 5000); 
+        const intervalId = setInterval(scroll, 10000); 
 
         return () => clearInterval(intervalId);
     }, [index1, index2]);
@@ -263,17 +279,17 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
         <body className=" bg-neutral-950">
 
 
-        <div className="flex justify-between content-center items-center" >
-            <div className="w-1/4 p-2 flex flex-col justify-end">
-                <div className="h-1/2 p-2 flex flex-col justify-end">
+        <div className="flex justify-between content-center items-center" style={{ height: '100vh' }}>
+            <div className="w-1/4 p-0 flex flex-col justify-center">
+                <div className="h-1/3flex flex-col justify-center p-2" >
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center items-center text-center object-cover rounded-3xl bg-red-950">
-                        <h1 className=" text-amber-300 text-lg"> Weather:<br></br>Temperature: {temperature}°f<br></br>Condition: {condition}</h1>
+                        <h1 className=" text-white text-xl"> Weather:<br></br>Temperature: {temperature}°f<br></br>Condition: {condition}</h1>
                         
                     </div>
                 </div>
-                <div className="h-1/2 p-2">
+                <div className="h-1/3 p-2" >
                         <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
-                            <h1 className=" text-amber-300 text-lg">{currentMenuItems1[imgIndex1]}</h1>
+                            <h1 className=" text-white text-xl">{currentMenuItems1[imgIndex1]}</h1>
                             <img 
                                 src = {currentMenuItemImages1[imgIndex1]}
                                 height={200}
@@ -281,30 +297,40 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                             />
                     </div>
                 </div>
+                <div className="h-1/3 p-2" >
+                        <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
+                            <h1 className=" text-white text-xl">{currentMenuItems1[imgIndex12]}</h1>
+                            <img 
+                                src = {currentMenuItemImages1[imgIndex12]}
+                                height={200}
+                                className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                            />
+                    </div>
+                </div>
             </div>
-            <div className="w-1/4 p-2 flex flex-col justify-center">
-                <div className="border-2 border-amber-300 p-4 m-4 flex flex-col justify-start items-center text-center object-cover rounded-3xl bg-red-950" style={{ height: '95vh' }}>
-                    <h1 className=" text-amber-300 font-black text-3xl">{currentCategory1}</h1>
+            <div className="w-1/4 p-0 flex flex-col justify-center">
+                <div className="border-2 border-amber-300 p-4 m-4 flex flex-col justify-start items-center text-center object-cover rounded-3xl bg-red-950" style={{ height: '85vh' }}>
+                    <h1 className=" text-white font-black text-4xl">{currentCategory1}</h1>
                     <br/>
                     {currentMenuItems1.map((mi) => (
-                        <p key={mi} className=" text-amber-300 text-lg"><br></br> <br></br> {mi} <br></br> <br></br></p> 
+                        <p key={mi} className=" text-white text-xl"><br></br>{mi} <br></br> <br></br></p> 
                     ))}
                 </div>
             </div>
-            <div className="w-1/4 p-2 flex flex-col justify-center">
-                <div className="border-2 border-amber-300 p-4 m-4 flex flex-col justify-start items-center text-center object-cover rounded-3xl bg-red-950" style={{ height: '95vh' }}>
-                    <h1 className=" text-amber-300 font-black text-3xl">{currentCategory2}</h1>
+            <div className="w-1/4 p-0 flex flex-col justify-center">
+                <div className="border-2 border-amber-300 p-4 m-4 flex flex-col justify-start items-center text-center object-cover rounded-3xl bg-red-950" style={{ height: '85vh' }}>
+                    <h1 className=" text-white font-black text-4xl">{currentCategory2}</h1>
                     <br/>
                     {currentMenuItems2.map((mi) => (
                         
-                        <p  key={mi} className=" text-amber-300 text-lg"> <br></br> <br></br> {mi} <br></br> <br></br></p> 
+                        <p  key={mi} className=" text-white text-xl"> <br></br> {mi} <br></br> <br></br></p> 
                     ))}
                 </div>
             </div>
             <div className="w-1/4 p-2 flex flex-col justify-end">
-                <div className="h-1/2 p-2 flex flex-col justify-end">
+                <div className="h-1/3 p-2 flex flex-col justify-end">
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
-                        <h1 className=" text-amber-300 text-lg"> Recomended Item:<br></br> {hotCold[weatherIndex]}</h1>
+                        <h1 className=" text-white text-xl"> Recomended Item:<br></br> {hotCold[weatherIndex]}</h1>
                         <img 
                             src = {hotColdImg[weatherIndex]}
                             height={200}
@@ -312,11 +338,21 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                         />
                     </div>
                 </div>
-                <div className="h-1/2 p-2">
+                <div className="h-1/3 p-2">
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
-                        <h1 className=" text-amber-300 text-lg">{currentMenuItems2[imgIndex2]}</h1>
+                        <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex2]}  {imgIndex2}</h1>
                         <img 
                             src = {currentMenuItemImages2[imgIndex2]}
+                            height={200}
+                            className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
+                        />
+                    </div>
+                </div>
+                <div className="h-1/3 p-2">
+                    <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
+                        <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex22]}    {imgIndex22}</h1>
+                        <img 
+                            src = {currentMenuItemImages2[imgIndex22]}
                             height={200}
                             className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
                         />
