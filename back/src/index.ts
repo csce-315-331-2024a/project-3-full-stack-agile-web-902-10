@@ -9,6 +9,7 @@ import {
     Menu_Item,
     Order_Log,
     Users,
+    Order_Status,
 } from "@prisma/client";
 
 const io = new Server({
@@ -230,7 +231,7 @@ async function menuItemAdd(auth: AuthPacket, menu_item: Menu_Item, ingredients: 
                 price: menu_item.price,
                 image_url: menu_item.image_url,
                 category: menu_item.category,
-                is_active : menu_item.is_active,
+                is_active: menu_item.is_active,
             },
         });
         for (let i = 0; i < ingredients.length; i++) {
@@ -244,7 +245,7 @@ async function menuItemAdd(auth: AuthPacket, menu_item: Menu_Item, ingredients: 
         }
         io.emit("menuItem", await prisma.menu_Item.findMany());
         io.emit("ingredientMenu", await prisma.ingredients_Menu.findMany());
-    
+
     } catch (error) {
         console.error("ERROR: " + error);
         callback(error);
@@ -300,7 +301,14 @@ async function orderLogUpdate(auth: AuthPacket, update_query: OrderLogUpdate) {
             return;
         }
         const updatedOrderLog = await prisma.order_Log.update(update_query);
-        io.emit("orderLog", await prisma.order_Log.findMany());
+        const orders = await prisma.order_Log.findMany({
+            where: {
+                status: {
+                    not: Order_Status.Completed,
+                }
+            },
+        });
+        io.emit("orderLog", orders);
     } catch (error) {
         console.error("ERROR: " + error);
     }

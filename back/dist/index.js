@@ -262,7 +262,14 @@ async function orderLogUpdate(auth, update_query) {
             return;
         }
         const updatedOrderLog = await prisma.order_Log.update(update_query);
-        io.emit("orderLog", await prisma.order_Log.findMany());
+        const orders = await prisma.order_Log.findMany({
+            where: {
+                status: {
+                    not: client_1.Order_Status.Completed,
+                }
+            },
+        });
+        io.emit("orderLog", orders);
     }
     catch (error) {
         console.error("ERROR: " + error);
