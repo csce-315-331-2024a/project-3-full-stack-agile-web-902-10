@@ -15,7 +15,7 @@ const static_text = {
     add_to_cart: "Add to Cart",
 }
 
-export default function CustomerMenuDesktop({ menu_items_init, ingredients_init, ingredient_menus_init, user }: { menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredient_menus_init: Ingredients_Menu[], user: Users | null }) {
+export default function CustomerMenuDesktop({ menu_items_init, ingredients_init, ingredient_menus_init, user }: { menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredient_menus_init: Ingredients_Menu[], user: Users | null}) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
