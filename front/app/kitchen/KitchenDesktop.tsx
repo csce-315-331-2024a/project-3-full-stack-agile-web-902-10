@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogHeader,
@@ -34,10 +35,13 @@ export default function KitchenDesktop({ orders_init, menu_items_init, ingredien
     useEffect(() => {
         if (socket) {
             socket.emit("orderLog:read", orderLogRead, (new_orders: Order_Log[]) => {
+                new_orders.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
                 setOrders(new_orders);
             });
             socket.on("orderLog", (new_orders: Order_Log[]) => {
+                new_orders.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
                 setOrders(new_orders);
+
             });
             socket.emit("menu_Item:read", {}, (new_menu_items: Menu_Item[]) => {
                 setMenuItems(new_menu_items);
@@ -89,7 +93,7 @@ export default function KitchenDesktop({ orders_init, menu_items_init, ingredien
 
     function changeOrderStatus(order: Order_Log) {
         const newStatus = order.status === Order_Status.Created ? Order_Status.Cooking : Order_Status.Completed;
-        socket?.emit("orderLog:update", { email : user.email, jwt: user.jwt }, { where: { id: order.id }, data: { status: newStatus } });
+        socket?.emit("orderLog:update", { email: user.email, jwt: user.jwt }, { where: { id: order.id }, data: { status: newStatus } });
     }
 
     // show orders in a table
@@ -138,9 +142,11 @@ export default function KitchenDesktop({ orders_init, menu_items_init, ingredien
                                                 {order.status == "Created" ? "Change the order status to 'Cooking'?" : "Change the order status to 'Completed'?"}
                                             </DialogDescription>
                                         </DialogHeader>
-                                        <Button variant="default" onClick={() => changeOrderStatus(order)}>
-                                            {order.status == "Created" ? "Start Cooking" : "Complete Order"}
-                                        </Button>
+                                        <DialogClose asChild>
+                                            <Button variant="default" onClick={() => changeOrderStatus(order)}>
+                                                {order.status == "Created" ? "Start Cooking" : "Complete Order"}
+                                            </Button>
+                                        </DialogClose>
                                     </DialogContent>
                                 </Dialog>
                             </TableCell>

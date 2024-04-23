@@ -39,7 +39,7 @@ export default async function KitchenPage() {
     return (
         <>
             <KitchenNavBar user={user} />
-            <KitchenDesktop orders_init={orders} menu_items_init={menu_items} ingredients_init={ingredients} ingredients_menu_init={ingredients_menu} user={user} />
+            <KitchenDesktop orders_init={orders.sort( (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())} menu_items_init={menu_items} ingredients_init={ingredients} ingredients_menu_init={ingredients_menu} user={user} />
         </>
     );
 }
