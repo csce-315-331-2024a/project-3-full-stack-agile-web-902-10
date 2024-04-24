@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/popover"
 import UsersList from "./UsersList";
 
-import { AuthPacket, useSocket, MenuItemCreate, MenuItemDelete } from "@/lib/socket";
+import { AuthPacket, useSocket, MenuItemCreate, MenuItemDelete, IngredientCreateQuery, IngredientDeleteQuery } from "@/lib/socket";
 import { create } from "domain";
 
 
@@ -60,7 +60,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [minstock, setMinstock] = useState('');
-    let ingredientsMenuList: Ingredients_Menu[] = [];
+    const [isactive, setIsactive] = useState('');
+    let ingredientsMenuList: Ingredient[] = [];
+    let ratios: number[] = [];    
 
     const [menu_items, setMenuItems] = useState(menu_items_init);
     const [ingredients, setIngredients] = useState(ingredients_init);
@@ -136,6 +138,16 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         setShowEmployeeDiv(!showEmployeeDiv);
     }
 
+    const stringToBool = (str: string): boolean => {
+        if (str === "true") return true;
+        else return false;
+    }
+
+    const auth: AuthPacket = {
+        email: user?.email ?? "",
+        jwt: user?.jwt ?? ""
+    };
+
     const editItem = async (menu_item: Menu_Item) => {
 
     }
@@ -144,46 +156,58 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
     }
 
+
     const handleInputChange = (e: any, setter: any) => {
         setter(e.target.value);
     }
 
     const handleCheckboxAddMenu = (item: Ingredient, menu_name: string) => {
-        const newLink: Ingredients_Menu = {
-            id: menuIngredients[menuIngredients.length].id + 1,
-            ingredients_id: item.id,
-            menu_id: menu_items[menu_items.length].id + 1,
-            quantity: 1,
-        };
-        ingredientsMenuList.push(newLink)
+        ingredientsMenuList.push(item)
     };
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmitMenu = async (e: any) => {
         e.preventDefault();
         const formData = {
             itemName,
             category,
             intPrice: parseInt(price, 10),
-            ingredientsMenuList
+            activeConversion: stringToBool(isactive)
         };
         ingredientsMenuList = [];
-        // const create_query: MenuItemCreate = {
-        //     data : {
-        //         name: itemName,
-        //         price: formData.intPrice,
-        //         category: category,
-        //         image_url: '',
-        //         Ingredients_Menu: null
-        //     }
-        // };
-        // socket?.emit('menuItem:create', auth, create_query);
+        const create_query: MenuItemCreate = {
+            data : {
+                name: itemName,
+                price: formData.intPrice,
+                image_url: '',
+                category: category,
+                is_active: formData.activeConversion
+            }
+        };
+        socket?.emit('menuItem:create', auth, create_query);
     };
 
-    const auth: AuthPacket = {
-        email: user?.email ?? "",
-        jwt: user?.jwt ?? ""
-    };
-    
+    const handleSubmitIngredient = async (e:any) => {
+        e.preventDefault();
+        const formData = {
+            itemName,
+            category,
+            intStock: parseInt(stock, 10),
+            intMinstock: parseInt(minstock, 10),
+            activeConversion: stringToBool(isactive)
+        };
+        const create_query: IngredientCreateQuery = {
+            data: {
+                name: itemName,
+                stock: formData.intStock,
+                min_stock: formData.intMinstock,
+                category: category,
+                is_active: formData.activeConversion
+            }
+        };
+        socket?.emit('ingredient:create', auth, create_query);
+    }    
+
+    // These work now!!!!!!!!!!!!
     function deleteItem(menu_item: Menu_Item) {
         const update_query: MenuItemDelete = {
             where: {
@@ -192,9 +216,14 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         };
         socket?.emit('menuItem:delete', auth, update_query);
     }
-
+    
     function deleteIngredient(ingredient: Ingredient) {
-
+        const update_query: IngredientDeleteQuery = {
+            where: {
+                id: ingredient.id
+            }
+        };
+        socket?.emit('ingredient:delete', auth, update_query);
     }
 
     return (
@@ -218,6 +247,23 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 <h1 className="text-2xl font-bold p-16">Select a function using the buttons on the left.</h1>
             </ScrollArea>)}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             {/* if editing menu items */}
             {showEditDiv && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
@@ -233,7 +279,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                     <DialogTitle className="text-lg font-bold">Add New Item</DialogTitle>
                                 </DialogHeader>
 
-                                <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleSubmitMenu}>
                                     <div className="py-2">
                                         <Label htmlFor="itemName">Enter Item Name</Label>
                                         <Input
@@ -268,6 +314,17 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                     </div>
 
                                     <div className="py-2">
+                                        <Label htmlFor="price">Is this menu item active? (true or false)</Label>
+                                        <Input
+                                            className="w-64"
+                                            placeholder="true or false"
+                                            id="isactive"
+                                            value={isactive}
+                                            onChange={(e) => handleInputChange(e, setIsactive)}
+                                        />
+                                    </div>
+
+                                    {/* <div className="py-2">
                                         <Label htmlFor="date">Enter Seasonal Item End Date</Label>
                                         <Popover modal={true}>
                                             <PopoverTrigger asChild>
@@ -291,7 +348,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                                 />
                                             </PopoverContent>
                                         </Popover>
-                                    </div>
+                                    </div> */}
 
                                     <ScrollArea className="py-2 h-[40vh] w-100 p-2 whitespace-nowrap border-2 rounded-lg">
                                         <div className="flex-col space-y-4">
@@ -327,6 +384,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                 <div className="flex flex-col w-[25vw] h-[12vh] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
                                     <div className="flex flex-col w-[25vw] h-[12vh] justify-center items-center">
                                         <h2 className="text-base font-bold snap-center">{menu_item.name}</h2>
+                                        <h2 className="text-base snap-center">
+                                            {menu_item.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-700">Inactive</div>}
+                                        </h2>
                                         <div className="flex justify-center items-center gap-4">
                                             <DialogTrigger asChild>
                                                 <Button variant="default" onClick={() => editItem(menu_item)}>Edit</Button>
@@ -377,7 +437,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         <Input className="w-64" placeholder={(menu_item.price).toString()} id="message" />
                                     </div>
 
-                                    <div>
+                                    {/* <div>
                                         <Label htmlFor="message">Change Seasonal Item End Date</Label>
                                         <Popover modal={true}>
                                             <PopoverTrigger asChild>
@@ -401,7 +461,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                                 />
                                             </PopoverContent>
                                         </Popover>
-                                    </div>
+                                    </div> */}
 
                                     <ScrollArea className="h-[40vh] w-100 p-2 whitespace-nowrap overflow-auto border-2 rounded-lg">
                                         <div className="flex-col space-y-4">
@@ -435,6 +495,34 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 </ScrollArea>
             )}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             {showIngredientDiv && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
                     <div className="grid grid-cols-1 gap-4 p-4">
@@ -449,7 +537,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                     <DialogTitle className="text-lg font-bold">Add New Ingredient</DialogTitle>
                                 </DialogHeader>
 
-                                <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleSubmitIngredient}>
                                     <div className="py-2">
                                         <Label htmlFor="itemName">Enter Ingredient Name</Label>
                                         <Input
@@ -491,6 +579,17 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             id="minstock"
                                             value={minstock}
                                             onChange={(e) => handleInputChange(e, setMinstock)}
+                                        />
+                                    </div>
+
+                                    <div className="py-2">
+                                        <Label htmlFor="active">Is this ingredient active? (true or false)</Label>
+                                        <Input
+                                            className="w-64"
+                                            placeholder="true or false"
+                                            id="active"
+                                            value={isactive}
+                                            onChange={(e) => handleInputChange(e, setIsactive)}
                                         />
                                     </div>
 
