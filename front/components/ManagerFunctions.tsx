@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/popover"
 import UsersList from "./UsersList";
 
-import { AuthPacket, useSocket, MenuItemCreate, MenuItemDelete, IngredientCreate, IngredientDelete } from "@/lib/socket";
+import { AuthPacket, useSocket, MenuItemDelete, IngredientCreate, IngredientDelete } from "@/lib/socket";
 import { create } from "domain";
 
 
@@ -53,7 +53,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const [showTrendDiv, setShowTrendDiv] = useState(false);
     const [showEmployeeDiv, setShowEmployeeDiv] = useState(false);
     const [showIngredientDiv, setShowIngredientDiv] = useState(false);
-    const [date, setDate] = useState<Date>();
+    // const [date, setDate] = useState<Date>();
     const router = useRouter();
     const [itemName, setItemName] = useState('');
     const [category, setCategory] = useState('');
@@ -61,8 +61,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const [stock, setStock] = useState('');
     const [minstock, setMinstock] = useState('');
     const [isactive, setIsactive] = useState('');
-    let ingredientsMenuList: Ingredient[] = [];
-    let ratios: number[] = [];    
+    const [ingredientList, setIngredientList] = useState<Ingredient[]>([]);
+    const [ratios, setRatios] = useState<number[]>([]);
 
     const [menu_items, setMenuItems] = useState(menu_items_init);
     const [ingredients, setIngredients] = useState(ingredients_init);
@@ -161,9 +161,15 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         setter(e.target.value);
     }
 
-    const handleCheckboxAddMenu = (item: Ingredient, menu_name: string) => {
-        ingredientsMenuList.push(item)
-    };
+    const handleCheckBoxChange = (e: any, ingredient: Ingredient) => {
+        let newIngArray = ingredientList;
+        newIngArray.push(ingredient);
+        setIngredientList(newIngArray);
+        let newRatioArray = ratios;
+        newRatioArray.push(1);
+        setRatios(newRatioArray);
+        console.log("Added ingredient to list", ingredientList);
+    }
 
     const handleSubmitMenu = async (e: any) => {
         e.preventDefault();
@@ -173,17 +179,18 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             intPrice: parseInt(price, 10),
             activeConversion: stringToBool(isactive)
         };
-        ingredientsMenuList = [];
-        const create_query: MenuItemCreate = {
-            data : {
-                name: itemName,
-                price: formData.intPrice,
-                image_url: '',
-                category: category,
-                is_active: formData.activeConversion
-            }
-        };
-        socket?.emit('menuItem:create', auth, create_query);
+    
+        console.log("Before emitting:", ingredientList);
+        socket?.emit('menuItem:add', auth, {
+            name: formData.itemName,
+            price: formData.intPrice,
+            image_url: '/',
+            category: formData.category,
+            is_active: formData.activeConversion
+        }, ingredientList, ratios, () => {});
+        console.log("Emit callback executed");
+        setIngredientList([]);
+        setRatios([]);
     };
 
     const handleSubmitIngredient = async (e:any) => {
@@ -211,7 +218,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     function deleteItem(menu_item: Menu_Item) {
         const update_query: MenuItemDelete = {
             where: {
-                id: menu_item.id
+                name: menu_item.name
             }
         };
         socket?.emit('menuItem:delete', auth, update_query);
@@ -220,7 +227,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     function deleteIngredient(ingredient: Ingredient) {
         const update_query: IngredientDelete = {
             where: {
-                id: ingredient.id
+                name: ingredient.name
             }
         };
         socket?.emit('ingredient:delete', auth, update_query);
@@ -356,7 +363,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                                 <div key={index} className="flex items-center">
                                                     <Checkbox
                                                         id={(item.id).toString()}
-                                                        onChange={() => handleCheckboxAddMenu(item, itemName)}
+                                                        onClick={(e) => handleCheckBoxChange(e, item)}
                                                     />
                                                     <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>
                                                 </div>
@@ -542,7 +549,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         <Label htmlFor="itemName">Enter Ingredient Name</Label>
                                         <Input
                                             className="w-64"
-                                            placeholder="Type Ingredient name here."
+                                            placeholder="Type ingredient name here."
                                             id="ingredientName"
                                             value={itemName}
                                             onChange={(e) => handleInputChange(e, setItemName)}
@@ -553,7 +560,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         <Label htmlFor="category">Enter Category</Label>
                                         <Input
                                             className="w-64"
-                                            placeholder="Type ingredient category here."
+                                            placeholder="Type ingredient category."
                                             id="category"
                                             value={category}
                                             onChange={(e) => handleInputChange(e, setCategory)}
@@ -564,7 +571,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         <Label htmlFor="stock">Enter Stock</Label>
                                         <Input
                                             className="w-64"
-                                            placeholder="Type item stock here."
+                                            placeholder="Type ingredient stock."
                                             id="stock"
                                             value={stock}
                                             onChange={(e) => handleInputChange(e, setStock)}
