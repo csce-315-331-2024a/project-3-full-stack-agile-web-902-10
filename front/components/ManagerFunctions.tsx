@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/popover"
 import UsersList from "./UsersList";
 
-import { AuthPacket, useSocket, MenuItemDelete, IngredientCreate, IngredientDelete } from "@/lib/socket";
+import { AuthPacket, useSocket, MenuItemDelete, IngredientCreate, IngredientDelete, IngredientsMenuRead } from "@/lib/socket";
 import { create } from "domain";
 
 
@@ -66,7 +66,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
     const [menu_items, setMenuItems] = useState(menu_items_init);
     const [ingredients, setIngredients] = useState(ingredients_init);
-    const [menuIngredients, setMenuIngredients] = useState(menuIngredients_init);
+    const [ingredientsMenu, setIngredientsMenu] = useState(menuIngredients_init);
     const [users, setUsers] = useState(users_init);
 
     // in case we need to listen to something
@@ -89,11 +89,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 setIngredients(new_ingredients);
             });
 
-            // havent implmented this in the api yet
-            // socket.emit('menuIngredient:read');
-            // socket.on('menuIngredient', (data: string) => {
-            //     setMenuIngredients(JSON.parse(data));
-            // });
+            socket.emit("ingredientMenu:read", undefined, (new_ingredient_menus: Ingredients_Menu[]) => {
+                setIngredientsMenu(new_ingredient_menus);
+            });
 
             socket.emit('users:read', undefined, (new_users: Users[]) => {
                 setUsers(new_users);
@@ -148,27 +146,59 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         jwt: user?.jwt ?? ""
     };
 
-    const editItem = async (menu_item: Menu_Item) => {
-
+    const handleEditMenu = async (e: any) => {
+        e.preventDefault();
+        const formData = {
+            itemName,
+            category,
+            intPrice: parseInt(price, 10),
+            activeConversion: stringToBool(isactive)
+        };
+    
+        console.log("Before emitting:", ingredientList);
+        socket?.emit('menuItem:update', auth, {
+            name: formData.itemName,
+            price: formData.intPrice,
+            category: formData.category,
+            is_active: formData.activeConversion
+        }, ingredientList, ratios, () => {});
+        console.log("Emit callback executed");
+        setIngredientList([]);
+        setRatios([]);
     }
 
-    const editIngredient = async (ingredient: Ingredient) => {
-
+    const handlePreCheck = (menu_item: Menu_Item, ingredient: Ingredient) => {
+        return ingredientsMenu.some(item => 
+            item.ingredients_id === ingredient.id && item.menu_id === menu_item.id
+        );
     }
-
 
     const handleInputChange = (e: any, setter: any) => {
         setter(e.target.value);
     }
 
+    const handleEditChange = (e:any, setter: any, attribute: any) => {
+        if (e.target.value === '') setter(attribute.target.value);
+        else setter(e.target.value)
+    }
+
     const handleCheckBoxChange = (e: any, ingredient: Ingredient) => {
         let newIngArray = ingredientList;
-        newIngArray.push(ingredient);
-        setIngredientList(newIngArray);
         let newRatioArray = ratios;
-        newRatioArray.push(1);
-        setRatios(newRatioArray);
-        console.log("Added ingredient to list", ingredientList);
+        if(newIngArray.includes(ingredient)){
+            const index = newIngArray.indexOf(ingredient);
+            newIngArray.splice(index, 1);
+            setIngredientList(newIngArray);
+            newRatioArray.pop();
+            console.log("Removed ingredient from list", ingredientList);
+        }
+        else{
+            newIngArray.push(ingredient);
+            setIngredientList(newIngArray);
+            newRatioArray.push(1);
+            setRatios(newRatioArray);
+            console.log("Added ingredient to list", ingredientList);
+        }
     }
 
     const handleSubmitMenu = async (e: any) => {
@@ -213,6 +243,10 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         };
         socket?.emit('ingredient:create', auth, create_query);
     }    
+
+    const editIngredient = async (ing: Ingredient) => {
+
+    }
 
     // These work now!!!!!!!!!!!!
     function deleteItem(menu_item: Menu_Item) {
@@ -275,7 +309,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             {showEditDiv && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
                     <div className="grid grid-cols-1 gap-4 p-4">
-                        <Dialog>
+                        <Dialog onOpenChange={() => {setIngredientList([]), setRatios([])}}>
                             <div className="flex flex-col w-auto justify-center items-center">
                                 <DialogTrigger>
                                     <Button variant="default" className="text-3xl font-bold p-8">Add Item</Button>
@@ -295,6 +329,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             id="itemName"
                                             value={itemName}
                                             onChange={(e) => handleInputChange(e, setItemName)}
+                                            required
+                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please enter an item name.')}
+                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
 
@@ -306,6 +343,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             id="category"
                                             value={category}
                                             onChange={(e) => handleInputChange(e, setCategory)}
+                                            required
+                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please enter an item category.')}
+                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
 
@@ -317,6 +357,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             id="price"
                                             value={price}
                                             onChange={(e) => handleInputChange(e, setPrice)}
+                                            required
+                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please enter an item price.')}
+                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
 
@@ -328,6 +371,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             id="isactive"
                                             value={isactive}
                                             onChange={(e) => handleInputChange(e, setIsactive)}
+                                            required
+                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please specify if item is active.')}
+                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
 
@@ -376,7 +422,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             <Button variant="default" type="submit">Add Item</Button>
                                         </DialogClose>
                                         <DialogClose asChild>
-                                            <Button variant={"destructive"} >Cancel</Button>
+                                            <Button variant="destructive" onClick={() => {setIngredientList([]), setRatios([])}} >Cancel</Button>
                                         </DialogClose>
                                     </div>
 
@@ -387,7 +433,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
                     <div className="grid grid-cols-3 gap-4">
                         {menu_items.map((menu_item) => (
-                            <Dialog key={menu_item.id}>
+                            <Dialog key={menu_item.id} onOpenChange={() => {setIngredientList([]), setRatios([])}}>
                                 <div className="flex flex-col w-[25vw] h-[12vh] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
                                     <div className="flex flex-col w-[25vw] h-[12vh] justify-center items-center">
                                         <h2 className="text-base font-bold snap-center">{menu_item.name}</h2>
@@ -396,7 +442,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         </h2>
                                         <div className="flex justify-center items-center gap-4">
                                             <DialogTrigger asChild>
-                                                <Button variant="default" onClick={() => editItem(menu_item)}>Edit</Button>
+                                                <Button variant="default" >Edit</Button>
                                             </DialogTrigger>
                                             <AlertDialog>
                                                 <AlertDialogTrigger>
@@ -429,19 +475,51 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         <DialogTitle className="text-lg font-bold">Edit Menu Item</DialogTitle>
                                     </DialogHeader>
 
-                                    <div>
-                                        <Label htmlFor="message">Change Item Name</Label>
-                                        <Input className="w-64" placeholder={menu_item.name} id="message" />
+                                <form onSubmit={handleEditMenu}>
+                                    
+                                    <div className="py-2">
+                                        <Label htmlFor="itemName">Change Item Name</Label>
+                                        <Input
+                                            className="w-64"
+                                            placeholder={menu_item.name}
+                                            id="itemName"
+                                            value={itemName}
+                                            onChange={(e) => handleEditChange(e, setItemName, menu_item.name)}
+                                        />
                                     </div>
 
-                                    <div>
-                                        <Label htmlFor="message">Change Category</Label>
-                                        <Input className="w-64" placeholder={menu_item.category} id="message" />
+
+                                    <div className="py-2">
+                                        <Label htmlFor="category">Change Item Category</Label>
+                                        <Input
+                                            className="w-64"
+                                            placeholder={menu_item.category}
+                                            id="category"
+                                            value={category}
+                                            onChange={(e) => handleEditChange(e, setCategory, menu_item)}
+                                        />
                                     </div>
 
-                                    <div>
-                                        <Label htmlFor="message">Change Price</Label>
-                                        <Input className="w-64" placeholder={(menu_item.price).toString()} id="message" />
+                                    <div className="py-2">
+                                        <Label htmlFor="price">Change Item Price</Label>
+                                        <Input
+                                            className="w-64"
+                                            placeholder={(menu_item.price).toString()}
+                                            id="price"
+                                            value={price}
+                                            onChange={(e) => handleEditChange(e, setPrice, (menu_item.price).toString())}
+                                        />
+                                    </div>
+
+                                    <div className="py-2">
+                                        <Label htmlFor="isactive">Is this menu item active? (true or false)</Label>
+                                        <Input
+                                            className="w-64"
+                                            placeholder={(menu_item.is_active).toString()}
+                                            id="isactive"
+                                            value={isactive}
+                                            onChange={(e) => handleEditChange(e, setIsactive, (menu_item.is_active).toString())}
+                                        />
                                     </div>
 
                                     {/* <div>
@@ -476,6 +554,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                                 <div key={index} className="flex items-center">
                                                     <Checkbox
                                                         id={(item.id).toString()}
+                                                        //checked={handlePreCheck(menu_item, item) || false}
+                                                        onClick={(e) => handleCheckBoxChange(e, item)}
                                                     />
                                                     <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>
                                                 </div>
@@ -486,15 +566,16 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
                                     <div className="flex items-center gap-4">
                                         <DialogClose asChild>
-                                            <Button variant="default" onClick={() => editItem(menu_item)}>Edit Item</Button>
+                                            <Button variant="default" type="submit">Edit Item</Button>
                                         </DialogClose>
                                         <DialogClose asChild>
-                                            <Button variant={"destructive"} >Cancel</Button>
+                                            <Button variant="destructive" onClick={() => {setIngredientList([]), setRatios([])}}>Cancel</Button>
                                         </DialogClose>
                                     </div>
                                     <DialogFooter>
 
                                     </DialogFooter>
+                                    </form>
                                 </DialogContent>
                             </Dialog>
                         ))}
