@@ -45,11 +45,20 @@ model Menu_Item {
 }
 
 model Order_Log {
+<<<<<<< HEAD
   id          Int      @id @default(autoincrement())
   time        DateTime @default(now())
   price       Int
   menu_items  String
   ingredients String
+=======
+  id          Int          @id @default(autoincrement())
+  time        DateTime     @default(now())
+  price       Int
+  menu_items  String
+  ingredients String
+  status      Order_Status @default(Completed)
+>>>>>>> main
 }
 
 model Users {
@@ -60,9 +69,30 @@ model Users {
   is_manager  Boolean
   is_employee Boolean
   jwt         String      @default("")
+<<<<<<< HEAD
+=======
+  role        Roles       @default(Customer)
+>>>>>>> main
   Login_Log   Login_Log[]
 }
 
 model schema_migrations {
   version String @id @unique(map: "schema_migrations_version_idx") @db.VarChar(14)
+<<<<<<< HEAD
+=======
+}
+
+enum Order_Status {
+  Created
+  Cooking
+  Completed
+}
+
+enum Roles {
+  Customer
+  Cashier
+  Kitchen
+  Manager
+  Admin
+>>>>>>> main
 }

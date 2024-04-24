@@ -1,4 +1,4 @@
-# How to use this server
+# Socket IO Backend
 
 ## Preface
 
@@ -10,10 +10,9 @@ data fetching.
 
 ## Server setup
 
-Right now the server is not hosted, and needs to be run locally for
-debugging purposes, run it in a seperate terminal after installing the
-python dependencies using pip.
-
+After insuring all the dependencies are installed,
+run `npm run build` and `npm run start`, this will
+build and run the server.
 
 ## Sending data to the server
 
@@ -82,26 +81,32 @@ note that any time a modification is made, the server makes a brodcast
 back to all clients that are listening to the corresponding table.
 ```ts
 io.on("connect", (socket) => {
-    console.log("Connected: " + socket.id);
-    socket.on("ingredient:create", ingredientCreate);
-    socket.on("ingredient:read", ingredientRead);
-    socket.on("ingredient:update", ingredientUpdate);
-    socket.on("ingredient:delete", ingredientDelete);
-    socket.on("loginLog:create", loginLogCreate);
-    socket.on("loginLog:read", loginLogRead);
-    socket.on("loginLog:update", loginLogUpdate);
-    socket.on("loginLog:delete", loginLogDelete);
-    socket.on("menuItem:create", menuItemCreate);
-    socket.on("menuItem:read", menuItemRead);
-    socket.on("menuItem:update", menuItemUpdate);
-    socket.on("menuItem:delete", menuItemDelete);
-    socket.on("orderLog:create", orderLogCreate);
-    socket.on("orderLog:read", orderLogRead);
-    socket.on("orderLog:update", orderLogUpdate);
-    socket.on("orderLog:delete", orderLogDelete);
-    socket.on("users:create", usersCreate);
-    socket.on("users:read", usersRead);
-    socket.on("users:update", usersUpdate);
-    socket.on("users:delete", usersDelete);
+    socket.on("ingredient:create", routes.ingredientCreate);
+    socket.on("ingredient:read", routes.ingredientRead);
+    socket.on("ingredient:update", routes.ingredientUpdate);
+    socket.on("ingredient:delete", routes.ingredientDelete);
+    socket.on("ingredientMenu:create", routes.ingredientsMenuCreate);
+    socket.on("ingredientMenu:read", routes.ingredientsMenuRead);
+    socket.on("ingredientMenu:update", routes.ingredientsMenuUpdate);
+    socket.on("ingredientMenu:delete", routes.ingredientsMenuDelete);
+    socket.on("loginLog:create", routes.loginLogCreate);
+    socket.on("loginLog:read", routes.loginLogRead);
+    socket.on("loginLog:update", routes.loginLogUpdate);
+    socket.on("loginLog:delete", routes.loginLogDelete);
+    socket.on("menuItem:create", routes.menuItemCreate);
+    socket.on("menuItem:add", routes.menuItemAdd);
+    socket.on("menuItem:read", routes.menuItemRead);
+    socket.on("menuItem:update", routes.menuItemUpdate);
+    socket.on("menuItem:delete", routes.menuItemDelete);
+    socket.on("orderLog:create", routes.orderLogCreate);
+    socket.on("orderLog:read", routes.orderLogRead);
+    socket.on("orderLog:update", routes.orderLogUpdate);
+    socket.on("orderLog:delete", routes.orderLogDelete);
+    socket.on("users:create", routes.usersCreate);
+    socket.on("users:read", routes.usersRead);
+    socket.on("users:update", routes.usersUpdate);
+    socket.on("users:delete", routes.usersDelete);
+    socket.on("translateJSON", routes.translateJSON);
+    socket.on("translateArray", routes.translateArray);
 });
 ```

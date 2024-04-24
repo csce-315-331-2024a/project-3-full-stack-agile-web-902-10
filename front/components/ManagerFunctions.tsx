@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/popover"
 import UsersList from "./UsersList";
 
-import { AuthPacket, useSocket, MenuItemCreate, MenuItemDelete, IngredientCreateQuery, IngredientDeleteQuery } from "@/lib/socket";
+import { AuthPacket, useSocket, MenuItemCreate, MenuItemDelete, IngredientCreate, IngredientDelete } from "@/lib/socket";
 import { create } from "domain";
 
 
@@ -195,7 +195,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             intMinstock: parseInt(minstock, 10),
             activeConversion: stringToBool(isactive)
         };
-        const create_query: IngredientCreateQuery = {
+        const create_query: IngredientCreate = {
             data: {
                 name: itemName,
                 stock: formData.intStock,
@@ -218,7 +218,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     }
     
     function deleteIngredient(ingredient: Ingredient) {
-        const update_query: IngredientDeleteQuery = {
+        const update_query: IngredientDelete = {
             where: {
                 id: ingredient.id
             }

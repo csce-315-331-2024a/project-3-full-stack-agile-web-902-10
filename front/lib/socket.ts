@@ -8,10 +8,10 @@ export type AuthPacket = {
     email: string;
     jwt: string;
 }
-export type IngredientCreateQuery = Parameters<typeof prisma.ingredient.create>[0];
-export type IngredientReadQuery = Parameters<typeof prisma.ingredient.findMany>[0];
-export type IngredientUpdateQuery = Parameters<typeof prisma.ingredient.update>[0];
-export type IngredientDeleteQuery = Parameters<typeof prisma.ingredient.delete>[0];
+export type IngredientCreate = Parameters<typeof prisma.ingredient.create>[0];
+export type IngredientRead = Parameters<typeof prisma.ingredient.findMany>[0];
+export type IngredientUpdate = Parameters<typeof prisma.ingredient.update>[0];
+export type IngredientDelete = Parameters<typeof prisma.ingredient.delete>[0];
 export type IngredientsMenuCreate = Parameters<typeof prisma.ingredients_Menu.create>[0];
 export type IngredientsMenuRead = Parameters<typeof prisma.ingredients_Menu.findMany>[0];
 export type IngredientsMenuUpdate = Parameters<typeof prisma.ingredients_Menu.update>[0];
