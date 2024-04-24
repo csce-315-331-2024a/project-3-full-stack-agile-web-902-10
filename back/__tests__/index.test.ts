@@ -212,6 +212,5 @@ test("ingredientCreate", async () => {
     }));
 
     await routes.ingredientCreate(mock_auth, { data: mock_ingredients[0] });
-    // expect(ioMock.emit).toHaveBeenCalledWith("ingredient", mock_ingredients);
-    expect(ioMock.emit).toHaveBeenCalled();
+    expect(ioMock.emit).toHaveBeenCalledWith("ingredient", mock_ingredients);
 });
