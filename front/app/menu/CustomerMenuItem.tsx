@@ -35,6 +35,21 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
     const reset_ingredients = () => {
         setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
     }
+    
+    const compare = (array1: number[], array2: number[]) => {
+
+        if (array1.length != array2.length) {
+            return false;
+        }
+
+        for (let i = 0; i < array1.length; ++i) {
+            if (array1[i] != array2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     const updateCart = (menu_item: Menu_Item, ingredient_ids: number[]) => {
         const cartItem: CartItem = {
@@ -44,13 +59,9 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
         }
 
         for (let i = 0; i < cart.length; ++i) {
-            console.log(cartItem.menu_item.id);
-            console.log(cart[i].menu_item.id);
-            console.log(cartItem.ingredient_ids);
-            console.log(cart[i].ingredient_ids);
-            if ((cartItem.menu_item.id === cart[i].menu_item.id) && (cartItem.ingredient_ids === cart[i].ingredient_ids)) {
-                cart[i].quantity++;
-                console.log("same item");
+            if ((cartItem.menu_item.id === cart[i].menu_item.id) && (compare(cartItem.ingredient_ids, cart[i].ingredient_ids))) {
+                cart[i].quantity += 1;
+                setCart(cart);
                 return;
             }
         }
