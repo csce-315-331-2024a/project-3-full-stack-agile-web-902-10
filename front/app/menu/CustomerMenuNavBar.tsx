@@ -59,7 +59,8 @@ export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
     const { theme, setTheme } = useTheme();
 
     // get add to cart store
-    const cart = useCartStore((state) => state.cart);
+    const some_cart = useCartStore((state) => state.cart);
+    let cart = some_cart;
     const setCart = useCartStore((state) => state.setCart);
     const clearCart = useCartStore((state) => state.clearCart);
 
@@ -71,6 +72,10 @@ export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
     const language = useLanguageStore((state) => state.language);
     const setLanguage = useLanguageStore((state) => state.setLanguage);
     let [translated, setTranslated] = useState(static_text);
+
+    useEffect(() => {
+        cart = some_cart;
+    }, [some_cart]);
 
     const socket = useSocket();
     useEffect(() => {

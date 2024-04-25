@@ -14,6 +14,8 @@ import { useState, useEffect } from "react"
 
 import { Menu_Item, Ingredient, Ingredients_Menu } from "@prisma/client"
 import { useCartStore } from "@/lib/provider/cart-store-provider"
+import { CartItem } from "@/lib/stores/cart-store"
+import { createWriteStream } from "fs"
 
 export default function CustomerMenuItem({ menu_item, ingredients, ingredient_menus, translated }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[], translated: any }) {
     const cart = useCartStore((state) => state.cart);
@@ -33,6 +35,30 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
     const reset_ingredients = () => {
         setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
     }
+
+    const updateCart = (menu_item: Menu_Item, ingredient_ids: number[]) => {
+        const cartItem: CartItem = {
+            menu_item: menu_item,
+            ingredient_ids: ingredient_ids,
+            quantity: 1
+        }
+
+        for (let i = 0; i < cart.length; ++i) {
+            console.log(cartItem.menu_item.id);
+            console.log(cart[i].menu_item.id);
+            console.log(cartItem.ingredient_ids);
+            console.log(cart[i].ingredient_ids);
+            if ((cartItem.menu_item.id === cart[i].menu_item.id) && (cartItem.ingredient_ids === cart[i].ingredient_ids)) {
+                cart[i].quantity++;
+                console.log("same item");
+                return;
+            }
+        }
+        
+        cart.push(cartItem);
+        setCart(cart);
+    }
+
 
     return (
         <Dialog key={menu_item.id} onOpenChange={reset_ingredients}>
@@ -74,7 +100,7 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
                 </div>
                 <DialogFooter>
                     <DialogClose asChild>
-
+                        <Button key={"add cart"} variant={"default"} onClick={() => updateCart(menu_item, selectedIngredients)}>Add to Cart</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>
