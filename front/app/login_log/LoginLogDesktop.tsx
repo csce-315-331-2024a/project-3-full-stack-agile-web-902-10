@@ -66,6 +66,9 @@ export default function LoginLogDesktop() {
             loginLogRead = {
                 skip: pageIndex * 10,
                 take: 10,
+                orderBy: {
+                    time: "desc",
+                },
             };
             socket.emit("loginLog:read", {}, (obj: Login_Log[]) => {
                 setLoginLogs(obj);
@@ -89,6 +92,9 @@ export default function LoginLogDesktop() {
                 loginLogRead = {
                     skip: pageIndex * 10,
                     take: 10,
+                    orderBy: {
+                        time: "desc",
+                    },
                 };
             } else {
                 const user = users.find((user) => user.id === parseInt(selectedUser));
@@ -97,6 +103,9 @@ export default function LoginLogDesktop() {
                     take: 10,
                     where: {
                         user_id: parseInt(selectedUser),
+                    },
+                    orderBy: {
+                        time: "desc",
                     },
                 };
             }

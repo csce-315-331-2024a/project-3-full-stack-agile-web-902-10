@@ -54,6 +54,9 @@ export default function OrderHistoryDesktop() {
             const orderLogRead: OrderLogRead = {
                 skip: pageIndex * 10,
                 take: 10,
+                orderBy: {
+                    time: "desc",
+                },
             };
             socket.emit("menuItem:read", {}, (new_menu_items: Menu_Item[]) => {
                 setMenuItems(new_menu_items);
@@ -76,6 +79,9 @@ export default function OrderHistoryDesktop() {
             const orderLogRead: OrderLogRead = {
                 skip: pageIndex * 10,
                 take: 10,
+                orderBy: {
+                    time: "desc",
+                },
             };
             socket.emit("orderLog:read", orderLogRead, (new_orders: Order_Log[]) => {
                 setOrders(new_orders);
