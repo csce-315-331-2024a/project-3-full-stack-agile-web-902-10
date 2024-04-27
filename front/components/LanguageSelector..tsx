@@ -17,8 +17,6 @@ export default function LanguageSelector({ translated, id }: { translated: any, 
     const language = useLanguageStore((state) => state.language);
     const setLanguage = useLanguageStore((state) => state.setLanguage);
 
-    console.log(language)
-
     return (
         <Select onValueChange={setLanguage} defaultValue={language}>
             <SelectTrigger className="text-lg p-4 border-4">

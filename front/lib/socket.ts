@@ -34,21 +34,23 @@ export type UsersUpdate = Parameters<typeof prisma.users.update>[0];
 export type UsersDelete = Parameters<typeof prisma.users.delete>[0];
 
 
-export function useSocket(): ReturnType<typeof io> | null{
-    const [socket, setSocket] = useState<null | ReturnType<typeof io>>(null);
+const socket = io(process.env.NODE_ENV === 'development' ? 'localhost:5000' : 'https://revs-websocket-26f326ba64e2.herokuapp.com/');
 
-    useEffect(() => {
-        // localhost if local, and the server's IP if on vercel
-        const ip = process.env.NODE_ENV === 'development' ? 'localhost:5000' : 'https://revs-websocket-26f326ba64e2.herokuapp.com/';
-        const socketIo = io(ip);
-
-        setSocket(socketIo);
-
-        function cleanup() {
-            socketIo.disconnect();
-        }
-        return cleanup;
-    }, []);
+export function useSocket() {
+//    const [socket, setSocket] = useState<null | ReturnType<typeof io>>(null);
+//
+//    useEffect(() => {
+//        // localhost if local, and the server's IP if on vercel
+//        const ip = process.env.NODE_ENV === 'development' ? 'localhost:5000' : 'https://revs-websocket-26f326ba64e2.herokuapp.com/';
+//        const socketIo = io(ip);
+//
+//        setSocket(socketIo);
+//
+//        function cleanup() {
+//            socketIo.disconnect();
+//        }
+//        return cleanup;
+//    }, []);
 
     return socket
 }
