@@ -21,6 +21,7 @@ io.on("connect", (socket) => {
     socket.on("menuItem:read", routes.menuItemRead);
     socket.on("menuItem:update", routes.menuItemUpdate);
     socket.on("menuItem:delete", routes.menuItemDelete);
+    socket.on("menuItem:clear", routes.menuItemClear);
     socket.on("orderLog:create", routes.orderLogCreate);
     socket.on("orderLog:read", routes.orderLogRead);
     socket.on("orderLog:update", routes.orderLogUpdate);
