@@ -290,7 +290,7 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
             setWIndex(Math.floor(Math.random() * (weather_items[x].length)));
         };
 
-        const intervalId = setInterval(scroll, 10000); 
+        const intervalId = setInterval(scroll, 5000); 
 
         return () => clearInterval(intervalId);
     }, [index1, index2]);
