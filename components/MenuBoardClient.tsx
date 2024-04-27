@@ -226,6 +226,15 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
     const [hotColdImg, setHotColdImg] = useState(weather_itemsImg[x]);
     const [weatherIndex, setWIndex] = useState(0);
 
+    const [m1_start, setm1_start] = useState(0);
+    const [m2_start, setm2_start] = useState(0);
+
+    const [m1_next, setm1_next] = useState(0);
+    const [m2_next, setm2_next] = useState(0);
+
+    const [m1_fin, setm1_fin] = useState(false);
+    const [m2_fin, setm2_fin] = useState(false);
+
 
 
 
@@ -237,15 +246,52 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
             let next11 = next1;
             let next21 = next2;
 
+            //for cycling
+            let m1s = m1_start;
+            let m2s = m2_start;
+
+            let m1n = m1_next;
+            let m2n = m2_next;
+
+            let m1f = m1_fin;
+            let m2f = m2_fin;
+
+
+
             if ((preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2]) || (next2 == 0 && next1 != 0)){//stall index 2 (added for if odd, stall till index 1 is done)
-                next21 = index2;
+                m2n = next21;
+                m2f = true;
+                next2 = m2s;
             }
 
             if (preCategories2[next2] == preCategories2[index2] && preCategories1[next1] != preCategories1[index1]){//stall index 1
-                next11 = index1;
+                m1n = next11;
+                m1f = true;
+                next1 = m1s;
             }
-            next1 = next11;
-            next2 = next21;
+
+            if(m1f && m2f){
+                m1f = false;
+                m2f = false;
+                
+                m1s = m1n;
+                m2s = m2n;
+
+                next1 = m1n;
+                next2 = m2n;
+            }
+
+
+            //set state of all the looping functions
+            setm1_start(m1s);
+            setm2_start(m2s);
+            setm1_fin(m1f);
+            setm2_fin(m2f);
+            setm1_next(m1n);
+            setm2_next(m2n);
+
+            //next1 = next11;
+            //next2 = next21;
 
             setIndex1(next1);
             setIndex2(next2);
