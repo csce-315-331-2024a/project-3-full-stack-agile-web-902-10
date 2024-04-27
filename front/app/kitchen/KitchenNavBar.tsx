@@ -37,10 +37,10 @@ export default function KitchenMenuNavBar({ user }: { user: Users | null }) {
                 <nav className="flex w-full item-center justify-center md:mx-12">
                     <div className="flex justify-start">
                         <Link
-                            href={"/menu"}
+                            href={"/manager"}
                             className="text-lg font-bold transition-colors hover:text-primary"
                         >
-                            {"Back to menu"}
+                            {"Back to Dashboard"}
                         </Link>
                     </div>
                     <div className="flex justify-center flex-grow">

@@ -143,7 +143,7 @@ export default function KitchenDesktop({ orders_init, menu_items_init, ingredien
                                             </DialogDescription>
                                         </DialogHeader>
                                         <DialogClose asChild>
-                                            <Button variant="default" onClick={() => changeOrderStatus(order)}>
+                                            <Button variant="default" className="w-[10vw] h-[8vh] font-bold text-2xl" onClick={() => changeOrderStatus(order)}>
                                                 {order.status == "Created" ? "Start Cooking" : "Complete Order"}
                                             </Button>
                                         </DialogClose>

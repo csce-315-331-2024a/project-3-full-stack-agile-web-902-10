@@ -3,7 +3,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Menu_Item, Ingredient, Ingredients_Menu, Users } from "@prisma/client";
+import { Menu_Item, Ingredient, Ingredients_Menu, Users, Roles } from "@prisma/client";
 import { useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from 'next/navigation';
 import {
@@ -33,6 +33,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import OrderHistoryDesktop from "@/app/order_history/OrderHistoryDesktop";
+import LoginLogDesktop from "@/app/login_log/LoginLogDesktop";
 
 import { format, set } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -51,7 +53,6 @@ import { ifError } from "assert";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/lib/imageFB";
-import { setupDevBundler } from "next/dist/server/lib/router-utils/setup-dev-bundler";
 
 export default function ManagerFunctions({ menu_items_init, categories_init, ingredients_init, menuIngredients_init, users_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], ingredients_init: Ingredient[], menuIngredients_init: Ingredients_Menu[], users_init: Users[], user: Users | null }) {
     const [showEditDiv, setShowEditDiv] = useState(false);
@@ -59,6 +60,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const [showEmployeeDiv, setShowEmployeeDiv] = useState(false);
     const [showIngredientDiv, setShowIngredientDiv] = useState(false);
     const [showIngredientScroll, setShowIngredientScroll] = useState(false);
+    const [showOrder, setShowOrder] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
+
     // const [date, setDate] = useState<Date>();
     const router = useRouter();
     const [itemName, setItemName] = useState('');
@@ -109,10 +113,30 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         }
     }, [socket]);
 
+    const toggleLogin = () => {
+        setShowEmployeeDiv(false);
+        setShowTrendDiv(false);
+        setShowIngredientDiv(false);
+        setShowEditDiv(false);
+        setShowOrder(false);
+        setShowLogin(!showLogin);
+    }
+
+    const toggleOrder = () => {
+        setShowEmployeeDiv(false);
+        setShowTrendDiv(false);
+        setShowIngredientDiv(false);
+        setShowEditDiv(false);
+        setShowLogin(false);
+        setShowOrder(!showOrder);
+    }
+
     const toggleEditMenuDiv = () => {
         setShowEmployeeDiv(false);
         setShowTrendDiv(false);
         setShowIngredientDiv(false);
+        setShowOrder(false);
+        setShowLogin(false);
         setShowEditDiv(!showEditDiv);
     }
 
@@ -120,6 +144,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         setShowEmployeeDiv(false);
         setShowTrendDiv(false);
         setShowEditDiv(false);
+        setShowOrder(false);
+        setShowLogin(false);
         setShowIngredientDiv(!showIngredientDiv);
     }
 
@@ -132,6 +158,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         setShowEditDiv(false);
         setShowTrendDiv(false);
         setShowIngredientDiv(false);
+        setShowOrder(false);
+        setShowLogin(false);
         router.push("/manager_trends");
     }
 
@@ -139,6 +167,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         setShowTrendDiv(false);
         setShowEditDiv(false);
         setShowIngredientDiv(false);
+        setShowOrder(false);
+        setShowLogin(false);
         setShowEmployeeDiv(!showEmployeeDiv);
     }
 
@@ -347,7 +377,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     }
 
     return (
-        <div className="flex overflow-hidden flex-row gap-4">
+        <div className="flex h-[90vh] overflow-hidden flex-row gap-4">
             {/* Manager Options */}
             <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
@@ -355,14 +385,16 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     <Separator />
                     <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
                     <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>
-                    {/* {isadmin && (<Button className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)} */}
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>
+                    {user?.role === Roles.Admin && (<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)}
                     <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>
+                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>
+                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>
+                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>
                     <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleBoard}>Menu Board</Button>
                 </div>
             </ScrollArea>
 
-            {!showEditDiv && !showEmployeeDiv && !showIngredientDiv && (
+            {!showEditDiv && !showEmployeeDiv && !showIngredientDiv && !showOrder && !showLogin && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
                     <h1 className="text-2xl font-bold p-16">Select a function using the buttons on the left.</h1>
                 </ScrollArea>)}
@@ -927,6 +959,20 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             {/* Employee management */}
             {showEmployeeDiv && (
                 <UsersList users={users} user={user} />
+            )}
+
+            {/* Order log */}
+            {showOrder && (
+                <ScrollArea className="w-[90vw]">
+                    <OrderHistoryDesktop/>
+                </ScrollArea>
+            )}
+
+            {/* lgin history */}
+            {showLogin && (
+                <ScrollArea className="w-[90vw]">
+                    <LoginLogDesktop/>
+                </ScrollArea>
             )}
         </div>
     );
