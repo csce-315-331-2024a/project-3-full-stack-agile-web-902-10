@@ -256,6 +256,10 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
             let m1f = m1_fin;
             let m2f = m2_fin;
 
+            let m1t = m1_start;
+            let m2t = m2_start;
+
+
 
 
             if ((preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2]) || (next2 == 0 && next1 != 0)){//stall index 2 (added for if odd, stall till index 1 is done)
@@ -272,13 +276,18 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
 
             if(m1f && m2f){
                 m1f = false;
-                m2f = false;
-                
                 m1s = m1n;
-                m2s = m2n;
-
                 next1 = m1n;
-                next2 = m2n;
+
+                if(m2n == 0 && m1n != 0){
+                    next2 = m2s;
+                    
+                }
+                else{ 
+                    m2f = false;
+                    m2s = m2n;
+                    next2 = m2n;
+                }
             }
 
 
