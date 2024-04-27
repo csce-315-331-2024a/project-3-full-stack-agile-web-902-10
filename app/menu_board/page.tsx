@@ -18,7 +18,7 @@ export default async function menu_board() {
     
     return ( //calls the client side thing
         //<MenuBoardClient menu_items={menu_items} categories1={categories}/>
-        <MenuBoardClient menu_items={menu_items} categories={categories} temperature={temperature} condition={condition}/>
+        <MenuBoardClient  temperature={temperature} condition={condition}/>
     );
 }
 

@@ -8,38 +8,71 @@ import { useEffect } from "react";
 
 
 
-export default function MenuBoardClient({ menu_items, categories, temperature, condition}://categories1}:
+export default function MenuBoardClient({ temperature, condition}://categories1}:
     {
-        menu_items: Menu_Item[],
-        categories: string[],
         temperature: number,
         condition: string
     }) {
-    const menuItemToString = (item: Menu_Item) => {
-        return item.name + ": $"+ item.price.toString();
+
+    const categories = ["Cat1", "Cat2", "Cat3","Cat4", "Cat5"];
+    const l1 = [6, 13, 15, 7, 10];
+    
+    const l1_size = () => {
+        let total = 0;
+        for(let i = 0; i < l1.length; ++i){
+            total += l1[i];
+
+        }
+        return total;
     }
+
+    const l1Size = l1_size();
+
+
+    const getMenuItems = ({cat, x}: {cat: string, x: number}) => {
+        let menuItems = [""];
+        for (let i = 0; i < x; ++i){//x; ++i){
+
+            menuItems.push( cat + " Item: "+  i);
+        }
+        menuItems.splice(0,1);
+        return menuItems;
+    }
+    const getMenuImages = ({cat, x}: {cat: string, x: number})  => {
+        let menuItemsImages = [""];
+        for (let i = 0; i < x; ++i){
+            menuItemsImages.push(cat + " Image: "+  i );
+        }
+        menuItemsImages.splice(0,1);
+        return menuItemsImages;
+    }
+
+
+
+
+
+    /*const menuItemToString = (item: Menu_Item) => {
+        return item.name + ": $"+ item.price.toString();
+    }*/
 
     //let temperature = 79;//temporary until weather is implimented
     let temperature_threshold = 80;//at what temperature do we switch between hot and cold items
 
 
     //to get all menu items in a recognizable way
-    let allMenuItems = [""];
+    /*let allMenuItems = [""];
     allMenuItems.splice(0,1);
     let allMenuItemsImg = [""];
     allMenuItemsImg.splice(0,1);
     for (let i = 0; i < menu_items.length; ++i){
         allMenuItems.push(menuItemToString(menu_items[i]));
         allMenuItemsImg.push(menu_items[i].image_url);
-    }
+    }*/
     
-    const coldw_cat = ["burger", "Burger"];
-    const hotw_cat = ["shake", "Shake"];
+    const coldw_cat = ["Cat1"];
+    const hotw_cat = ["Cat2"];
 
-    let weather_items = [[""]];
-    weather_items.splice(0,1);
-    let weather_itemsImg = [[""]];
-    weather_itemsImg.splice(0,1);
+    
     let coldw_items = [""];
     coldw_items.splice(0,1);
     let coldw_itemsImg = [""];
@@ -49,47 +82,40 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
     let hotw_itemsImg = [""];
     hotw_itemsImg.splice(0,1);
 
-    for(let x = 0; x < coldw_cat.length; ++x){
-        for (let y = 0; y < menu_items.length; ++y){
-            if (menu_items[y].name.search(coldw_cat[x]) != -1){
-                coldw_items.push(menuItemToString(menu_items[y]));
-                coldw_itemsImg.push(menu_items[y].image_url);
-            }
-        }
-    }
-    for(let x = 0; x < hotw_cat.length; ++x){
-        for (let y = 0; y < menu_items.length; ++y){
-            if (menu_items[y].name.search(hotw_cat[x]) != -1){
-                hotw_items.push(menuItemToString(menu_items[y]));
-                hotw_itemsImg.push(menu_items[y].image_url);
+    for (let x = 0; x < coldw_cat.length; ++x){
+        for(let i = 0; i < categories.length; ++i){
+            if(categories[i] == coldw_cat[x]){
+                coldw_items = getMenuItems({cat: categories[i], x: l1[i]});
+                coldw_itemsImg = getMenuImages({cat: categories[i], x: l1[i]});
             }
         }
     }
 
-    if (coldw_items.length == 0){
-        weather_items.push(allMenuItems);
-        weather_itemsImg.push(allMenuItemsImg);
-    }
-    else {
-        weather_items.push(coldw_items);
-        weather_itemsImg.push(coldw_itemsImg);
+    for (let x = 0; x < hotw_cat.length; ++x){
+        for(let i = 0; i < categories.length; ++i){
+            if(categories[i] == hotw_cat[x]){
+                hotw_items = getMenuItems({cat: categories[i], x: l1[i]});
+                hotw_itemsImg = getMenuImages({cat: categories[i], x: l1[i]});
+            }
+        }
     }
 
-    if (hotw_items.length == 0){
-        weather_items.push(allMenuItems);
-        weather_itemsImg.push(allMenuItemsImg);
-    }
-    else {
-        weather_items.push(hotw_items);
-        weather_itemsImg.push(hotw_itemsImg);
-    }
+    let weather_items = [[""]];
+    weather_items.splice(0,1);
+    let weather_itemsImg = [[""]];
+    weather_itemsImg.splice(0,1);
+
+    weather_items.push(coldw_items);
+    weather_items.push(hotw_items);
+    weather_itemsImg.push(coldw_itemsImg);
+    weather_itemsImg.push(hotw_itemsImg);
 
 
     
 
     
     //Gets menu items in a category
-    const getMenuItems = (cat: string) => {
+    /*const getMenuItems = (cat: string) => {
         let menuItems = [""];
         for (let i = 0; i < menu_items.length; ++i){
             if (menu_items[i].category == cat){
@@ -98,9 +124,9 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
         }
         menuItems.splice(0,1);
         return menuItems;
-    }
+    }*/
     //gets menu item images
-    const getMenuImages = (cat: string) => {
+    /*const getMenuImages = (cat: string) => {
         let menuItemsImages = [""];
         for (let i = 0; i < menu_items.length; ++i){
             if (menu_items[i].category == cat){
@@ -109,19 +135,10 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
         }
         menuItemsImages.splice(0,1);
         return menuItemsImages;
-    }
-    /*
-    const getMenuItems = ({cat, x}: {cat: string, x: number}) => {
-        let menuItems = [""];
-        for (let i = 0; i < x; ++i){//x; ++i){
-
-            menuItems.push("| TEST" +  i +" |");
-        }
-        menuItems.splice(0,1);
-        return menuItems;
-    }
-    const categories = ["Cat1", "Cat2", "Cat3","Cat4", "Cat5",];
-    const l1 = [6, 13, 15, 7, 10];*/
+    }*/
+    
+    
+    
 
 
     //definitions for arrays
@@ -154,8 +171,8 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
     //gets all the elements for the first half of the menu board
     for (let i = 0; i < categories.length; i = i +2){
         //temp1 = getMenuItems({cat: categories[i], x: l1[i]});
-        temp1 = getMenuItems(categories[i]);
-        temp3 = getMenuImages(categories[i]);
+        temp1 = getMenuItems({cat: categories[i], x: l1[i]});
+        temp3 = getMenuImages({cat: categories[i], x: l1[i]});
         while (temp1.length > 5){  
             preMenu1.push(temp1.splice(0,5));
             preMenuImages1.push(temp3.splice(0,5));
@@ -168,8 +185,8 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
      //gets all the elements for the second half of the menu board
      for (let i = 1; i < categories.length; i = i +2){
         //temp2 = getMenuItems({cat: categories[i], x: l1[i]});
-        temp2 = getMenuItems(categories[i]);
-        temp4 = getMenuImages(categories[i]);
+        temp2 = getMenuItems({cat: categories[i], x: l1[i]});
+        temp4 = getMenuImages({cat: categories[i], x: l1[i]});
         while (temp2.length > 5){  
             preMenu2.push(temp2.splice(0,5));
             preMenuImages2.push(temp4.splice(0,5));
@@ -294,21 +311,18 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                 <div className="h-1/3 p-2" >
                         <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
                             <h1 className=" text-white text-xl">{currentMenuItems1[imgIndex1]}</h1>
-                            <img 
-                                src = {currentMenuItemImages1[imgIndex1]}
-                                height={200}
-                                className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                            />
+                            
+                            <div className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border content-center">
+                                <p className=" text-white text-xl text-center"> {currentMenuItemImages1[imgIndex1]} </p>
+                            </div>
                     </div>
                 </div>
                 <div className="h-1/3 p-2" >
                         <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
                             <h1 className=" text-white text-xl">{currentMenuItems1[imgIndex12]}</h1>
-                            <img 
-                                src = {currentMenuItemImages1[imgIndex12]}
-                                height={200}
-                                className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                            />
+                            <div className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border content-center">
+                                <p className=" text-white text-xl text-center"> {currentMenuItemImages1[imgIndex12]} </p>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -335,31 +349,25 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                 <div className="h-1/3 p-2 flex flex-col justify-end">
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
                         <h1 className=" text-white text-xl"> Recomended Item:<br></br> {hotCold[weatherIndex]}</h1>
-                        <img 
-                            src = {hotColdImg[weatherIndex]}
-                            height={200}
-                            className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                        />
+                        <div className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border content-center">
+                                <p className=" text-white text-xl text-center"> {hotColdImg[weatherIndex]} </p>
+                        </div>
                     </div>
                 </div>
                 <div className="h-1/3 p-2">
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
                         <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex2]}</h1>
-                        <img 
-                            src = {currentMenuItemImages2[imgIndex2]}
-                            height={200}
-                            className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                        />
+                        <div className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border content-center">
+                                <p className=" text-white text-xl text-center"> {currentMenuItemImages2[imgIndex2]} </p>
+                        </div>
                     </div>
                 </div>
                 <div className="h-1/3 p-2">
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
                         <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex22]}</h1>
-                        <img 
-                            src = {currentMenuItemImages2[imgIndex22]}
-                            height={200}
-                            className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border"
-                        />
+                        <div className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border content-center">
+                                <p className=" text-white text-xl text-center"> {currentMenuItemImages2[imgIndex22]} </p>
+                        </div>
                     </div>
                 </div>
                 
