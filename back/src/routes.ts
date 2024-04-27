@@ -503,6 +503,29 @@ export async function menuItemDelete(auth: AuthPacket, delete_query: MenuItemDel
 }
 
 /**
+ * Route that deletes menu item's ingredients, sends a broadcast to all clients that are subscribed to the menu item event
+ * @param auth the {@link AuthPacket}
+ * @param menu_item the {@link Menu_Item}
+ * @returns void
+ */
+export async function menuItemClear(auth: AuthPacket, menu_item: Menu_Item) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        await prisma.ingredients_Menu.deleteMany({
+            where: {
+                menu_id: menu_item.id,
+            },
+        });
+        io.emit("menuItem", await prisma.menu_Item.findMany());
+        io.emit("ingredientMenu", await prisma.ingredients_Menu.findMany());
+    } catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
+
+/**
  * Route that creates a new order log, sends a broadcast to all clients that are subscribed to the order log event
  * @param auth the {@link AuthPacket}
  * @param create_query the {@link OrderLogCreate}

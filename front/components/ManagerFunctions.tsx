@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Menu_Item, Ingredient, Ingredients_Menu, Users } from "@prisma/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from 'next/navigation';
 import {
     Dialog,
@@ -32,6 +32,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
 import { format, set } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -44,15 +45,20 @@ import {
 } from "@/components/ui/popover"
 import UsersList from "./UsersList";
 
-import { AuthPacket, useSocket, MenuItemDelete, IngredientCreate, IngredientDelete, IngredientsMenuRead } from "@/lib/socket";
+import { AuthPacket, useSocket, MenuItemDelete, IngredientCreate, IngredientDelete, IngredientsMenuRead, MenuItemUpdate, IngredientUpdate, IngredientsMenuDelete, IngredientsMenuCreate } from "@/lib/socket";
 import { create } from "domain";
-
+import { ifError } from "assert";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "@/lib/imageFB";
+import { setupDevBundler } from "next/dist/server/lib/router-utils/setup-dev-bundler";
 
 export default function ManagerFunctions({ menu_items_init, categories_init, ingredients_init, menuIngredients_init, users_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], ingredients_init: Ingredient[], menuIngredients_init: Ingredients_Menu[], users_init: Users[], user: Users | null }) {
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);
     const [showEmployeeDiv, setShowEmployeeDiv] = useState(false);
     const [showIngredientDiv, setShowIngredientDiv] = useState(false);
+    const [showIngredientScroll, setShowIngredientScroll] = useState(false);
     // const [date, setDate] = useState<Date>();
     const router = useRouter();
     const [itemName, setItemName] = useState('');
@@ -60,7 +66,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [minstock, setMinstock] = useState('');
-    const [isactive, setIsactive] = useState('');
+    const [uploadedimageURL, setUploadedImageURL] = useState('');
     const [ingredientList, setIngredientList] = useState<Ingredient[]>([]);
     const [ratios, setRatios] = useState<number[]>([]);
 
@@ -136,63 +142,45 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         setShowEmployeeDiv(!showEmployeeDiv);
     }
 
-    const stringToBool = (str: string): boolean => {
-        if (str === "true") return true;
-        else return false;
-    }
-
     const auth: AuthPacket = {
         email: user?.email ?? "",
         jwt: user?.jwt ?? ""
     };
 
-    const handleEditMenu = async (e: any) => {
-        e.preventDefault();
-        const formData = {
-            itemName,
-            category,
-            intPrice: parseInt(price, 10),
-            activeConversion: stringToBool(isactive)
-        };
-    
-        console.log("Before emitting:", ingredientList);
-        socket?.emit('menuItem:update', auth, {
-            name: formData.itemName,
-            price: formData.intPrice,
-            category: formData.category,
-            is_active: formData.activeConversion
-        }, ingredientList, ratios, () => {});
-        console.log("Emit callback executed");
-        setIngredientList([]);
-        setRatios([]);
-    }
-
-    const handlePreCheck = (menu_item: Menu_Item, ingredient: Ingredient) => {
-        return ingredientsMenu.some(item => 
-            item.ingredients_id === ingredient.id && item.menu_id === menu_item.id
-        );
-    }
-
     const handleInputChange = (e: any, setter: any) => {
         setter(e.target.value);
     }
 
-    const handleEditChange = (e:any, setter: any, attribute: any) => {
-        if (e.target.value === '') setter(attribute.target.value);
-        else setter(e.target.value)
+    const handleImage = (e: ChangeEvent<HTMLInputElement>, setter: any) => {
+        if (e.target.files === null) {
+            return;
+        }
+        const file = e.target.files[0];
+
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        const imagename = new Date().getTime().toString() + ".webp";
+        const imgref = ref(storage, imagename);
+
+        const uploadtask = uploadBytes(imgref, file).then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((downloadURL) => {
+                setUploadedImageURL(downloadURL);
+            });
+        });
     }
 
-    const handleCheckBoxChange = (e: any, ingredient: Ingredient) => {
+    const handleCheckBoxChange = (ingredient: Ingredient) => {
         let newIngArray = ingredientList;
         let newRatioArray = ratios;
-        if(newIngArray.includes(ingredient)){
+        if (newIngArray.includes(ingredient)) {
             const index = newIngArray.indexOf(ingredient);
             newIngArray.splice(index, 1);
             setIngredientList(newIngArray);
             newRatioArray.pop();
             console.log("Removed ingredient from list", ingredientList);
         }
-        else{
+        else {
             newIngArray.push(ingredient);
             setIngredientList(newIngArray);
             newRatioArray.push(1);
@@ -201,36 +189,78 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
         }
     }
 
-    const handleSubmitMenu = async (e: any) => {
+    const handleSubmitMenu = async (e: any, url: string) => {
         e.preventDefault();
         const formData = {
             itemName,
             category,
-            intPrice: parseInt(price, 10),
-            activeConversion: stringToBool(isactive)
+            url,
+            intPrice: parseInt(price, 10)
         };
-    
+
+        console.log("URL: ", url);
         console.log("Before emitting:", ingredientList);
         socket?.emit('menuItem:add', auth, {
             name: formData.itemName,
             price: formData.intPrice,
-            image_url: '/',
+            image_url: formData.url,
             category: formData.category,
-            is_active: formData.activeConversion
-        }, ingredientList, ratios, () => {});
-        console.log("Emit callback executed");
+            is_active: true
+        }, ingredientList, ratios, () => { });
+        console.log("Emit callback executed", ingredientList);
         setIngredientList([]);
         setRatios([]);
     };
 
-    const handleSubmitIngredient = async (e:any) => {
+    const handleEditMenu = async (e: any, menu_item: Menu_Item) => {
+        e.preventDefault();
+        if (ingredientList.length > 0) {
+            console.log("Before emitting clear:", ingredientList);
+            socket?.emit('menuItem:clear', auth, menu_item);
+            console.log("After clear: ", ingredientList);
+
+            ingredientList.forEach((ing) => {
+                const create_query: IngredientsMenuCreate = {
+                    data: {
+                        menu_id: menu_item.id,
+                        ingredients_id: ing.id,
+                        quantity: 1
+                    }
+                };
+                socket?.emit('ingredientMenu:create', auth, create_query);
+            });
+        }
+        else {
+            const formData = {
+                itemName,
+                category,
+                price,
+                uploadedimageURL,
+            };
+            const update_query: MenuItemUpdate = {
+                where: {
+                    id: menu_item.id
+                },
+                data: {
+                    name: (formData.itemName == '' ? menu_item.name : formData.itemName),
+                    category: (formData.category == '' ? menu_item.category : formData.category),
+                    price: parseInt((formData.price == '' ? (menu_item.price).toString() : formData.price), 10),
+                    image_url: (formData.uploadedimageURL == '' ? menu_item.image_url : formData.uploadedimageURL)
+                }
+            }
+            console.log("Editing attributes with: ", update_query.data.name, update_query.data.category, update_query.data.price);
+            socket?.emit('menuItem:update', auth, update_query, () => { });
+            console.log("Emit menuItem:update callback executed");
+        }
+    };
+
+    const handleSubmitIngredient = async (e: any) => {
         e.preventDefault();
         const formData = {
             itemName,
             category,
             intStock: parseInt(stock, 10),
-            intMinstock: parseInt(minstock, 10),
-            activeConversion: stringToBool(isactive)
+            intMinstock: parseInt(minstock, 10)
         };
         const create_query: IngredientCreate = {
             data: {
@@ -238,33 +268,82 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 stock: formData.intStock,
                 min_stock: formData.intMinstock,
                 category: category,
-                is_active: formData.activeConversion
+                is_active: true
             }
         };
         socket?.emit('ingredient:create', auth, create_query);
-    }    
-
-    const editIngredient = async (ing: Ingredient) => {
-
     }
 
-    // These work now!!!!!!!!!!!!
-    function deleteItem(menu_item: Menu_Item) {
-        const update_query: MenuItemDelete = {
+    const handleSubmitEditIngredient = async (e: any, ing: Ingredient) => {
+        e.preventDefault();
+        const formData = {
+            itemName,
+            category,
+            stock,
+            minstock
+        };
+        const update_query: IngredientUpdate = {
+            where: {
+                id: ing.id
+            },
+            data: {
+                name: (formData.itemName == '' ? ing.name : formData.itemName),
+                category: (formData.category == '' ? ing.category : formData.category),
+                stock: parseInt((formData.stock == '' ? (ing.stock).toString() : formData.stock), 10),
+                min_stock: parseInt((formData.minstock == '' ? (ing.min_stock).toString() : formData.minstock), 10),
+            }
+        }
+        console.log("Editing attributes with: ", update_query.data.name, update_query.data.category, update_query.data.stock, update_query.data.min_stock);
+        socket?.emit('ingredient:update', auth, update_query, () => { });
+        console.log("Emit menuItem:update callback executed");
+    }
+
+    function deactivateItem(menu_item: Menu_Item) {
+        const update_query: MenuItemUpdate = {
             where: {
                 name: menu_item.name
+            },
+            data: {
+                is_active: false
             }
         };
-        socket?.emit('menuItem:delete', auth, update_query);
+        socket?.emit('menuItem:update', auth, update_query);
     }
-    
-    function deleteIngredient(ingredient: Ingredient) {
-        const update_query: IngredientDelete = {
+
+    function activateItem(menu_item: Menu_Item) {
+        const update_query: MenuItemUpdate = {
+            where: {
+                name: menu_item.name
+            },
+            data: {
+                is_active: true
+            }
+        };
+        socket?.emit('menuItem:update', auth, update_query);
+    }
+
+    function deactivateIngredient(ingredient: Ingredient) {
+        const update_query: IngredientUpdate = {
             where: {
                 name: ingredient.name
+            },
+            data: {
+                is_active: false
             }
         };
-        socket?.emit('ingredient:delete', auth, update_query);
+        socket?.emit('ingredient:update', auth, update_query);
+    }
+
+    function activateIngredient(ingredient: Ingredient) {
+        const update_query: IngredientUpdate = {
+            where: {
+                name: ingredient.name
+            },
+            data: {
+                is_active: true
+            }
+        };
+        socket?.emit('ingredient:update', auth, update_query);
     }
 
     return (
@@ -283,10 +362,10 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 </div>
             </ScrollArea>
 
-            {!showEditDiv && !showEmployeeDiv && !showIngredientDiv &&  (
-            <ScrollArea className="flex-col w-auto items-center h-[91vh]">
-                <h1 className="text-2xl font-bold p-16">Select a function using the buttons on the left.</h1>
-            </ScrollArea>)}
+            {!showEditDiv && !showEmployeeDiv && !showIngredientDiv && (
+                <ScrollArea className="flex-col w-auto items-center h-[91vh]">
+                    <h1 className="text-2xl font-bold p-16">Select a function using the buttons on the left.</h1>
+                </ScrollArea>)}
 
 
 
@@ -309,9 +388,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             {showEditDiv && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
                     <div className="grid grid-cols-1 gap-4 p-4">
-                        <Dialog onOpenChange={() => {setIngredientList([]), setRatios([])}}>
+                        <Dialog>
                             <div className="flex flex-col w-auto justify-center items-center">
-                                <DialogTrigger>
+                                <DialogTrigger onClick={() => { setIngredientList([]), setRatios([]), setUploadedImageURL('') }}>
                                     <Button variant="default" className="text-3xl font-bold p-8">Add Item</Button>
                                 </DialogTrigger>
                             </div>
@@ -320,9 +399,12 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                     <DialogTitle className="text-lg font-bold">Add New Item</DialogTitle>
                                 </DialogHeader>
 
-                                <form onSubmit={handleSubmitMenu}>
+                                <form onSubmit={(e) => handleSubmitMenu(e, uploadedimageURL)}>
                                     <div className="py-2">
-                                        <Label htmlFor="itemName">Enter Item Name</Label>
+                                        <div className="flex items-center">
+                                            <Label htmlFor="itemName">Enter Item Name</Label>
+                                            <p className="text-red-500">*</p>
+                                        </div>
                                         <Input
                                             className="w-64"
                                             placeholder="Type item name here."
@@ -336,7 +418,10 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                     </div>
 
                                     <div className="py-2">
-                                        <Label htmlFor="category">Enter Category</Label>
+                                        <div className="flex items-center">
+                                            <Label htmlFor="category">Enter Category</Label>
+                                            <p className="text-red-500">*</p>
+                                        </div>
                                         <Input
                                             className="w-64"
                                             placeholder="Type item category here."
@@ -350,7 +435,10 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                     </div>
 
                                     <div className="py-2">
-                                        <Label htmlFor="price">Enter Price</Label>
+                                        <div className="flex items-center">
+                                            <Label htmlFor="price">Enter Price</Label>
+                                            <p className="text-red-500">*</p>
+                                        </div>
                                         <Input
                                             className="w-64"
                                             placeholder="Type item price here."
@@ -359,20 +447,6 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             onChange={(e) => handleInputChange(e, setPrice)}
                                             required
                                             onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please enter an item price.')}
-                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
-                                        />
-                                    </div>
-
-                                    <div className="py-2">
-                                        <Label htmlFor="price">Is this menu item active? (true or false)</Label>
-                                        <Input
-                                            className="w-64"
-                                            placeholder="true or false"
-                                            id="isactive"
-                                            value={isactive}
-                                            onChange={(e) => handleInputChange(e, setIsactive)}
-                                            required
-                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please specify if item is active.')}
                                             onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
@@ -403,26 +477,52 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         </Popover>
                                     </div> */}
 
-                                    <ScrollArea className="py-2 h-[40vh] w-100 p-2 whitespace-nowrap border-2 rounded-lg">
-                                        <div className="flex-col space-y-4">
-                                            {ingredients.map((item, index) => (
-                                                <div key={index} className="flex items-center">
-                                                    <Checkbox
-                                                        id={(item.id).toString()}
-                                                        onClick={(e) => handleCheckBoxChange(e, item)}
-                                                    />
-                                                    <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>
-                                                </div>
-                                            ))}
+                                    <div className="">
+                                        <div className="flex items-center">
+                                            <Label htmlFor="picture">Select Picture (.webp only)</Label>
+                                            <p className="text-red-500">*</p>
                                         </div>
-                                    </ScrollArea>
+                                        {uploadedimageURL === '' ?
+                                            <input
+                                                id="picture"
+                                                type="file"
+                                                className="w-64 pb-2"
+                                                placeholder="Select an image"
+                                                value={uploadedimageURL}
+                                                onChange={(e) => handleImage(e, setUploadedImageURL)}
+                                                required
+                                                onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please select an image.')}
+                                                onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
+                                            />
+                                            : uploadedimageURL
+                                        }
+                                    </div>
+
+                                    <div>
+                                        <div className="flex items-center py-2">
+                                            <Label>Select Ingredients</Label>
+                                        </div>
+                                        <ScrollArea className="py-2 h-[25vh] w-100 p-2 whitespace-nowrap border-2 rounded-lg">
+                                            <div className="flex-col space-y-4">
+                                                {ingredients.map((item, index) => (
+                                                    <div key={index} className="flex items-center">
+                                                        <Checkbox
+                                                            id={(item.id).toString()}
+                                                            onClick={() => handleCheckBoxChange(item)}
+                                                        />
+                                                        <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </div>
 
                                     <div className="py-2 flex items-center gap-4">
-                                        <DialogClose asChild>
+                                        <DialogClose asChild onAbort={() => { setIngredientList([]), setRatios([]) }}>
                                             <Button variant="default" type="submit">Add Item</Button>
                                         </DialogClose>
                                         <DialogClose asChild>
-                                            <Button variant="destructive" onClick={() => {setIngredientList([]), setRatios([])}} >Cancel</Button>
+                                            <Button variant="destructive" onClick={() => { setIngredientList([]), setRatios([]) }} >Cancel</Button>
                                         </DialogClose>
                                     </div>
 
@@ -433,36 +533,146 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
                     <div className="grid grid-cols-3 gap-4">
                         {menu_items.map((menu_item) => (
-                            <Dialog key={menu_item.id} onOpenChange={() => {setIngredientList([]), setRatios([])}}>
-                                <div className="flex flex-col w-[25vw] h-[12vh] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
-                                    <div className="flex flex-col w-[25vw] h-[12vh] justify-center items-center">
+                            <div key={menu_item.id}>
+                                <div className="flex flex-col w-[25vw] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
+                                    <div className="flex flex-col w-[25vw] h-[30vh] justify-center items-center">
                                         <h2 className="text-base font-bold snap-center">{menu_item.name}</h2>
+                                        <Image
+                                            src={menu_item.image_url}
+                                            width={150}
+                                            height={150}
+                                            alt={menu_item.name}
+                                            className="aspect-[1/1] h-auto w-auto object-cover rounded-3xl border"
+                                        />
                                         <h2 className="text-base snap-center">
-                                            {menu_item.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-700">Inactive</div>}
+                                            {menu_item.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-500">Inactive</div>}
                                         </h2>
                                         <div className="flex justify-center items-center gap-4">
-                                            <DialogTrigger asChild>
-                                                <Button variant="default" >Edit</Button>
-                                            </DialogTrigger>
+                                            <Dialog>
+                                                <DialogTrigger onClick={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false) }}>
+                                                    <Button variant="default">Edit</Button>
+                                                </DialogTrigger>
+
+                                                <DialogContent onAbort={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false) }}>
+
+                                                    <DialogHeader>
+                                                        <DialogTitle className="text-lg font-bold">Edit Menu Item</DialogTitle>
+                                                    </DialogHeader>
+
+                                                    <DialogDescription>
+                                                        Fill only the fields that you desire to change.
+                                                    </DialogDescription>
+
+                                                    <form onSubmit={(e) => handleEditMenu(e, menu_item)}>
+
+                                                        <div className="py-2">
+                                                            <Label htmlFor="itemName">Change Item Name</Label>
+                                                            <Input
+                                                                className="w-64"
+                                                                placeholder={menu_item.name}
+                                                                id="itemName"
+                                                                value={itemName}
+                                                                onChange={(e) => handleInputChange(e, setItemName)}
+                                                            />
+                                                        </div>
+
+                                                        <div className="py-2">
+                                                            <Label htmlFor="category">Change Item Category</Label>
+                                                            <Input
+                                                                className="w-64"
+                                                                placeholder={menu_item.category}
+                                                                id="category"
+                                                                value={category}
+                                                                onChange={(e) => handleInputChange(e, setCategory)}
+                                                            />
+                                                        </div>
+
+                                                        <div className="py-2">
+                                                            <Label htmlFor="price">Change Item Price</Label>
+                                                            <Input
+                                                                className="w-64"
+                                                                placeholder={(menu_item.price).toString()}
+                                                                id="price"
+                                                                value={price}
+                                                                onChange={(e) => handleInputChange(e, setPrice)}
+                                                            />
+                                                        </div>
+
+                                                        <div className="">
+                                                            <div className="flex items-center py-2">
+                                                                <Label htmlFor="picture">Change Picture (.webp only)</Label>
+                                                            </div>
+                                                            {uploadedimageURL === '' ?
+                                                                <input
+                                                                    id="picture"
+                                                                    type="file"
+                                                                    className="w-64 pb-2"
+                                                                    placeholder="Select an image"
+                                                                    value={uploadedimageURL}
+                                                                    onChange={(e) => handleImage(e, setUploadedImageURL)}
+                                                                />
+                                                                : uploadedimageURL
+                                                            }
+                                                        </div>
+
+                                                        <div className="py-2 flex items-center">
+                                                            <Checkbox className="p-2" id="showdiv" onClick={(e) => setShowIngredientScroll(!showIngredientScroll)} />
+                                                            <label className="p-2" htmlFor="showdiv">Change Ingredients?</label>
+                                                        </div>
+
+                                                        {showIngredientScroll && (
+                                                            <div className="py-2">
+                                                                <Label>Select all desired ingredients</Label>
+                                                                <ScrollArea className=" py-2 h-[40vh] w-100 p-2 whitespace-nowrap border-2 rounded-lg">
+                                                                    <div className="flex-col space-y-4">
+                                                                        {ingredients.map((item, index) => (
+                                                                            <div key={index} className="flex items-center">
+                                                                                <Checkbox
+                                                                                    id={(item.id).toString()}
+                                                                                    // checked={handlePreCheck(curr_menu_item, item)}
+                                                                                    onClick={() => handleCheckBoxChange(item)}
+                                                                                />
+                                                                                <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </ScrollArea>
+                                                            </div>
+                                                        )}
+
+                                                        <div className="py-2 flex items-center gap-4">
+                                                            <DialogClose asChild onAbort={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false) }}>
+                                                                <Button variant="default" type="submit">Edit Item</Button>
+                                                            </DialogClose>
+                                                            <DialogClose asChild onAbort={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false) }}>
+                                                                <Button variant="destructive" onClick={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false) }}>Cancel</Button>
+                                                            </DialogClose>
+                                                        </div>
+
+                                                        <DialogFooter>
+
+                                                        </DialogFooter>
+                                                    </form>
+                                                </DialogContent>
+                                            </Dialog>
+
                                             <AlertDialog>
                                                 <AlertDialogTrigger>
-                                                    <Button variant="destructive">
-                                                        Delete
-                                                    </Button>
+                                                    {menu_item.is_active ? <Button variant="destructive" className="bg-red-500">Deactivate</Button> : <Button variant="default">Activate</Button>}
                                                 </AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            This action cannot be undone. This will permanently delete the menu item
-                                                            and remove its data from our server.
+                                                            This action will change the status of the menu item. This will alter trend
+                                                            data and change the visibilty of the records of this item. This action can be reversed.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <Button variant="destructive" onClick={() => deleteItem(menu_item)}>
+                                                        <AlertDialogCancel className="bg-red-500 text-white" onClick={() => { menu_item.is_active ? deactivateItem(menu_item) : activateItem(menu_item) }}>
                                                             Continue
-                                                        </Button>
+                                                        </AlertDialogCancel>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
@@ -470,114 +680,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                     </div>
                                 </div>
 
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle className="text-lg font-bold">Edit Menu Item</DialogTitle>
-                                    </DialogHeader>
 
-                                <form onSubmit={handleEditMenu}>
-                                    
-                                    <div className="py-2">
-                                        <Label htmlFor="itemName">Change Item Name</Label>
-                                        <Input
-                                            className="w-64"
-                                            placeholder={menu_item.name}
-                                            id="itemName"
-                                            value={itemName}
-                                            onChange={(e) => handleEditChange(e, setItemName, menu_item.name)}
-                                        />
-                                    </div>
-
-
-                                    <div className="py-2">
-                                        <Label htmlFor="category">Change Item Category</Label>
-                                        <Input
-                                            className="w-64"
-                                            placeholder={menu_item.category}
-                                            id="category"
-                                            value={category}
-                                            onChange={(e) => handleEditChange(e, setCategory, menu_item)}
-                                        />
-                                    </div>
-
-                                    <div className="py-2">
-                                        <Label htmlFor="price">Change Item Price</Label>
-                                        <Input
-                                            className="w-64"
-                                            placeholder={(menu_item.price).toString()}
-                                            id="price"
-                                            value={price}
-                                            onChange={(e) => handleEditChange(e, setPrice, (menu_item.price).toString())}
-                                        />
-                                    </div>
-
-                                    <div className="py-2">
-                                        <Label htmlFor="isactive">Is this menu item active? (true or false)</Label>
-                                        <Input
-                                            className="w-64"
-                                            placeholder={(menu_item.is_active).toString()}
-                                            id="isactive"
-                                            value={isactive}
-                                            onChange={(e) => handleEditChange(e, setIsactive, (menu_item.is_active).toString())}
-                                        />
-                                    </div>
-
-                                    {/* <div>
-                                        <Label htmlFor="message">Change Seasonal Item End Date</Label>
-                                        <Popover modal={true}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[280px] justify-start text-left font-normal",
-                                                        !date && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {date ? format(date, "PPP") : <span>Select Date</span>}
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={date}
-                                                    onSelect={setDate}
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div> */}
-
-                                    <ScrollArea className="h-[40vh] w-100 p-2 whitespace-nowrap overflow-auto border-2 rounded-lg">
-                                        <div className="flex-col space-y-4">
-                                            {ingredients.map((item, index) => (
-                                                <div key={index} className="flex items-center">
-                                                    <Checkbox
-                                                        id={(item.id).toString()}
-                                                        //checked={handlePreCheck(menu_item, item) || false}
-                                                        onClick={(e) => handleCheckBoxChange(e, item)}
-                                                    />
-                                                    <label htmlFor={(item.id).toString()} className="p-2">{item.name}</label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </ScrollArea>
-
-
-                                    <div className="flex items-center gap-4">
-                                        <DialogClose asChild>
-                                            <Button variant="default" type="submit">Edit Item</Button>
-                                        </DialogClose>
-                                        <DialogClose asChild>
-                                            <Button variant="destructive" onClick={() => {setIngredientList([]), setRatios([])}}>Cancel</Button>
-                                        </DialogClose>
-                                    </div>
-                                    <DialogFooter>
-
-                                    </DialogFooter>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
+                            </div>
                         ))}
                     </div>
                 </ScrollArea>
@@ -625,59 +729,76 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                     <DialogTitle className="text-lg font-bold">Add New Ingredient</DialogTitle>
                                 </DialogHeader>
 
+                                <DialogDescription>
+                                    All fields are required.
+                                </DialogDescription>
+
                                 <form onSubmit={handleSubmitIngredient}>
                                     <div className="py-2">
-                                        <Label htmlFor="itemName">Enter Ingredient Name</Label>
+                                        <div className="flex items-center">
+                                            <Label htmlFor="itemName">Enter Ingredient</Label>
+                                            <p className="text-red-500">*</p>
+                                        </div>
                                         <Input
                                             className="w-64"
                                             placeholder="Type ingredient name here."
                                             id="ingredientName"
                                             value={itemName}
                                             onChange={(e) => handleInputChange(e, setItemName)}
+                                            required
+                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please enter an ingredient name.')}
+                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
 
                                     <div className="py-2">
-                                        <Label htmlFor="category">Enter Category</Label>
+                                        <div className="flex items-center">
+                                            <Label htmlFor="category">Enter Category</Label>
+                                            <p className="text-red-500">*</p>
+                                        </div>
                                         <Input
                                             className="w-64"
                                             placeholder="Type ingredient category."
                                             id="category"
                                             value={category}
                                             onChange={(e) => handleInputChange(e, setCategory)}
+                                            required
+                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please enter an ingredient category.')}
+                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
 
                                     <div className="py-2">
-                                        <Label htmlFor="stock">Enter Stock</Label>
+                                        <div className="flex items-center">
+                                            <Label htmlFor="stock">Enter Stock</Label>
+                                            <p className="text-red-500">*</p>
+                                        </div>
                                         <Input
                                             className="w-64"
                                             placeholder="Type ingredient stock."
                                             id="stock"
                                             value={stock}
                                             onChange={(e) => handleInputChange(e, setStock)}
+                                            required
+                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please enter the ingredient stock.')}
+                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
 
                                     <div className="py-2">
-                                        <Label htmlFor="minstock">Enter Minimum Stock Necessary</Label>
+                                        <div className="flex items-center">
+                                            <Label htmlFor="minstock">Enter Minimum Stock Necessary</Label>
+                                            <p className="text-red-500">*</p>
+                                        </div>
                                         <Input
                                             className="w-64"
                                             placeholder="Type minimum stock here."
                                             id="minstock"
                                             value={minstock}
                                             onChange={(e) => handleInputChange(e, setMinstock)}
-                                        />
-                                    </div>
-
-                                    <div className="py-2">
-                                        <Label htmlFor="active">Is this ingredient active? (true or false)</Label>
-                                        <Input
-                                            className="w-64"
-                                            placeholder="true or false"
-                                            id="active"
-                                            value={isactive}
-                                            onChange={(e) => handleInputChange(e, setIsactive)}
+                                            required
+                                            onInvalid={e => (e.target as HTMLInputElement).setCustomValidity('Please enter a minimum ingredient stock.')}
+                                            onInput={e => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                     </div>
 
@@ -697,7 +818,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
                     <div className="grid grid-cols-3 gap-4">
                         {ingredients.map((ingredient) => (
-                            <Dialog key={ingredient.id}>
+                            <div key={ingredient.id}>
                                 <div className="flex flex-col w-[25vw] h-[12vh] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
                                     <div className="flex flex-col w-[25vw] h-[12vh] justify-center items-center">
                                         <h2 className="text-base font-bold snap-center">{ingredient.name}</h2>
@@ -705,78 +826,99 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             {ingredient.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-700">Inactive</div>}
                                         </h2>
                                         <div className="flex justify-center items-center gap-4">
-                                            <DialogTrigger asChild>
-                                                <Button variant="default" onClick={() => editIngredient(ingredient)}>Edit</Button>
-                                            </DialogTrigger>
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <Button variant="default">Edit</Button>
+                                                </DialogTrigger>
+
+                                                <DialogContent>
+                                                    <DialogHeader>
+                                                        <DialogTitle className="text-lg font-bold">Edit Ingredient</DialogTitle>
+                                                    </DialogHeader>
+
+                                                    <form onSubmit={(e) => handleSubmitEditIngredient(e, ingredient)}>
+                                                        <div className="py-2">
+                                                            <Label htmlFor="ingredientName">Enter Ingredient Name</Label>
+                                                            <Input
+                                                                className="w-64"
+                                                                placeholder={ingredient.name}
+                                                                id="ingredientName"
+                                                                value={itemName}
+                                                                onChange={(e) => handleInputChange(e, setItemName)}
+                                                            />
+                                                        </div>
+
+                                                        <div className="py-2">
+                                                            <Label htmlFor="category">Enter Category</Label>
+                                                            <Input
+                                                                className="w-64"
+                                                                placeholder={ingredient.category}
+                                                                id="category"
+                                                                value={category}
+                                                                onChange={(e) => handleInputChange(e, setCategory)}
+                                                            />
+                                                        </div>
+
+                                                        <div className="py-2">
+                                                            <Label htmlFor="stock">Enter Stock</Label>
+                                                            <Input
+                                                                className="w-64"
+                                                                placeholder={(ingredient.stock).toString()}
+                                                                id="stock"
+                                                                value={stock}
+                                                                onChange={(e) => handleInputChange(e, setStock)}
+                                                            />
+                                                        </div>
+
+                                                        <div className="py-2">
+                                                            <Label htmlFor="minstock">Enter Minimum Stock Necessary</Label>
+                                                            <Input
+                                                                className="w-64"
+                                                                placeholder={(ingredient.min_stock).toString()}
+                                                                id="minstock"
+                                                                value={minstock}
+                                                                onChange={(e) => handleInputChange(e, setMinstock)}
+                                                            />
+                                                        </div>
+
+                                                        <div className="py-2 flex items-center gap-4">
+                                                            <DialogClose asChild>
+                                                                <Button variant="default" type="submit">Edit Ingredient</Button>
+                                                            </DialogClose>
+                                                            <DialogClose asChild>
+                                                                <Button variant={"destructive"} >Cancel</Button>
+                                                            </DialogClose>
+                                                        </div>
+
+                                                    </form>
+                                                </DialogContent>
+                                            </Dialog>
+
+
                                             <AlertDialog>
                                                 <AlertDialogTrigger>
-                                                    <Button variant="destructive">
-                                                        Delete
-                                                    </Button>
+                                                    {ingredient.is_active ? <Button variant="destructive" className="bg-red-500">Deactivate</Button> : <Button variant="default">Activate</Button>}
                                                 </AlertDialogTrigger>
                                                 <AlertDialogContent>
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            This action cannot be undone. This will permanently delete the ingredient
-                                                            and remove its data from our server.
+                                                            This action will change the status of the ingredient. This will alter trend
+                                                            data and change the visibilty of the records of this item. This action can be reversed.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <Button variant="destructive" onClick={() => deleteIngredient(ingredient)}>
+                                                        <AlertDialogCancel className="bg-red-500 text-white" onClick={() => { ingredient.is_active ? deactivateIngredient(ingredient) : activateIngredient(ingredient) }}>
                                                             Continue
-                                                        </Button>
+                                                        </AlertDialogCancel>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
                                         </div>
                                     </div>
                                 </div>
-
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle className="text-lg font-bold">Edit Ingredient</DialogTitle>
-                                    </DialogHeader>
-
-                                    <div>
-                                        <Label htmlFor="name">Change Item Name</Label>
-                                        <Input className="w-64" placeholder={ingredient.name} id="name" />
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="category">Change Category</Label>
-                                        <Input className="w-64" placeholder={ingredient.category} id="category" />
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="stock">Change Stock</Label>
-                                        <Input className="w-64" placeholder={(ingredient.stock).toString()} id="stock" />
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="minstock">Change Minimum Stock</Label>
-                                        <Input className="w-64" placeholder={(ingredient.min_stock).toString()} id="minstock" />
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="active">Is this ingredient active? (true or false)</Label>
-                                        <Input className="w-64" placeholder={(ingredient.is_active).toString()} id="active" />
-                                    </div>
-
-                                    <div className="flex items-center gap-4">
-                                        <DialogClose asChild>
-                                            <Button variant="default" onClick={() => editIngredient(ingredient)}>Edit Ingredient</Button>
-                                        </DialogClose>
-                                        <DialogClose asChild>
-                                            <Button variant={"destructive"} >Cancel</Button>
-                                        </DialogClose>
-                                    </div>
-                                    <DialogFooter>
-
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
+                            </div>
                         ))}
                     </div>
                 </ScrollArea>
