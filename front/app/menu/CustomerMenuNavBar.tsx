@@ -166,13 +166,13 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
         <div className="border-b pt-4">
             <div className="flex h-[6vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
-                    <div className="flex justify-start">
+                    <div className="flex justify-start border-2 p-4 rounded-full">
                         {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="text-lg font-bold transition-colors hover:text-primary">Dashboard</Link>}
                         {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="text-lg font-bold transition-colors"> {temprature + " °F"} </p>}
                     </div>
-                    <div className="flex justify-center flex-grow">
+                    <div className="flex justify-center flex-grow flex-col">
                         {cart.length <= 0 ?
-                            <p className="text-xl font-bold text-center">{user?.name === undefined ? "Rev's Grill" : translated.welcome + ", " + user.name.split(" ")[0]}</p> :
+                            <p className="text-xl font-bold text-center">{user?.name === undefined ? "Rev's American Grill" : translated.welcome + ", " + user.name.split(" ")[0]}</p> :
                             <Drawer direction="right">
                                 <DrawerTrigger>
                                     <Button variant="default" className="text-lg font-bold">{"Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
@@ -214,7 +214,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                             </Drawer>
                         }
                     </div>
-                    <div className="flex justify-end gap-x-16">
+                    <div className="flex justify-end gap-x-16 border-2 p-4 rounded-full">
                         <Dialog>
                             <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
                             <DialogContent>
