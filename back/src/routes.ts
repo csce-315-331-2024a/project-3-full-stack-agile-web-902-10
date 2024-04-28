@@ -148,6 +148,25 @@ export type UsersUpdate = Parameters<typeof prisma.users.update>[0];
  */
 export type UsersDelete = Parameters<typeof prisma.users.delete>[0];
 
+/**
+ * The kitchen create query
+ */
+export type KitchenCreate = Parameters<typeof prisma.kitchen.create>[0];
+
+/**
+ * The kitchen read query
+ */
+export type KitchenRead = Parameters<typeof prisma.kitchen.findMany>[0];
+
+/**
+ * The kitchen update query
+ */
+export type KitchenUpdate = Parameters<typeof prisma.kitchen.update>[0];
+
+/**
+ * The kitchen delete query
+ */
+export type KitchenDelete = Parameters<typeof prisma.kitchen.delete>[0];
 
 /**
  * Helper function that verifies the {@link AuthPacket}
@@ -668,13 +687,73 @@ export async function usersDelete(auth: AuthPacket, delete_query: UsersDelete) {
     }
 }
 
-// export async function cartCreate();
+/**
+ * Route that creates a new kitchen cart
+ * @param auth the {@link AuthPacket}
+ * @param create_query the {@link KitchenCreate}
+ * @returns void
+ */
+export async function kitchenCreate(auth: AuthPacket, create_query: KitchenCreate) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        const newKitchen = await prisma.kitchen.create(create_query);
+        io.emit("kitchen", await prisma.kitchen.findMany());
+    } catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
 
-// export async function cartRead();
+/**
+ * Route that reads all kitchen carts
+ * @param read_query the {@link KitchenRead}
+ * @param callback the callback function
+ * @returns void
+ */
+export async function kitchenRead(read_query: KitchenRead, callback: any) {
+    try {
+        callback(await prisma.kitchen.findMany(read_query || {}));
+    } catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
 
-// export async function cartUpdate();
+/**
+ * Route that updates a kitchen cart
+ * @param auth the {@link AuthPacket}
+ * @param update_query the {@link KitchenUpdate}
+ * @returns void
+ */
+export async function kitchenUpdate(auth: AuthPacket, update_query: KitchenUpdate) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        const updatedKitchen = await prisma.kitchen.update(update_query);
+        io.emit("kitchen", await prisma.kitchen.findMany());
+    } catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
 
-// export async function cartDelete();
+/**
+ * Route that deletes a kitchen cart
+ * @param auth the {@link AuthPacket}
+ * @param delete_query the {@link KitchenDelete}
+ * @returns void
+ */
+export async function kitchenDelete(auth: AuthPacket, delete_query: KitchenDelete) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        await prisma.kitchen.delete(delete_query);
+        io.emit("kitchen", await prisma.kitchen.findMany());
+    } catch (error) {
+        console.error("ERROR: " + error);
+    }
+}
 
 /**
  * Route that translates a JSON object to a specified language
@@ -801,6 +880,4 @@ export function setupTestListen(io: any) {
     io.on("disconnect", (socket: any) => {
         console.log("Disconnected: " + socket.id);
     });
-
-    console.log("Got here");
 }
