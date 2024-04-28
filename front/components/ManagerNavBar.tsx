@@ -41,7 +41,7 @@ export default function ManagerNavBar({ username }: {
 
                     <div className="flex justify-center grow">
                         <div className="flex flex-col justify-center">
-                            <p className="text-lg font-bold">{username === undefined ? "Manager Functions" : "Dashboard - " + username.split(" ")[0]}</p>
+                            <p className="text-lg font-bold">{username === undefined ? "Dashboard" : "Dashboard - " + username.split(" ")[0]}</p>
                         </div>
                     </div>
 

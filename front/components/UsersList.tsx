@@ -60,9 +60,10 @@ export default function UsersList({ users, user }:
                 {filteredUsers.map(user => (
                     <Dialog key={user.id}>
                         <DialogTrigger asChild>
-                            <Button variant="outline" className="flex-col justify-evenly w-[25vw] h-[20vh]">
-                                <h2 className="text-2xl font-bold">{user.name}</h2>
-                                <h2 className="text-2xl">{user?.role}</h2>
+                            <Button variant="outline" className="flex-col w-[25vw] h-[20vh]">
+                                <h2 className="text-3xl font-bold">{user.name}</h2>
+                                {/* <p className="text-slate-500 py-4">{user.email}</p> */}
+                                <h1 className="text-xl">{user?.role}</h1>
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="">

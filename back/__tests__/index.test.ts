@@ -1,216 +1,323 @@
-import * as routes from "../src/routes";
-import { prismaMock } from "../src/singleton";
-import { ioMock } from "../src/socketmock";
-
+import io, { Socket } from 'socket.io-client'
 import {
-    Ingredient,
-    Ingredients_Menu,
-    Login_Log,
-    Menu_Item,
-    Order_Log,
-    Users,
-    Order_Status,
-    Roles,
-} from "@prisma/client";
+    setupTestListen,
+    IngredientCreate,
+    IngredientRead,
+    IngredientUpdate,
+    IngredientDelete,
+    IngredientsMenuCreate,
+    IngredientsMenuRead,
+    IngredientsMenuUpdate,
+    IngredientsMenuDelete,
+    LoginLogCreate,
+    LoginLogRead,
+    LoginLogUpdate,
+    LoginLogDelete,
+    MenuItemCreate,
+    MenuItemRead,
+    MenuItemUpdate,
+    MenuItemDelete,
+    OrderLogCreate,
+    OrderLogRead,
+    OrderLogUpdate,
+    OrderLogDelete,
+    UsersCreate,
+    UsersRead,
+    UsersUpdate,
+    UsersDelete,
+} from "../src/routes";
+import prisma from '../src/client';
+import { Ingredient, Ingredients_Menu, Login_Log, Menu_Item, Order_Log, Users } from '@prisma/client';
 
-const mock_users: Users[] = [
-    {
-        id: 0,
-        name: "authed",
-        email: "authed@utsawb.dev",
-        avatar: null,
-        is_employee: true,
-        is_manager: true,
-        jwt: "1",
-        role: Roles.Admin,
-    },
-    {
-        id: 1,
-        name: "non authed",
-        email: "nonauthed@utsawb.dev",
-        avatar: null,
-        is_employee: false,
-        is_manager: false,
-        jwt: "2",
-        role: Roles.Customer,
-    },
-];
-
-const mock_auth: routes.AuthPacket = {
-    email: mock_users[0].email,
-    jwt: mock_users[0].jwt,
+const auth = {
+    email: "test@utsawb.dev",
+    jwt: 1,
 }
 
-const mock_ingredients: Ingredient[] = [
-    {
-        id: 0,
-        name: "Flour",
-        stock: 120,
-        category: "Baking",
-        min_stock: 50,
-        is_active: true
-    },
-    {
-        id: 1,
-        name: "Sugar",
-        stock: 80,
-        category: "Baking",
-        min_stock: 30,
-        is_active: true
-    },
-    {
-        id: 2,
-        name: "Olive Oil",
-        stock: 60,
-        category: "Oil",
-        min_stock: 20,
-        is_active: true
-    },
-    {
-        id: 3,
-        name: "Basil",
-        stock: 30,
-        category: "Herbs",
-        min_stock: 10,
-        is_active: false
-    },
-    {
-        id: 4,
-        name: "Tomatoes",
-        stock: 0,
-        category: "Vegetables",
-        min_stock: 20,
-        is_active: true
-    }
-];
-
-const mock_login_logs: Login_Log[] = [
-    {
-        id: 0,
-        time: new Date('2024-04-23T08:00:00Z'),
-        login: true,
-        user_id: 101
-    },
-    {
-        id: 1,
-        time: new Date('2024-04-23T12:00:00Z'),
-        login: false,
-        user_id: 101
-    },
-    {
-        id: 2,
-        time: new Date('2024-04-23T09:15:00Z'),
-        login: true,
-        user_id: 102
-    },
-    {
-        id: 3,
-        time: new Date('2024-04-23T17:30:00Z'),
-        login: false,
-        user_id: 102
-    },
-    {
-        id: 4,
-        time: new Date('2024-04-23T10:00:00Z'),
-        login: true,
-        user_id: 103
-    },
-    {
-        id: 5,
-        time: new Date('2024-04-23T15:00:00Z'),
-        login: false,
-        user_id: 103
-    }
-];
-
-const mock_menu_items: Menu_Item[] = [
-    {
-        id: 1,
-        name: "Classic Burger",
-        price: 8.99,
-        image_url: "https://example.com/images/classic-burger.jpg",
-        category: "Main Course",
-        is_active: true
-    },
-    {
-        id: 2,
-        name: "Vegan Salad",
-        price: 7.50,
-        image_url: "https://example.com/images/vegan-salad.jpg",
-        category: "Salads",
-        is_active: true
-    },
-    {
-        id: 3,
-        name: "Chocolate Cake",
-        price: 4.25,
-        image_url: "https://example.com/images/chocolate-cake.jpg",
-        category: "Desserts",
-        is_active: true
-    },
-    {
-        id: 4,
-        name: "Cappuccino",
-        price: 3.00,
-        image_url: "https://example.com/images/cappuccino.jpg",
-        category: "Beverages",
-        is_active: true
-    },
-    {
-        id: 5,
-        name: "Cheese Pizza",
-        price: 9.99,
-        image_url: "https://example.com/images/cheese-pizza.jpg",
-        category: "Main Course",
-        is_active: false
-    }
-];
-
-const mock_order_logs: Order_Log[] = [
-    {
-        id: 1,
-        time: new Date('2024-04-23T12:30:00Z'),
-        price: 24.95,
-        menu_items: JSON.stringify([1, 3]), // IDs of menu items
-        ingredients: JSON.stringify([2, 4, 6]), // IDs of ingredients used
-        status: Order_Status.Completed
-    },
-    {
-        id: 2,
-        time: new Date('2024-04-23T13:00:00Z'),
-        price: 15.50,
-        menu_items: JSON.stringify([2]), // IDs of menu items
-        ingredients: JSON.stringify([1, 5]), // IDs of ingredients used
-        status: Order_Status.Created
-    },
-    {
-        id: 3,
-        time: new Date('2024-04-23T13:15:00Z'),
-        price: 8.75,
-        menu_items: JSON.stringify([4]), // IDs of menu items
-        ingredients: JSON.stringify([3]), // IDs of ingredients used
-        status: Order_Status.Cooking
-    }
-];
-
-test("verifyTokenHappy", async () => {
-    prismaMock.users.findUnique.mockResolvedValue(mock_users[0]);
-    await expect(routes.verifyToken(mock_users[0].email, mock_users[0].jwt)).resolves.toEqual(true);
+let socket: Socket;
+beforeEach(async () => {
+    socket = io('localhost:5000');
 });
 
-test("verifyTokenUnhappy", async () => {
-    prismaMock.users.findUnique.mockResolvedValue(mock_users[1]);
-    await expect(routes.verifyToken(mock_users[1].email, mock_users[1].jwt)).resolves.toEqual(false);
+afterEach(async () => {
+    socket.close();
 });
 
 test("ingredientCreate", async () => {
-    prismaMock.ingredient.create.mockResolvedValue(mock_ingredients[0]);
-    prismaMock.ingredient.findMany.mockResolvedValue(mock_ingredients);
+    const ingredient: IngredientCreate = {
+        data: {
+            name: "test",
+            stock: 1,
+            category: "test",
+            min_stock: 1,
+            is_active: false,
+        }
+    }
+    socket.on("ingredient", (data: Ingredient[]) => {
+        expect(data).toEqual(prisma.ingredient.findMany());
+    });
+    socket.emit("ingredientCreate", ingredient, auth);
+});
 
-    jest.mock('../src/index', () => ({
-        verifyToken: jest.fn().mockReturnValue(true)
-    }));
+test("ingredientRead", async () => {
+    socket.emit("ingredientRead", {}, (data: Ingredient[]) =>
+        expect(data).toEqual(prisma.ingredient.findMany()),
+    );
+});
 
-    await routes.ingredientCreate(mock_auth, { data: mock_ingredients[0] });
-    expect(ioMock.emit).toHaveBeenCalledWith("ingredient", mock_ingredients);
+test("ingredientUpdate", async () => {
+    const ingredient: IngredientUpdate = {
+        where: { name: "test" },
+        data: {
+            stock: 2,
+            category: "test",
+            min_stock: 2,
+            is_active: false,
+        }
+    }
+    socket.on("ingredient", (data: Ingredient[]) => {
+        expect(data).toEqual(prisma.ingredient.findMany());
+    });
+    socket.emit("ingredientUpdate", ingredient, auth);
+});
+
+test("ingredientDelete", async () => {
+    const ingredient: IngredientDelete = {
+        where: { name: "test" }
+    }
+    socket.on("ingredient", (data: Ingredient[]) => {
+        expect(data).toEqual(prisma.ingredient.findMany());
+    });
+    socket.emit("ingredientDelete", ingredient, auth);
+});
+
+test("ingredientsMenuCreate", async () => {
+    const ingredientsMenu: IngredientsMenuCreate = {
+        data: {
+            menu_id: 1,
+            ingredients_id: 1,
+            quantity: 1,
+        }
+    }
+    socket.on("ingredientsMenu", (data: Ingredients_Menu[]) => {
+        expect(data).toEqual(prisma.ingredients_Menu.findMany());
+    });
+    socket.emit("ingredientsMenuCreate", ingredientsMenu, auth);
+});
+
+test("ingredientsMenuRead", async () => {
+    socket.emit("ingredientsMenuRead", {}, (data: Ingredients_Menu[]) =>
+        expect(data).toEqual(prisma.ingredients_Menu.findMany()),
+    );
+});
+
+test("ingredientsMenuUpdate", async () => {
+    const ingredientsMenu: IngredientsMenuUpdate = {
+        where: { id: 1 },
+        data: {
+            quantity: 2,
+        }
+    }
+    socket.on("ingredientsMenu", (data: Ingredients_Menu[]) => {
+        expect(data).toEqual(prisma.ingredients_Menu.findMany());
+    });
+    socket.emit("ingredientsMenuUpdate", ingredientsMenu, auth);
+});
+
+test("ingredientsMenuDelete", async () => {
+    const ingredientsMenu: IngredientsMenuDelete = {
+        where: { id: 1 }
+    }
+    socket.on("ingredientsMenu", (data: Ingredients_Menu[]) => {
+        expect(data).toEqual(prisma.ingredients_Menu.findMany());
+    });
+    socket.emit("ingredientsMenuDelete", ingredientsMenu, auth);
+});
+
+test("loginLogCreate", async () => {
+    const loginLog: LoginLogCreate = {
+        data: {
+            user_id: 1,
+            time: new Date(),
+            login: true,
+        }
+    }
+    socket.on("loginLog", (data: Login_Log[]) => {
+        expect(data).toEqual(prisma.login_Log.findMany());
+    });
+    socket.emit("loginLogCreate", loginLog, auth);
+});
+
+test("loginLogRead", async () => {
+    socket.emit("loginLogRead", {}, (data: Login_Log[]) =>
+        expect(data).toEqual(prisma.login_Log.findMany()),
+    );
+});
+
+test("loginLogUpdate", async () => {
+    const loginLog: LoginLogUpdate = {
+        where: { id: 1 },
+        data: {
+            login: false,
+        }
+    }
+    socket.on("loginLog", (data: Login_Log[]) => {
+        expect(data).toEqual(prisma.login_Log.findMany());
+    });
+    socket.emit("loginLogUpdate", loginLog, auth);
+});
+
+test("loginLogDelete", async () => {
+    const loginLog: LoginLogDelete = {
+        where: { id: 1 }
+    }
+    socket.on("loginLog", (data: Login_Log[]) => {
+        expect(data).toEqual(prisma.login_Log.findMany());
+    });
+    socket.emit("loginLogDelete", loginLog, auth);
+});
+
+test("menuItemCreate", async () => {
+    const menuItem: MenuItemCreate = {
+        data: {
+            name: "test",
+            price: 1,
+            image_url: "/test",
+            category: "test",
+            is_active: false,
+        }
+    }
+    socket.on("menuItem", (data: Menu_Item[]) => {
+        expect(data).toEqual(prisma.menu_Item.findMany());
+    });
+    socket.emit("menuItemCreate", menuItem, auth);
+});
+
+test("menuItemRead", async () => {
+    socket.emit("menuItemRead", {}, (data: Menu_Item[]) =>
+        expect(data).toEqual(prisma.menu_Item.findMany()),
+    );
+});
+
+test("menuItemUpdate", async () => {
+    const menuItem: MenuItemUpdate = {
+        where: { name: "test" },
+        data: {
+            price: 2,
+            image_url: "/test",
+            category: "test",
+            is_active: false,
+        }
+    }
+    socket.on("menuItem", (data: Menu_Item[]) => {
+        expect(data).toEqual(prisma.menu_Item.findMany());
+    });
+    socket.emit("menuItemUpdate", menuItem, auth);
+});
+
+test("menuItemDelete", async () => {
+    const menuItem: MenuItemDelete = {
+        where: { name: "test" }
+    }
+    socket.on("menuItem", (data: Menu_Item[]) => {
+        expect(data).toEqual(prisma.menu_Item.findMany());
+    });
+    socket.emit("menuItemDelete", menuItem, auth);
+});
+
+test("orderLogCreate", async () => {
+    const orderLog: OrderLogCreate = {
+        data: {
+            time: new Date(),
+            price: 1,
+            menu_items: "1, 2, 3",
+            ingredients: "1, 2, 3",
+            status: "Completed"
+        }
+    }
+    socket.on("orderLog", (data: Order_Log[]) => {
+        expect(data).toEqual(prisma.order_Log.findMany());
+    });
+    socket.emit("orderLogCreate", orderLog, auth);
+});
+
+test("orderLogRead", async () => {
+    socket.emit("orderLogRead", {}, (data: Order_Log[]) =>
+        expect(data).toEqual(prisma.order_Log.findMany()),
+    );
+});
+
+test("orderLogUpdate", async () => {
+    const orderLog: OrderLogUpdate = {
+        where: { id: 1 },
+        data: {
+            status: "Completed",
+        }
+    }
+    socket.on("orderLog", (data: Order_Log[]) => {
+        expect(data).toEqual(prisma.order_Log.findMany());
+    });
+    socket.emit("orderLogUpdate", orderLog, auth);
+});
+
+test("orderLogDelete", async () => {
+    const orderLog: OrderLogDelete = {
+        where: { id: 1 }
+    }
+    socket.on("orderLog", (data: Order_Log[]) => {
+        expect(data).toEqual(prisma.order_Log.findMany());
+    });
+    socket.emit("orderLogDelete", orderLog, auth);
+});
+
+test("usersCreate", async () => {
+    const users: UsersCreate = {
+        data: {
+            email: "test@revs.com",
+            name: "test",
+            avatar: null,
+            is_manager : false,
+            is_employee: false,
+            jwt: "1",
+            role: "Customer",
+        }
+    };
+    socket.on("users", (data: Users[]) => {
+        expect(data).toEqual(prisma.users.findMany());
+    });
+    socket.emit("usersCreate", users, auth);
+});
+
+test("usersRead", async () => {
+    socket.emit("usersRead", {}, (data: Users[]) =>
+        expect(data).toEqual(prisma.users.findMany()),
+    );
+});
+
+test("usersUpdate", async () => {
+    const users: UsersUpdate = {
+        where: { email: "test@revs.com" },
+        data: {
+            name: "test",
+            avatar: null,
+            is_manager : false,
+            is_employee: false,
+            jwt: "1",
+            role: "Customer",
+        }
+    }
+    socket.on("users", (data: Users[]) => {
+        expect(data).toEqual(prisma.users.findMany());
+    });
+    socket.emit("usersUpdate", users, auth);
+});
+
+test("usersDelete", async () => {
+    const users: UsersDelete = {
+        where: { email: "test@revs.com" }
+    }
+    socket.on("users", (data: Users[]) => {
+        expect(data).toEqual(prisma.users.findMany());
+    });
+    socket.emit("usersDelete", users, auth);
 });

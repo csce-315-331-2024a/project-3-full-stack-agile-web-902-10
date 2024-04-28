@@ -3,7 +3,7 @@ import { Menu_Item, Ingredient } from '@prisma/client';
 
 export type CartItem = {
     menu_item: Menu_Item;
-    ingredients: Ingredient[];
+    ingredient_ids: number[];
     quantity: number;
 };
 
@@ -26,6 +26,6 @@ export const createCartStore = (initState: CartState = defaultCartState) => {
     return createStore<CartStore>((set) => ({
         ...initState,
         clearCart: () => set({ cart: [] }),
-        setCart: (cart: CartItem[]) => set({ cart }),
+        setCart: (new_cart: CartItem[]) => set((state) => ({ cart: [...new_cart] })),
     }));
 }

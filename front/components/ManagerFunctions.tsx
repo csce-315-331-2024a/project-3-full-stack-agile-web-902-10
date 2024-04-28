@@ -78,6 +78,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const [ingredients, setIngredients] = useState(ingredients_init);
     const [ingredientsMenu, setIngredientsMenu] = useState(menuIngredients_init);
     const [users, setUsers] = useState(users_init);
+    const [currentUser, setCurrentUser] = useState<Users | null>(user);
 
     // in case we need to listen to something
     const socket = useSocket();
@@ -104,12 +105,27 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             });
 
             socket.emit('users:read', undefined, (new_users: Users[]) => {
+                const moddedUser = new_users.find((u) => u.id === currentUser?.id);
+                if (moddedUser === undefined || moddedUser.role === Roles.Customer) {
+                    router.push("/menu");
+                }
+                if (moddedUser?.role !== currentUser?.role) {
+                    location.reload();
+                }
+                setCurrentUser(new_users.find((u) => u.id === user?.id) || null);
                 setUsers(new_users);
             });
 
             socket.on('users', (new_users: Users[]) => {
+                const moddedUser = new_users.find((u) => u.id === currentUser?.id);
+                if (moddedUser === undefined || moddedUser.role === Roles.Customer) {
+                    router.push("/menu");
+                }
+                if (moddedUser?.role !== currentUser?.role) {
+                    location.reload();
+                }
+                setCurrentUser(new_users.find((u) => u.id === user?.id) || null);
                 setUsers(new_users);
-                router.refresh();
             });
         }
     }, [socket]);
@@ -174,8 +190,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     }
 
     const auth: AuthPacket = {
-        email: user?.email ?? "",
-        jwt: user?.jwt ?? ""
+        email: currentUser?.email ?? "",
+        jwt: currentUser?.jwt ?? ""
     };
 
     const handleInputChange = (e: any, setter: any) => {
@@ -380,20 +396,34 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     return (
         <div className="flex h-[90vh] overflow-hidden flex-row gap-4">
             {/* Manager Options */}
-            <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
+            <div className="flex flex-col w-auto justify-center items-center">
+            <p className="text-xl py-4 font-bold"> Options </p>
+            <Separator/>
+            <ScrollArea className="h-[100vh] w-auto p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
-                    <p className="text-lg font-bold"> Options </p>
-                    <Separator />
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>}
-                    {user?.role === Roles.Admin && (<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager || user?.role === Roles.Kitchen) &&<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleBoard}>Menu Board</Button>
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Cashier) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/cashier")}>Cashier</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Kitchen) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) &&
+                        <div className="w-[9vw] h-[4vh] flex flex-col justify-center">
+                            <Separator />
+                            <h2 className="pt-4 text-lg flex-grow text-center">Management</h2>
+                            <h2 className="text-lg flex-grow text-center">Functions</h2>
+                        </div>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleBoard}>Menu Board</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>}
+                    {currentUser?.role === Roles.Admin && (<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) &&
+                        <div className="w-[9vw] h-[4vh] flex flex-col justify-center">
+                            <Separator />
+                            <h2 className="pt-6 text-lg flex-grow text-center">Trend Data</h2>
+                        </div>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
                 </div>
             </ScrollArea>
+            </div>
 
             {!showEditDiv && !showEmployeeDiv && !showIngredientDiv && !showOrder && !showLogin && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
@@ -404,7 +434,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
             {/* if editing menu items */}
             {showEditDiv && (
-                <ScrollArea className="flex-col w-auto items-center h-[91vh]">
+                <ScrollArea className="flex-col items-center h-[88vh] w-[90vw] pb-4">
                     <div className="grid grid-cols-1 gap-4 p-4">
                         <Dialog>
                             <div className="flex flex-col w-auto justify-center items-center">
@@ -560,7 +590,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             width={150}
                                             height={150}
                                             alt={menu_item.name}
-                                            className="aspect-[1/1] h-auto w-auto object-cover rounded-3xl border"
+                                            className="aspect-[1/1] h-[16vh] w-[8vw] object-cover rounded-3xl border"
                                         />
                                         <h2 className="text-base snap-center">
                                             {menu_item.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-500">Inactive</div>}
@@ -708,7 +738,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
 
             {showIngredientDiv && (
-                <ScrollArea className="flex-col w-auto items-center h-[91vh]">
+                <ScrollArea className="flex-col w-[90vw] items-center h-[91vh]">
                     <div className="grid grid-cols-1 gap-4 p-4">
                         <Dialog>
                             <div className="flex flex-col w-auto justify-center items-center">
@@ -811,10 +841,10 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     <div className="grid grid-cols-3 gap-4">
                         {ingredients.map((ingredient) => (
                             <div key={ingredient.id}>
-                                <div className="flex flex-col w-[25vw] h-[12vh] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
+                                <div className="flex flex-col w-[25vw] h-[20vh] border-solid justify-center items-center border-2 rounded-lg hover:bg-foreground/5 transition-all">
                                     <div className="flex flex-col w-[25vw] h-[12vh] justify-center items-center">
-                                        <h2 className="text-base font-bold snap-center">{ingredient.name}</h2>
-                                        <h2 className="text-base snap-center">
+                                        <h2 className="text-2xl py-2 font-bold snap-center">{ingredient.name}</h2>
+                                        <h2 className="text-base pb-2 snap-center">
                                             {ingredient.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-700">Inactive</div>}
                                         </h2>
                                         <div className="flex justify-center items-center gap-4">
@@ -918,20 +948,20 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
             {/* Employee management */}
             {showEmployeeDiv && (
-                <UsersList users={users} user={user} />
+                <UsersList users={users} user={currentUser} />
             )}
 
             {/* Order log */}
             {showOrder && (
                 <ScrollArea className="w-[90vw]">
-                    <OrderHistoryDesktop/>
+                    <OrderHistoryDesktop />
                 </ScrollArea>
             )}
 
             {/* login history */}
             {showLogin && (
                 <ScrollArea className="w-[90vw]">
-                    <LoginLogDesktop/>
+                    <LoginLogDesktop />
                 </ScrollArea>
             )}
         </div>

@@ -20,7 +20,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
     const [ingredients, setIngredients] = useState<Ingredient[]>(ingredients_init);
-    const [ingredient_menus, setIngredientMenus] = useState<Ingredients_Menu[]>([]);
+    const [ingredient_menus, setIngredientMenus] = useState<Ingredients_Menu[]>(ingredient_menus_init);
     const [categories, setCategories] = useState<string[]>(Array.from(new Set(menu_items_init.map((item) => item.category))));
 
     const onCategoryClick = (category: string) => {
@@ -129,7 +129,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
     }, [socket, language]);
 
     return (
-        <div className="hidden lg:flex flex-row">
+        <div className="flex flex-row">
             <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center transition-all">
                     <h1 className="text-xl font-bold"> {translated.category} </h1>

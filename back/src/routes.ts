@@ -668,6 +668,14 @@ export async function usersDelete(auth: AuthPacket, delete_query: UsersDelete) {
     }
 }
 
+// export async function cartCreate();
+
+// export async function cartRead();
+
+// export async function cartUpdate();
+
+// export async function cartDelete();
+
 /**
  * Route that translates a JSON object to a specified language
  * @param obj the object to be translated
@@ -702,4 +710,97 @@ export async function translateArray(arr: string[], to: string, callback: any) {
     } catch (error) {
         console.error("ERROR: " + error);
     }
+}
+
+
+export function setupListen() {
+    io.on("connect", (socket) => {
+        console.log("Connected: " + socket.id);
+        socket.on("ingredient:create", ingredientCreate);
+        socket.on("ingredient:read", ingredientRead);
+        socket.on("ingredient:update", ingredientUpdate);
+        socket.on("ingredient:delete", ingredientDelete);
+        socket.on("ingredientMenu:create", ingredientsMenuCreate);
+        socket.on("ingredientMenu:read", ingredientsMenuRead);
+        socket.on("ingredientMenu:update", ingredientsMenuUpdate);
+        socket.on("ingredientMenu:delete", ingredientsMenuDelete);
+        socket.on("loginLog:create", loginLogCreate);
+        socket.on("loginLog:read", loginLogRead);
+        socket.on("loginLog:update", loginLogUpdate);
+        socket.on("loginLog:delete", loginLogDelete);
+        socket.on("menuItem:create", menuItemCreate);
+        socket.on("menuItem:add", menuItemAdd);
+        socket.on("menuItem:read", menuItemRead);
+        socket.on("menuItem:update", menuItemUpdate);
+        socket.on("menuItem:delete", menuItemDelete);
+        socket.on("menuItem:clear", menuItemClear);
+        socket.on("orderLog:create", orderLogCreate);
+        socket.on("orderLog:read", orderLogRead);
+        socket.on("orderLog:update", orderLogUpdate);
+        socket.on("orderLog:delete", orderLogDelete);
+        socket.on("users:create", usersCreate);
+        socket.on("users:read", usersRead);
+        socket.on("users:update", usersUpdate);
+        socket.on("users:delete", usersDelete);
+        socket.on("translateJSON", translateJSON);
+        socket.on("translateArray", translateArray);
+        socket.onAny((event, ...args) => {
+            console.log("Event: " + event);
+        });
+        socket.on("disconnect", (reason) => {
+            console.log("Disconnected: " + socket.id + " (" + reason + ")");
+        });
+    });
+
+    io.on("disconnect", (socket) => {
+        console.log("Disconnected: " + socket.id);
+    });
+
+    console.log("Got here");
+}
+
+export function setupTestListen(io: any) {
+    io.on("connect", (socket: any) => {
+        console.log("Connected: " + socket.id);
+        socket.on("ingredient:create", ingredientCreate);
+        socket.on("ingredient:read", ingredientRead);
+        socket.on("ingredient:update", ingredientUpdate);
+        socket.on("ingredient:delete", ingredientDelete);
+        socket.on("ingredientMenu:create", ingredientsMenuCreate);
+        socket.on("ingredientMenu:read", ingredientsMenuRead);
+        socket.on("ingredientMenu:update", ingredientsMenuUpdate);
+        socket.on("ingredientMenu:delete", ingredientsMenuDelete);
+        socket.on("loginLog:create", loginLogCreate);
+        socket.on("loginLog:read", loginLogRead);
+        socket.on("loginLog:update", loginLogUpdate);
+        socket.on("loginLog:delete", loginLogDelete);
+        socket.on("menuItem:create", menuItemCreate);
+        socket.on("menuItem:add", menuItemAdd);
+        socket.on("menuItem:read", menuItemRead);
+        socket.on("menuItem:update", menuItemUpdate);
+        socket.on("menuItem:delete", menuItemDelete);
+        socket.on("menuItem:clear", menuItemClear);
+        socket.on("orderLog:create", orderLogCreate);
+        socket.on("orderLog:read", orderLogRead);
+        socket.on("orderLog:update", orderLogUpdate);
+        socket.on("orderLog:delete", orderLogDelete);
+        socket.on("users:create", usersCreate);
+        socket.on("users:read", usersRead);
+        socket.on("users:update", usersUpdate);
+        socket.on("users:delete", usersDelete);
+        socket.on("translateJSON", translateJSON);
+        socket.on("translateArray", translateArray);
+        socket.onAny((event: string, ...args: any[]) => {
+            console.log("Event: " + event);
+        });
+        socket.on("disconnect", (reason: string) => {
+            console.log("Disconnected: " + socket.id + " (" + reason + ")");
+        });
+    });
+
+    io.on("disconnect", (socket: any) => {
+        console.log("Disconnected: " + socket.id);
+    });
+
+    console.log("Got here");
 }

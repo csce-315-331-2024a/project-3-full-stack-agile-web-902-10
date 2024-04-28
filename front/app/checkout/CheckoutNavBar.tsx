@@ -22,7 +22,7 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
 
     const language = useLanguageStore((state) => state.language);
     let [translated, setTranslated] = useState({
-        back: "Back to menu",
+        back: "Back to Menu",
         settings: "Settings",
         make_changes: "Make changes to your session here.",
         dark_mode: "Dark Mode",
@@ -47,7 +47,7 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
         <div className="border-b">
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
-                    <div className="flex justify-start">
+                    <div className="flex justify-start border-2 p-4 rounded-full">
                         <Link
                             href="/menu"
                             className="text-lg font-bold transition-colors hover:text-primary"
@@ -56,11 +56,11 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
                         </Link>
                     </div>
                     <div className="flex justify-center flex-grow">
-                        <p className="text-lg font-bold text-center">{user?.name === undefined ? "Rev's Grill" : "Welcome, " + user.name.split(" ")[0]}</p>
+                        <p className="text-lg font-bold text-center flex flex-col justify-center">{user?.name === undefined ? "Rev's Grill" : "Welcome, " + user.name.split(" ")[0]}</p>
                     </div>
                     <div className="flex justify-end">
                         <Dialog>
-                            <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
+                            <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary border-2 p-4 rounded-full">{translated.settings}</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>{translated.settings}</DialogTitle>
