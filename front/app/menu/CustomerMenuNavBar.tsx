@@ -57,6 +57,8 @@ const static_text = {
     sign_out: "Sign Out",
     place_order: "Place Order",
     checkout_desc: "Checkout here.",
+    no: "No",
+    qty: "Qty",
 }
 
 export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients }: { user: Users | null, ingredient_menus: Ingredients_Menu[], ingredients: Ingredient[] }) {
@@ -80,7 +82,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
     }
 
     const arrayDifference = (array1: number[], array2: number[]) => {
-        let difference = [];
+        let difference: number[] = [];
         for (let i = 0; i < array1.length; i++) {
             if (array2.indexOf(array1[i]) === -1) {
                 difference.push(array1[i]);
@@ -210,13 +212,13 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                                     <p className="text-xl py-4 m-4">
                                                         <Button key={"decrease item"} variant={item.quantity > 1 ? "outline" : "destructive"} onClick={() => removeItem(item)}>{item.quantity > 1 ? "-" : "X"}</Button>
                                                     </p>
-                                                    <p className="text-xl py-4 m-4">Qty: {item.quantity}</p>
+                                                    <p className="text-xl py-4 m-4">{translated.qty}: {item.quantity}</p>
                                                     <p className="text-xl py-4 m-4">{item.menu_item.name}</p>
                                                     <p className="text-xl py-4 m-4">${item.menu_item.price * item.quantity}</p>
                                                 </div>
                                                 <div className="indent-24">
                                                     {findMissingIngredients(item).map((ingredient_id) => (
-                                                        <p key={ingredient_id}>- No {returnIngredientName(ingredient_id)}</p>
+                                                        <p key={ingredient_id}>-{translated.no} {returnIngredientName(ingredient_id)}</p>
                                                     ))}
                                                 </div>
                                             </div>
