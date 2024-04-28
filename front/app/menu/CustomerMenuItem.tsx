@@ -116,7 +116,7 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
                 </div>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button key={"add cart"} variant={"default"} onClick={() => updateCart(menu_item, selectedIngredients)}>Add to Cart</Button>
+                        <Button key={"add cart"} variant={"default"} className="w-[12vw] h-[8vh] text-xl font-bold whitespace-normal" onClick={() => updateCart(menu_item, selectedIngredients)}>Add to Cart</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>
