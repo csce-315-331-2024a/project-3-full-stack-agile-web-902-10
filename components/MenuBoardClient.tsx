@@ -281,7 +281,6 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
 
                 if(m2n == 0 && m1n != 0){
                     next2 = m2s;
-                    
                 }
                 else{ 
                     m2f = false;
