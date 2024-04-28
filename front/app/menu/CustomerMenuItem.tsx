@@ -108,7 +108,7 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
                             const ingredient = ingredients.find((ingredient) => ingredient.id === ingredient_in_menu_item.ingredients_id);
                             if (ingredient) {
                                 return (
-                                    <Button key={ingredient.id} variant={ (selectedIngredients.includes(ingredient.id)) ? "default" : "destructive"} className="w-[10vw] h-[10vh] text-xl font-bold whitespace-normal" onClick={() => on_ingredient_click(ingredient.id)}> {ingredient.name} </Button>
+                                    <Button key={ingredient.id} variant={ (selectedIngredients.includes(ingredient.id)) ? "default" : "destructive"} className="w-[10vw] h-[10vh] text-xl font-bold whitespace-normal" onClick={() => on_ingredient_click(ingredient.id)}> <p className={(selectedIngredients.includes(ingredient.id)) ? "" : "line-through"}> {ingredient.name}</p> </Button>
                                 );
                             }
                         })}
