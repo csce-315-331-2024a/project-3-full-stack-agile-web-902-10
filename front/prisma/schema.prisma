@@ -68,9 +68,9 @@ model Users {
 
 model Kitchen {
   id              Int    @id @default(autoincrement())
-  order_id        Int
   menu_id         Int
   ingredients_ids String
+  order_id        Int
 }
 
 model schema_migrations {
