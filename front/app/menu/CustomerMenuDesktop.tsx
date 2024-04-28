@@ -20,7 +20,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
     const [ingredients, setIngredients] = useState<Ingredient[]>(ingredients_init);
-    const [ingredient_menus, setIngredientMenus] = useState<Ingredients_Menu[]>([]);
+    const [ingredient_menus, setIngredientMenus] = useState<Ingredients_Menu[]>(ingredient_menus_init);
     const [categories, setCategories] = useState<string[]>(Array.from(new Set(menu_items_init.map((item) => item.category))));
 
     const onCategoryClick = (category: string) => {

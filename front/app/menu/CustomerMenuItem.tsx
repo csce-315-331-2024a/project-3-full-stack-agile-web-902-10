@@ -24,9 +24,10 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
     const ingredients_in_menu_item = ingredient_menus.filter((ingredient_menu) => ingredient_menu.menu_id === menu_item.id);
     const [selectedIngredients, setSelectedIngredients] = useState<number[]>(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
 
-    useEffect(() => {
-        setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
-    }, [ingredient_menus]);
+    // UHH idk why this was here it works without it so im taking it out, it randomly appeared in the merge. -Alex
+    // useEffect(() => {
+    //     setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
+    // }, [ingredient_menus]);
 
     const on_ingredient_click = (ingredient_id: number) => {
         if (selectedIngredients.includes(ingredient_id)) {
