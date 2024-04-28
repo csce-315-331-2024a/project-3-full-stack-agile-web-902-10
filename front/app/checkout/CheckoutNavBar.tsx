@@ -47,10 +47,10 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
         <div className="border-b">
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
-                    <div className="flex justify-start border-2 p-4 rounded-full">
+                    <div className="flex justify-start border-2 rounded-sm">
                         <Link
                             href="/menu"
-                            className="text-lg font-bold transition-colors hover:text-primary"
+                            className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary"
                         >
                             {translated.back}
                         </Link>
@@ -58,9 +58,9 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
                     <div className="flex justify-center flex-grow">
                         <p className="text-lg font-bold text-center flex flex-col justify-center">{user?.name === undefined ? "Rev's Grill" : "Welcome, " + user.name.split(" ")[0]}</p>
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end border-2 rounded-sm">
                         <Dialog>
-                            <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary border-2 p-4 rounded-full">{translated.settings}</DialogTrigger>
+                            <DialogTrigger className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>{translated.settings}</DialogTitle>
@@ -70,10 +70,6 @@ export default function CheckoutNavBar({ user }: { user: Users | null }) {
                                     <div className="flex items-center gap-4">
                                         <Switch checked={theme === "dark" ? true : false} onCheckedChange={toggleTheme} id="dark-mode" />
                                         <Label htmlFor="dark-mode">{translated.dark_mode}</Label>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Switch id="another-setting" />
-                                        <Label htmlFor="another-setting">{translated.another_setting}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         {user?.name === undefined ?
