@@ -220,7 +220,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                         </div>
                                         <Dialog>
                                             <DialogTrigger asChild>
-                                                <Link href={"/checkout/"} className={buttonVariants({ variant: "default" })} >{translated.checkout}</Link>
+                                                <Button variant="default" >{translated.checkout}</Button>
                                             </DialogTrigger>
                                             <DialogContent className="sm:max-w-[425px]">
                                                 <DialogHeader>
