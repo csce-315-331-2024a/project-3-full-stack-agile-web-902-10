@@ -41,6 +41,7 @@ model Menu_Item {
   image_url        String
   category         String
   is_active        Boolean
+  date             DateTime?
   Ingredients_Menu Ingredients_Menu[]
 }
 
@@ -69,6 +70,7 @@ model Kitchen {
   id              Int    @id @default(autoincrement())
   menu_id         Int
   ingredients_ids String
+  order_id        Int
 }
 
 model schema_migrations {
