@@ -31,7 +31,10 @@ export type UsersCreate = Parameters<typeof prisma.users.create>[0];
 export type UsersRead = Parameters<typeof prisma.users.findMany>[0];
 export type UsersUpdate = Parameters<typeof prisma.users.update>[0];
 export type UsersDelete = Parameters<typeof prisma.users.delete>[0];
-
+export type KitchenCreate = Parameters<typeof prisma.kitchen.create>[0];
+export type KitchenRead = Parameters<typeof prisma.kitchen.findMany>[0];
+export type KitchenUpdate = Parameters<typeof prisma.kitchen.update>[0];
+export type KitchenDelete = Parameters<typeof prisma.kitchen.delete>[0];
 
 const socket = io(process.env.NODE_ENV === 'development' ? 'localhost:5000' : 'https://revs-websocket-26f326ba64e2.herokuapp.com/');
 

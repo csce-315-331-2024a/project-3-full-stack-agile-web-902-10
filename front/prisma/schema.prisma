@@ -70,6 +70,7 @@ model Kitchen {
   id              Int    @id @default(autoincrement())
   menu_id         Int
   ingredients_ids String
+  order_id        Int
 }
 
 model schema_migrations {
