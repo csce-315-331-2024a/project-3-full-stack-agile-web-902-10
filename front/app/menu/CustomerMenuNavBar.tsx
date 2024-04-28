@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Users, Ingredients_Menu, Menu_Item, Ingredient, Roles } from "@prisma/client";
 import { CartItem } from "@/lib/stores/cart-store"
 import {
@@ -218,7 +218,34 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                             <p>{translated.total}</p>
                                             <p>${cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0)}</p>
                                         </div>
-                                        <Link href={"/checkout/"} className={buttonVariants({ variant: "default" })} >{translated.checkout}</Link>
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Link href={"/checkout/"} className={buttonVariants({ variant: "default" })} >{translated.checkout}</Link>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px]">
+                                                <DialogHeader>
+                                                <DialogTitle>Edit profile</DialogTitle>
+                                                <DialogDescription>
+                                                    Make changes to your profile here. Click save when you're done.
+                                                </DialogDescription>
+                                                </DialogHeader>
+                                                <div className="grid gap-4 py-4">
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label htmlFor="name" className="text-right">
+                                                    Name
+                                                    </Label>
+                                                </div>
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label htmlFor="username" className="text-right">
+                                                    Username
+                                                    </Label>
+                                                </div>
+                                                </div>
+                                                <DialogFooter>
+                                                <Button type="submit">Save changes</Button>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                            </Dialog>
                                         <Button variant="destructive" className="p-4" onClick={() => clearCart()}>{translated.clear_cart}</Button>
                                     </DrawerFooter>
                                 </DrawerContent>
