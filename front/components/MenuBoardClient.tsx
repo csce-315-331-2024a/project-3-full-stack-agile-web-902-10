@@ -14,8 +14,8 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
         condition: string
     }) {
 
-    const categories = ["Cat1", "Cat2", "CatTest1" , "CatTest2", "Cat3","Cat4", "Cat5"];
-    const l1 = [6, 13, 9, 1, 15, 7, 10];
+    const categories = ["Cat1", "Cat2", "CatTest1" , "CatTest2", "CatTest3" , "CatTest4",  "Cat3","Cat4", "Cat5"];
+    const l1 = [6, 13, 9, 1, 1, 9, 15, 7, 10];
     
     const l1_size = () => {
         let total = 0;
