@@ -9,7 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
-import { Users, Ingredients_Menu, Menu_Item } from "@prisma/client";
+import { Users, Ingredients_Menu, Menu_Item, Ingredient } from "@prisma/client";
 import { CartItem } from "@/lib/stores/cart-store"
 import {
     Drawer,
@@ -40,6 +40,7 @@ import { useCartStore } from "@/lib/provider/cart-store-provider";
 import { useLanguageStore } from "@/lib/provider/language-store-provider";
 import { useSocket } from "@/lib/socket";
 import LanguageSelector from "@/components/LanguageSelector.";
+import { set } from "date-fns";
 
 const static_text = {
     welcome: "Welcome",
@@ -56,7 +57,7 @@ const static_text = {
     sign_out: "Sign Out",
 }
 
-export default function CustomerMenuNavBar({ user, ingredient_menus }: { user: Users | null, ingredient_menus: Ingredients_Menu[] }) {
+export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients }: { user: Users | null, ingredient_menus: Ingredients_Menu[], ingredients: Ingredient[] }) {
     const { theme, setTheme } = useTheme();
 
     // get add to cart store
@@ -83,6 +84,47 @@ export default function CustomerMenuNavBar({ user, ingredient_menus }: { user: U
             }
         }
         return difference;
+    }
+
+    const compare = (array1: number[], array2: number[]) => {
+
+        if (array1.length != array2.length) {
+            return false;
+        }
+
+        for (let i = 0; i < array1.length; ++i) {
+            if (array1[i] != array2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    const removeItem = (item: CartItem) => {
+        for (let i = 0; i < cart.length; ++i) {
+            if (item.menu_item.id === cart[i].menu_item.id && compare(item.ingredient_ids, cart[i].ingredient_ids)) {
+                if (cart[i].quantity > 1) {
+                    cart[i].quantity -= 1;
+                    setCart(cart);
+                    return;
+                }
+                else {
+                    cart.splice(i,1);
+                    setCart(cart);
+                    return;
+                }
+            }
+        }
+    }
+
+    const returnIngredientName = (ingredient_id: number) => {
+        for (let i = 0; i < ingredients.length; ++i) {
+            if (ingredients[i].id === ingredient_id) {
+                return ingredients[i].name;
+            }
+        }
+        return "";
     }
 
     // All data that needs to be processed by the server should be sent through the socket
@@ -139,16 +181,22 @@ export default function CustomerMenuNavBar({ user, ingredient_menus }: { user: U
                                         <DrawerTitle>{translated.cart}</DrawerTitle>
                                         <DrawerDescription>{translated.review_order}</DrawerDescription>
                                     </DrawerHeader>
-                                    <ScrollArea className="flex-col space-y-8 m-8">
+                                    <ScrollArea className="flex-col space-y-4 m-8">
                                         {cart.map((item) => (
-                                            <div key={item.menu_item.id} className="flex justify-between space-x-12">
-                                                <p className="text-xl py-4 m-4">Qty: {item.quantity}</p>
-                                                <p className="text-xl py-4 m-4">{item.menu_item.name}</p>
-                                                <p className="text-xl py-4 m-4">${item.menu_item.price}</p>
-                                                <br></br>
+                                            <div>
+                                                <div key={item.menu_item.id} className="flex justify-between space-x-12">
+                                                    <p className="text-xl py-4 m-4">
+                                                        <Button key={"decrease item"} variant={item.quantity > 1 ? "outline" : "destructive"} onClick={() => removeItem(item)}>{item.quantity > 1 ? "-" : "X"}</Button>
+                                                    </p>
+                                                    <p className="text-xl py-4 m-4">Qty: {item.quantity}</p>
+                                                    <p className="text-xl py-4 m-4">{item.menu_item.name}</p>
+                                                    <p className="text-xl py-4 m-4">${item.menu_item.price}</p>
+                                                </div>
+                                                <div className="indent-24">
                                                 {findMissingIngredients(item).map((ingredient_id) => (
-                                                    <p>{ingredient_id}</p>
-                                                ))}
+                                                        <p>- No {returnIngredientName(ingredient_id)}</p>
+                                                    ))}  
+                                                </div>
                                             </div>
                                         ))}
                                     </ScrollArea>
