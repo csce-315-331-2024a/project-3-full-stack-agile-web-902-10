@@ -131,6 +131,10 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
     }
 
     const placeOrder = () => {
+        const num = new Date().getTime() % 34212;
+        for (let i = 0; i < cart.length; ++i) {
+            handleKitchenCreation(cart[i].menu_item.id, cart[i].ingredient_ids.toString(), num);
+        }
         clearCart();
     }
 
@@ -168,12 +172,12 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
         });
     });
 
-    function handleKitchenCreation() {
+    function handleKitchenCreation(menu_id: number, ingredient_ids: string, order_id: number) {
         const kitchen_create: KitchenCreate = {
             data :{
-                menu_id: 1,
-                ingredients_ids: "1, 2, 3",
-                order_id: 1,
+                menu_id: menu_id,
+                ingredients_ids: ingredient_ids,
+                order_id: order_id,
             }
         }
         socket.emit("kitchen:create", kitchen_create);
