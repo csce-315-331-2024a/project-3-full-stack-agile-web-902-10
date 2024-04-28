@@ -49,6 +49,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
             });
 
             socket.emit("menuItem:read", {where: {is_active : true}}, (new_menu_items: Menu_Item[]) => {
+                new_menu_items = new_menu_items.filter((item) => item.is_active && (item.date === null || new Date(item.date).getTime() >= new Date().getTime()));
                 if (language !== "English") {
                     socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
                         new_menu_items.forEach((item, index) => {
@@ -71,7 +72,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
             });
             socket.on("menuItem", (new_menu_items: Menu_Item[]) => {
                 // filter out non-active items
-                new_menu_items = new_menu_items.filter((item) => item.is_active);
+                new_menu_items = new_menu_items.filter((item) => item.is_active && (item.date === null || new Date(item.date).getTime() >= new Date().getTime()));
                 if (language !== "English") {
                     socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
                         new_menu_items.forEach((item, index) => {

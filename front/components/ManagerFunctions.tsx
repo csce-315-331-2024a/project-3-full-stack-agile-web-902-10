@@ -63,7 +63,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const [showOrder, setShowOrder] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
 
-    // const [date, setDate] = useState<Date>();
+    const [date, setDate] = useState<Date>();
     const router = useRouter();
     const [itemName, setItemName] = useState('');
     const [category, setCategory] = useState('');
@@ -242,7 +242,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             itemName,
             category,
             url,
-            intPrice: parseInt(price, 10)
+            intPrice: parseInt(price, 10),
+            date
         };
 
         console.log("URL: ", url);
@@ -252,7 +253,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             price: formData.intPrice,
             image_url: formData.url,
             category: formData.category,
-            is_active: true
+            is_active: true,
+            date: formData.date
         }, ingredientList, ratios, () => { });
         console.log("Emit callback executed", ingredientList);
         setIngredientList([]);
@@ -283,6 +285,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 category,
                 price,
                 uploadedimageURL,
+                date
             };
             const update_query: MenuItemUpdate = {
                 where: {
@@ -292,7 +295,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     name: (formData.itemName == '' ? menu_item.name : formData.itemName),
                     category: (formData.category == '' ? menu_item.category : formData.category),
                     price: parseInt((formData.price == '' ? (menu_item.price).toString() : formData.price), 10),
-                    image_url: (formData.uploadedimageURL == '' ? menu_item.image_url : formData.uploadedimageURL)
+                    image_url: (formData.uploadedimageURL == '' ? menu_item.image_url : formData.uploadedimageURL),
+                    date: (formData.date == undefined ? menu_item.date : formData.date)
                 }
             }
             console.log("Editing attributes with: ", update_query.data.name, update_query.data.category, update_query.data.price);
@@ -499,7 +503,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         />
                                     </div>
 
-                                    {/* <div className="py-2">
+                                    <div className="py-2">
                                         <Label htmlFor="date">Enter Seasonal Item End Date</Label>
                                         <Popover modal={true}>
                                             <PopoverTrigger asChild>
@@ -523,7 +527,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                                 />
                                             </PopoverContent>
                                         </Popover>
-                                    </div> */}
+                                    </div>
 
                                     <div className="">
                                         <div className="flex items-center">
@@ -663,6 +667,32 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                                             }
                                                         </div>
 
+                                                        <div className="py-2">
+                                                            <Label htmlFor="date">Enter Seasonal Item End Date</Label>
+                                                            <Popover modal={true}>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button
+                                                                        variant={"outline"}
+                                                                        className={cn(
+                                                                            "w-[280px] justify-start text-left font-normal",
+                                                                            !date && "text-muted-foreground"
+                                                                        )}
+                                                                    >
+                                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                                        {date ? format(date, "PPP") : <span>Select Date</span>}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-0">
+                                                                    <Calendar
+                                                                        mode="single"
+                                                                        selected={date}
+                                                                        onSelect={setDate}
+                                                                        initialFocus
+                                                                    />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </div>
+
                                                         <div className="py-2 flex items-center">
                                                             <Checkbox className="p-2" id="showdiv" onClick={(e) => setShowIngredientScroll(!showIngredientScroll)} />
                                                             <label className="p-2" htmlFor="showdiv">Change Ingredients?</label>
@@ -671,7 +701,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                                         {showIngredientScroll && (
                                                             <div className="py-2">
                                                                 <Label>Select all desired ingredients</Label>
-                                                                <ScrollArea className=" py-2 h-[40vh] w-100 p-2 whitespace-nowrap border-2 rounded-lg">
+                                                                <ScrollArea className=" py-2 h-[20vh] w-100 p-2 whitespace-nowrap border-2 rounded-lg">
                                                                     <div className="flex-col space-y-4">
                                                                         {ingredients.map((item, index) => (
                                                                             <div key={index} className="flex items-center">

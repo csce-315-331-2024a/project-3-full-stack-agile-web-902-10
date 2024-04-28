@@ -41,6 +41,7 @@ model Menu_Item {
   image_url        String
   category         String
   is_active        Boolean
+  date             DateTime?
   Ingredients_Menu Ingredients_Menu[]
 }
 
