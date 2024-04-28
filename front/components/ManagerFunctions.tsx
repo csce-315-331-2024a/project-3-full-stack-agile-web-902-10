@@ -417,13 +417,13 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>}
                     {currentUser?.role === Roles.Admin && (<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)}
-                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) &&
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Cashier || currentUser?.role === Roles.Kitchen) &&
                         <div className="w-[9vw] h-[4vh] flex flex-col justify-center">
                             <Separator />
                             <h2 className="pt-6 text-lg flex-grow text-center">Trend Data</h2>
                         </div>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
-                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Cashier || currentUser?.role === Roles.Kitchen) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>}
                 </div>
             </ScrollArea>
