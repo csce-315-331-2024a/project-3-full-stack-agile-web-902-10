@@ -183,8 +183,8 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                     </DrawerHeader>
                                     <ScrollArea className="flex-col space-y-4 m-8">
                                         {cart.map((item) => (
-                                            <div>
-                                                <div key={item.menu_item.id} className="flex justify-between space-x-12">
+                                            <div key={item.menu_item.id}>
+                                                <div className="flex justify-between space-x-12">
                                                     <p className="text-xl py-4 m-4">
                                                         <Button key={"decrease item"} variant={item.quantity > 1 ? "outline" : "destructive"} onClick={() => removeItem(item)}>{item.quantity > 1 ? "-" : "X"}</Button>
                                                     </p>
@@ -194,7 +194,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                                 </div>
                                                 <div className="indent-24">
                                                 {findMissingIngredients(item).map((ingredient_id) => (
-                                                        <p>- No {returnIngredientName(ingredient_id)}</p>
+                                                        <p key={ingredient_id}>- No {returnIngredientName(ingredient_id)}</p>
                                                     ))}  
                                                 </div>
                                             </div>
