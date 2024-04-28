@@ -41,7 +41,7 @@ export default function CashierMenuDesktop({ menu_items_init }: { menu_items_ini
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
                     <h1 className="text-lg font-bold"> Cart Item Total </h1>
                     <Separator />
-                    <p> ${cart.reduce((acc, item) => acc + item.price, 0)} </p>
+                    <p> 0 items </p>
                 </div>
                 <ScrollBar orientation="vertical" />
             </ScrollArea>
