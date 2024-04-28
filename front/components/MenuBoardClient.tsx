@@ -212,8 +212,8 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
         const scroll = () => {
             let next1 = (index1 + 1)%preCategories1.length ;
             let next2 = (index2 + 1)%preCategories2.length ;
-            let next11 = next1;
-            let next21 = next2;
+            //let next11 = next1;
+            //let next21 = next2;
 
             //for cycling
             let m1s = m1_start;
@@ -225,20 +225,20 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
             let m1f = m1_fin;
             let m2f = m2_fin;
 
-            let m1t = m1_start;
-            let m2t = m2_start;
+            //let m1t = m1_start;
+            //let m2t = m2_start;
 
 
 
 
-            if ((preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2]) || (next2 == 0 && next1 != 0)){//stall index 2 (added for if odd, stall till index 1 is done)
-                m2n = next21;
+            if ((preCategories2[next2] != preCategories2[index2])){//stall index 2 (added for if odd, stall till index 1 is done)
+                m2n = next2;
                 m2f = true;
                 next2 = m2s;
             }
 
-            if (preCategories2[next2] == preCategories2[index2] && preCategories1[next1] != preCategories1[index1]){//stall index 1
-                m1n = next11;
+            if (preCategories1[next1] != preCategories1[index1]){//stall index 1
+                m1n = next1;
                 m1f = true;
                 next1 = m1s;
             }
@@ -256,6 +256,7 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
                     m2f = false;
                     m2s = m2n;
                     next2 = m2n;
+                    
                 }
             }
 
