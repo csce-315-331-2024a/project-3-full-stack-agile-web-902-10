@@ -55,6 +55,8 @@ const static_text = {
     language: "Language",
     sign_in: "Sign In",
     sign_out: "Sign Out",
+    place_order: "Place Order",
+    checkout_desc: "Checkout here.",
 }
 
 export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients }: { user: Users | null, ingredient_menus: Ingredients_Menu[], ingredients: Ingredient[] }) {
@@ -222,27 +224,19 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                             <DialogTrigger asChild>
                                                 <Button variant="default" >{translated.checkout}</Button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px]">
+                                            <DialogContent className="sm:max-w-[400px]">
                                                 <DialogHeader>
-                                                <DialogTitle>Edit profile</DialogTitle>
+                                                <DialogTitle>{translated.checkout}</DialogTitle>
                                                 <DialogDescription>
-                                                    Make changes to your profile here. Click save when you're done.
+                                                    {translated.checkout_desc}
                                                 </DialogDescription>
                                                 </DialogHeader>
-                                                <div className="grid gap-4 py-4">
-                                                <div className="grid grid-cols-4 items-center gap-4">
-                                                    <Label htmlFor="name" className="text-right">
-                                                    Name
-                                                    </Label>
-                                                </div>
-                                                <div className="grid grid-cols-4 items-center gap-4">
-                                                    <Label htmlFor="username" className="text-right">
-                                                    Username
-                                                    </Label>
-                                                </div>
-                                                </div>
+                                                <div className="flex justify-between text-xl">
+                                                    <p>{translated.total}</p>
+                                                    <p>${cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0)}</p>
+                                                </div> 
                                                 <DialogFooter>
-                                                <Button type="submit">Save changes</Button>
+                                                <Button type="submit">{translated.place_order}</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                             </Dialog>
