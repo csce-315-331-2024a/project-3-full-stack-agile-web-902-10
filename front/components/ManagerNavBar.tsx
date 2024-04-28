@@ -31,20 +31,22 @@ export default function ManagerNavBar({ username }: {
     }
 
     return (
-        <div className="border-b">
+        <div className="border-b overflow-hidden">
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
-                    <div className="flex justify-left">
-                        <Link href="/menu" className="text-lg font-bold transition-colors hover:text-primary" >To Menu</Link>
+                    <div className="flex justify-left border-2 p-4 rounded-full">
+                        <Link href="/menu" className="text-lg font-bold transition-colors hover:text-primary" >Back To Menu</Link>
                     </div>
 
 
                     <div className="flex justify-center grow">
-                        <p className="text-lg font-bold">{username === undefined ? "Manager Functions" : "Manager - " + username.split(" ")[0]}</p>
+                        <div className="flex flex-col justify-center">
+                            <p className="text-lg font-bold">{username === undefined ? "Manager Functions" : "Dashboard - " + username.split(" ")[0]}</p>
+                        </div>
                     </div>
 
 
-                    <div className="flex justify-end">
+                    <div className="flex justify-end border-2 p-4 rounded-full">
                         <Dialog>
                         <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">Settings</DialogTrigger>
                             <DialogContent>

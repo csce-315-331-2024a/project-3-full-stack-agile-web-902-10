@@ -1,26 +1,31 @@
 {
-  "name": "back",
-  "version": "1.0.0",
-  "description": "## Preface Instead of using the traditional REST api of even something like tRPC,  the fastest and easiest method was WebSockets. We were already looking into them for having client's be updated when the databse was modified. However it turned out to be a very pleasant experience for even simple data fetching.",
-  "main": "index.js",
-  "scripts": {
-    "start": "node dist/index.js",
-    "build": "tsc",
-    "dev": "tsc && nodemon dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^20.12.7",
-    "@types/socket.io": "^3.0.2",
-    "prisma": "^5.12.1",
-    "typescript": "^5.4.5"
-  },
-  "dependencies": {
-    "@prisma/client": "^5.12.1",
-    "google-translate-api-x": "^10.6.8",
-    "socket.io": "^4.7.5"
-  }
+    "name": "back",
+    "version": "1.0.0",
+    "description": "## Preface Instead of using the traditional REST api of even something like tRPC,  the fastest and easiest method was WebSockets. We were already looking into them for having client's be updated when the databse was modified. However it turned out to be a very pleasant experience for even simple data fetching.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node dist/src/index.js",
+        "build": "tsc",
+        "dev": "tsc && nodemon dist/index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/jest": "^29.5.12",
+        "@types/node": "^20.12.7",
+        "@types/socket.io": "^3.0.2",
+        "jest": "^29.7.0",
+        "prisma": "^5.12.1",
+        "typedoc": "^0.25.13"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.12.1",
+        "google-translate-api-x": "^10.6.8",
+        "jest-mock-extended": "^3.0.6",
+        "socket.io": "^4.7.5",
+        "socket.io-client": "^4.7.5",
+        "ts-jest": "^29.1.2",
+        "typescript": "^5.4.5"
+    }
 }

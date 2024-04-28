@@ -52,7 +52,7 @@ const static_text = {
     settings: "Settings",
     make_changes: "Make changes to your session here.",
     dark_mode: "Dark Mode",
-    another_setting: "another setting",
+    language: "Language",
     sign_in: "Sign In",
     sign_out: "Sign Out",
 }
@@ -214,7 +214,6 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                         }
                     </div>
                     <div className="flex justify-end gap-x-16">
-                        <LanguageSelector translated={translated} />
                         <Dialog>
                             <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
                             <DialogContent>
@@ -228,8 +227,8 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                         <Label htmlFor="dark-mode">{translated.dark_mode}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <Switch id="another-setting" />
-                                        <Label htmlFor="another-setting">{translated.another_setting}</Label>
+                                        <LanguageSelector translated={translated} id="language"/>
+                                        <Label htmlFor="language">{translated.language}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         {user?.name === undefined ?

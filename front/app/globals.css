@@ -43,25 +43,25 @@
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 0 0% 95%;
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 142.1 70.6% 45.3%;
-    --primary-foreground: 144.9 80.4% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142.4 71.8% 29.2%;
+    --background: 20 14% 4%;             /* Darker background */
+    --foreground: 0 0% 100%;             /* Pure white text for high contrast */
+    --card: 20 14% 4%;                    /* Darker card backgrounds */
+    --card-foreground: 0 0% 100%;        /* Pure white text on cards */
+    --popover: 0 0% 7%;                  /* Darker popover background */
+    --popover-foreground: 0 0% 100%;     /* Pure white text on popovers */
+    --primary: 142 71% 50%;              /* Brighter primary color */
+    --primary-foreground: 0 0% 100%;     /* White text for primary color */
+    --secondary: 240 4% 20%;             /* Slightly lighter secondary color */
+    --secondary-foreground: 0 0% 100%;   /* White text for secondary color */
+    --muted: 0 0% 20%;                   /* Lighter muted color for visibility */
+    --muted-foreground: 0 0% 100%;       /* White text for muted color */
+    --accent: 12 7% 20%;                 /* Brighter accent color */
+    --accent-foreground: 0 0% 100%;      /* White text for accent color */
+    --destructive: 0 63% 50%;            /* Brighter red for destructive actions */
+    --destructive-foreground: 0 0% 100%; /* White text for destructive buttons */
+    --border: 240 4% 20%;                /* Adjust border to be slightly lighter */
+    --input: 240 4% 20%;                 /* Input fields same as border */
+    --ring: 142 72% 35%;                 /* Brighter focus ring */
   }
 }
 

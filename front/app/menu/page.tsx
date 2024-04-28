@@ -17,7 +17,11 @@ export default async function MenuPage() {
         }
     }) : null;
 
-    const menu_items = await prisma.menu_Item.findMany();
+    const menu_items = await prisma.menu_Item.findMany({
+        where : {
+            is_active: true
+        }
+    });
     const ingredients = await prisma.ingredient.findMany();
     const ingredients_menus = await prisma.ingredients_Menu.findMany();
 
