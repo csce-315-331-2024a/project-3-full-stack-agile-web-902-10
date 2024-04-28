@@ -33,9 +33,9 @@ export default function ManagerNavBar({ username }: {
     return (
         <div className="border-b overflow-hidden">
             <div className="flex h-[8vh] items-center justify-center px-4">
-                <nav className="flex w-full item-center justify-center md:mx-12">
-                    <div className="flex justify-left border-2 p-4 rounded-full">
-                        <Link href="/menu" className="text-lg font-bold transition-colors hover:text-primary" >Back To Menu</Link>
+                <nav className="flex w-full items-center justify-center md:mx-12">
+                    <div className="flex justify-left border-2 rounded-sm">
+                        <Link href="/menu" className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary" >Back To Menu</Link>
                     </div>
 
 
@@ -46,9 +46,9 @@ export default function ManagerNavBar({ username }: {
                     </div>
 
 
-                    <div className="flex justify-end border-2 p-4 rounded-full">
+                    <div className="flex justify-left border-2 rounded-sm">
                         <Dialog>
-                        <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">Settings</DialogTrigger>
+                        <DialogTrigger className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">Settings</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>Settings</DialogTitle>
@@ -58,10 +58,6 @@ export default function ManagerNavBar({ username }: {
                                     <div className="flex items-center gap-4">
                                         <Switch checked={theme === "dark" ? true : false} onCheckedChange={toggleTheme} id="dark-mode" />
                                         <Label htmlFor="dark-mode">Dark Mode</Label>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <Switch id="another-setting" />
-                                        <Label htmlFor="another-setting">another setting</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         {username === undefined ?
