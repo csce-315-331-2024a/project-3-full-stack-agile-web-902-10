@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ingredient {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique
+  stock            Int
+  category         String
+  min_stock        Int
+  is_active        Boolean
+  Ingredients_Menu Ingredients_Menu[]
+}
+
+model Ingredients_Menu {
+  id             Int        @id @default(autoincrement())
+  ingredients_id Int        @default(autoincrement())
+  menu_id        Int        @default(autoincrement())
+  quantity       Int
+  Ingredient     Ingredient @relation(fields: [ingredients_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Menu_Item      Menu_Item  @relation(fields: [menu_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Login_Log {
+  id      Int      @id @default(autoincrement())
+  time    DateTime @default(now())
+  login   Boolean
+  user_id Int
+  Users   Users    @relation(fields: [user_id], references: [id])
+}
+
+model Menu_Item {
+  id               Int                @id @default(autoincrement())
+  name             String             @unique
+  price            Int
+  image_url        String
+  category         String
+  is_active        Boolean
+  Ingredients_Menu Ingredients_Menu[]
+}
+
+model Order_Log {
+  id          Int          @id @default(autoincrement())
+  time        DateTime     @default(now())
+  price       Int
+  menu_items  String
+  ingredients String
+  status      Order_Status @default(Completed)
+}
+
+model Users {
+  id          Int         @id @default(autoincrement())
+  email       String      @unique
+  name        String
+  avatar      String?
+  is_manager  Boolean
+  is_employee Boolean
+  jwt         String      @default("")
+  role        Roles       @default(Customer)
+  Login_Log   Login_Log[]
+}
+
+model schema_migrations {
+  version String @id @unique(map: "schema_migrations_version_idx") @db.VarChar(14)
+}
+
+enum Order_Status {
+  Created
+  Cooking
+  Completed
+}
+
+enum Roles {
+  Customer
+  Cashier
+  Kitchen
+  Manager
+  Admin
+}

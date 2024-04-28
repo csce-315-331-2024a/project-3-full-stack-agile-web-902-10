@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 142.1 76.2% 36.3%;
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 20 14% 4%;             /* Darker background */
+    --foreground: 0 0% 100%;             /* Pure white text for high contrast */
+    --card: 20 14% 4%;                    /* Darker card backgrounds */
+    --card-foreground: 0 0% 100%;        /* Pure white text on cards */
+    --popover: 0 0% 7%;                  /* Darker popover background */
+    --popover-foreground: 0 0% 100%;     /* Pure white text on popovers */
+    --primary: 142 71% 50%;              /* Brighter primary color */
+    --primary-foreground: 0 0% 100%;     /* White text for primary color */
+    --secondary: 240 4% 20%;             /* Slightly lighter secondary color */
+    --secondary-foreground: 0 0% 100%;   /* White text for secondary color */
+    --muted: 0 0% 20%;                   /* Lighter muted color for visibility */
+    --muted-foreground: 0 0% 100%;       /* White text for muted color */
+    --accent: 12 7% 20%;                 /* Brighter accent color */
+    --accent-foreground: 0 0% 100%;      /* White text for accent color */
+    --destructive: 0 63% 50%;            /* Brighter red for destructive actions */
+    --destructive-foreground: 0 0% 100%; /* White text for destructive buttons */
+    --border: 240 4% 20%;                /* Adjust border to be slightly lighter */
+    --input: 240 4% 20%;                 /* Input fields same as border */
+    --ring: 142 72% 35%;                 /* Brighter focus ring */
+  }
+}
+
+
+/* @layer base { */
+/*   * { */
+/*     @apply border-border; */
+/*   } */
+
+/*   body { */
+/*     @apply bg-background text-foreground; */
+/*   } */
+/* } */
