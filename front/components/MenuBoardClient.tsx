@@ -14,8 +14,8 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
         condition: string
     }) {
 
-    const categories = ["Cat1", "Cat2", "Cat3","Cat4", "Cat5"];
-    const l1 = [6, 13, 15, 7, 10];
+    const categories = ["Cat1", "Cat2", "CatTest1" , "CatTest2", "Cat3","Cat4", "Cat5"];
+    const l1 = [6, 13, 9, 1, 15, 7, 10];
     
     const l1_size = () => {
         let total = 0;
@@ -235,6 +235,8 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
     const [m1_fin, setm1_fin] = useState(false);
     const [m2_fin, setm2_fin] = useState(false);
 
+    const [test, settest] = useState(0);
+
 
 
 
@@ -262,7 +264,7 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
 
 
 
-            if ((preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2]) || (next2 == 0 && next1 != 0)){//stall index 2 (added for if odd, stall till index 1 is done)
+            if ((preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2])){//stall index 2 (added for if odd, stall till index 1 is done)
                 m2n = next21;
                 m2f = true;
                 next2 = m2s;
@@ -280,8 +282,8 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
                 next1 = m1n;
 
                 if(m2n == 0 && m1n != 0){
+                    settest(test+1);
                     next2 = m2s;
-                    
                 }
                 else{ 
                     m2f = false;
@@ -419,7 +421,7 @@ export default function MenuBoardClient({ temperature, condition}://categories1}
                 </div>
                 <div className="h-1/3 p-2">
                     <div className="border-2 border-amber-300 p-2 m-4 flex flex-col justify-center text-center items-center object-cover rounded-3xl bg-red-950">
-                        <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex22]}</h1>
+                        <h1 className=" text-white text-xl">{currentMenuItems2[imgIndex22]}    {test}</h1>
                         <div className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border content-center">
                                 <p className=" text-white text-xl text-center"> {currentMenuItemImages2[imgIndex22]} </p>
                         </div>
