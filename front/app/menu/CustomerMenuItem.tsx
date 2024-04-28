@@ -14,6 +14,8 @@ import { useState, useEffect } from "react"
 
 import { Menu_Item, Ingredient, Ingredients_Menu } from "@prisma/client"
 import { useCartStore } from "@/lib/provider/cart-store-provider"
+import { CartItem } from "@/lib/stores/cart-store"
+import { createWriteStream } from "fs"
 
 export default function CustomerMenuItem({ menu_item, ingredients, ingredient_menus, translated }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[], translated: any }) {
     const cart = useCartStore((state) => state.cart);
@@ -37,6 +39,41 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
     const reset_ingredients = () => {
         setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
     }
+    
+    const compare = (array1: number[], array2: number[]) => {
+
+        if (array1.length != array2.length) {
+            return false;
+        }
+
+        for (let i = 0; i < array1.length; ++i) {
+            if (array1[i] != array2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    const updateCart = (menu_item: Menu_Item, ingredient_ids: number[]) => {
+        const cartItem: CartItem = {
+            menu_item: menu_item,
+            ingredient_ids: ingredient_ids,
+            quantity: 1
+        }
+
+        for (let i = 0; i < cart.length; ++i) {
+            if ((cartItem.menu_item.id === cart[i].menu_item.id) && (compare(cartItem.ingredient_ids, cart[i].ingredient_ids))) {
+                cart[i].quantity += 1;
+                setCart(cart);
+                return;
+            }
+        }
+        
+        cart.push(cartItem);
+        setCart(cart);
+    }
+
 
     return (
         <Dialog key={menu_item.id} onOpenChange={reset_ingredients}>
@@ -78,7 +115,7 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
                 </div>
                 <DialogFooter>
                     <DialogClose asChild>
-
+                        <Button key={"add cart"} variant={"default"} onClick={() => updateCart(menu_item, selectedIngredients)}>Add to Cart</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

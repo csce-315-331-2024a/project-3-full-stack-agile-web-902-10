@@ -27,8 +27,8 @@ export default async function MenuPage() {
 
     return (
         <>
-            <CustomerMenuNavBar user={user} />
-            <CustomerMenuDesktop menu_items_init={menu_items} ingredients_init={ingredients} ingredient_menus_init={ingredients_menus} user={user} />
+            <CustomerMenuNavBar user={user} ingredient_menus={ingredients_menus} ingredients={ingredients} />
+            <CustomerMenuDesktop menu_items_init={menu_items} ingredients_init={ingredients} ingredient_menus_init={ingredients_menus} user={user}/>
         </>
     );
 }
