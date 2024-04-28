@@ -684,7 +684,7 @@ export async function usersDelete(auth: AuthPacket, delete_query: UsersDelete) {
  */
 export async function translateJSON(obj: { [key: string]: string }, to: string, callback: any) {
     try {
-        const translated = await translate(obj, { to: to }) as { [x: string]: googleTranslateApi.TranslationResponse; };
+        const translated = await translate(obj, { to: to, forceTo: true }) as { [x: string]: googleTranslateApi.TranslationResponse; };
         for (const key in obj) {
             obj[key] = translated[key].text;
         }
@@ -702,7 +702,7 @@ export async function translateJSON(obj: { [key: string]: string }, to: string, 
  */
 export async function translateArray(arr: string[], to: string, callback: any) {
     try {
-        const translated = await translate(arr, { to: to }) as googleTranslateApi.TranslationResponse[];
+        const translated = await translate(arr, { to: to, forceTo: true }) as googleTranslateApi.TranslationResponse[];
         for (let i = 0; i < arr.length; i++) {
             arr[i] = translated[i].text;
         }
