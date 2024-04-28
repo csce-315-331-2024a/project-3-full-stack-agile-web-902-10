@@ -71,7 +71,6 @@ model Kitchen {
   order_id        Int
   menu_id         Int
   ingredients_ids String
-  order_id        Int
 }
 
 model schema_migrations {
