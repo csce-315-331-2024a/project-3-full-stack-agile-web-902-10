@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import ManagerNavBar from "@/components/ManagerNavBar";
 import ManagerFunctions from "@/components/ManagerFunctions";
 import Redirect from "@/components/Redirect";
-import { Ingredients_Menu, Menu_Item } from "@prisma/client";
+import { Ingredients_Menu, Menu_Item, Roles } from "@prisma/client";
 
 export const metadata = {
     title: "Manager | Rev's Grill",
@@ -24,7 +24,7 @@ export default async function ManagerPage() {
     const menuIngredients = await prisma.ingredients_Menu.findMany();
     const users = await prisma.users.findMany();
 
-    if (!user || user.is_manager === false) {
+    if ((user === null) || (user.role === Roles.Customer)) {
         return <Redirect to="/menu" />;
     };
 

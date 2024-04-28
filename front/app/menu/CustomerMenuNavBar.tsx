@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { signIn, signOut } from 'next-auth/react';
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
-import { Users, Ingredients_Menu, Menu_Item, Ingredient } from "@prisma/client";
+import { Users, Ingredients_Menu, Menu_Item, Ingredient, Roles } from "@prisma/client";
 import { CartItem } from "@/lib/stores/cart-store"
 import {
     Drawer,
@@ -40,7 +40,7 @@ import { useCartStore } from "@/lib/provider/cart-store-provider";
 import { useLanguageStore } from "@/lib/provider/language-store-provider";
 import { useSocket } from "@/lib/socket";
 import LanguageSelector from "@/components/LanguageSelector.";
-import { set } from "date-fns";
+import { getTemperature } from "../api/weather";
 
 const static_text = {
     welcome: "Welcome",
@@ -65,12 +65,13 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
     let cart = some_cart;
     const setCart = useCartStore((state) => state.setCart);
     const clearCart = useCartStore((state) => state.clearCart);
+    const [currentUser, setCurrentUser] = useState<Users | null>(user);
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
     }
 
-    const findMissingIngredients = (cart_item: CartItem ) => {
+    const findMissingIngredients = (cart_item: CartItem) => {
         let ingredients_in_menu_item = ingredient_menus.filter((ingredient_menu) => ingredient_menu.menu_id === cart_item.menu_item.id);
         let selectedIngredients = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id);
         return arrayDifference(selectedIngredients, cart_item.ingredient_ids);
@@ -110,7 +111,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                     return;
                 }
                 else {
-                    cart.splice(i,1);
+                    cart.splice(i, 1);
                     setCart(cart);
                     return;
                 }
@@ -146,28 +147,28 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
             } else {
                 setTranslated(static_text);
             }
+
+            socket.on("users", (users: Users[]) => {
+                setCurrentUser(users.find((user) => user.id === currentUser?.id) || null);
+            });
         }
     }, [socket, language]);
+
+    const [temprature, setTemperature] = useState(0);
+
+    useEffect(() => {
+        getTemperature().then((temp) => {
+            setTemperature(temp);
+        });
+    });
 
     return (
         <div className="border-b pt-4">
             <div className="flex h-[6vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
                     <div className="flex justify-start">
-                        <Link
-                            href={user?.is_manager === undefined ? "https://www.weather.gov/" : "/manager"}
-                            className="text-lg font-bold transition-colors hover:text-primary"
-                        >
-                            {user?.is_manager === undefined ? "68 F" : "Manager"}
-                        </Link>
-                    </div>
-                    <div className="flex justify-start px-10">
-                        <Link
-                            href={user?.is_employee === true ? "/cashier" : ""}
-                            className="text-lg font-bold transition-colors hover:text-primary"
-                        >
-                            {user?.is_employee === true ? "Cashier" : ""}
-                        </Link>
+                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="text-lg font-bold transition-colors hover:text-primary">Dashboard</Link>}
+                        {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="text-lg font-bold transition-colors"> {temprature + " °F"} </p>}
                     </div>
                     <div className="flex justify-center flex-grow">
                         {cart.length <= 0 ?
@@ -193,9 +194,9 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                                     <p className="text-xl py-4 m-4">${item.menu_item.price * item.quantity}</p>
                                                 </div>
                                                 <div className="indent-24">
-                                                {findMissingIngredients(item).map((ingredient_id) => (
+                                                    {findMissingIngredients(item).map((ingredient_id) => (
                                                         <p key={ingredient_id}>- No {returnIngredientName(ingredient_id)}</p>
-                                                    ))}  
+                                                    ))}
                                                 </div>
                                             </div>
                                         ))}
@@ -227,7 +228,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                         <Label htmlFor="dark-mode">{translated.dark_mode}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <LanguageSelector translated={translated} id="language"/>
+                                        <LanguageSelector translated={translated} id="language" />
                                         <Label htmlFor="language">{translated.language}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">

@@ -5,16 +5,37 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { RestockReportData, RestockReportColumns, WhatSellsTogetherData, WhatSellsTogetherColumns, SalesReportData, ProductUsageReportData, ExcessReportColumns, ExcessReportData } from "@/app/manager_trends/columns"
 import { DataTable } from "@/components/ui/data-table"
-import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import BarChart from "@/components/ui/bar-chart"
+import { Roles, Users } from "@prisma/client";
+import { useSocket } from "@/lib/socket";
+import { useState, useEffect } from "react";
 
-export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData, restockReportData, whatSellsTogtherData }: { excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[] }) {
+export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData, restockReportData, whatSellsTogtherData, user }: { excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[], user: Users | null }) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
     const router = useRouter();
+    const socket = useSocket();
+    const [currentUser, setCurrentUser] = useState<Users | null>(user);
+
+    useEffect(() => {
+        if (socket) {
+            socket.emit("users:read", {}, (users: Users[]) => {
+                setCurrentUser(users.find(u => u.id === user?.id) || null);
+                if (currentUser?.role !== Roles.Admin && currentUser?.role !== Roles.Manager) {
+                    router.push("/manager");
+                }
+            });
+            socket.on("users", (users: Users[]) => {
+                setCurrentUser(users.find(u => u.id === user?.id) || null);
+                if (currentUser?.role !== Roles.Admin && currentUser?.role !== Roles.Manager) {
+                    router.push("/manager");
+                }
+            });
+        }
+    }, [socket])
 
     const onButtonClick = (trend: string) => {
         setSelectedTrend(trend);
@@ -27,11 +48,11 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                     <h1 className="text-lg font-bold"> Trends </h1>
                     <Separator />
                     <Button variant="destructive" key={"Test3"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => router.push("/manager")}> {"Back to Manager"} </Button>
-                    <Button variant={ (selectedTrend == "Product Usage Chart" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Product Usage Chart")}> {"Product Usage Chart"} </Button>
-                    <Button variant={ (selectedTrend == "Sales Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
-                    <Button variant={ (selectedTrend == "Excess Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Excess Report")}> {"Excess Report"} </Button>
-                    <Button variant={ (selectedTrend == "Restock Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
-                    <Button variant={ (selectedTrend == "What Sells Together" ? "default" : "secondary")} key={"Test2"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
+                    <Button variant={(selectedTrend == "Product Usage Chart" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Product Usage Chart")}> {"Product Usage Chart"} </Button>
+                    <Button variant={(selectedTrend == "Sales Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
+                    <Button variant={(selectedTrend == "Excess Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Excess Report")}> {"Excess Report"} </Button>
+                    <Button variant={(selectedTrend == "Restock Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
+                    <Button variant={(selectedTrend == "What Sells Together" ? "default" : "secondary")} key={"Test2"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
 
                 </div>
                 <ScrollBar orientation="vertical" />

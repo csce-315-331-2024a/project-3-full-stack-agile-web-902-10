@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 import { RestockReportData, WhatSellsTogetherData, SalesReportData, ProductUsageReportData, ExcessReportData } from "@/app/manager_trends/columns"
 import ManagerNavBar from "@/components/ManagerNavBar";
 import { getUserSession } from "@/lib/session";
+import { Roles } from "@prisma/client";
+import Redirect from "@/components/Redirect";
 
 export default async function ManagerTrendsPage() {
     const user_session = await getUserSession();
@@ -11,6 +13,11 @@ export default async function ManagerTrendsPage() {
             email: user_session?.email ?? undefined
         }
     }) : null;
+
+    if (user === null || (user.role !== Roles.Admin && user.role !== Roles.Manager)) {
+        return <Redirect to="/manager" />;
+    }
+
     const productUsageReportData = await prisma.$queryRawUnsafe<ProductUsageReportData[]>(`SELECT
             "Ingredient".NAME AS Ingredient,
             SUM("Ingredients_Menu".QUANTITY) AS TotalQuantityUsed,
@@ -89,7 +96,7 @@ export default async function ManagerTrendsPage() {
     return (
         <>
             <ManagerNavBar username={user?.name} />
-            <ManagerTrends excessReportData={excessReportData} productUsageReportData={productUsageReportData} salesReportData={salesReportData} restockReportData={restockReportData} whatSellsTogtherData={whatSellsTogtherData} />
+            <ManagerTrends excessReportData={excessReportData} productUsageReportData={productUsageReportData} salesReportData={salesReportData} restockReportData={restockReportData} whatSellsTogtherData={whatSellsTogtherData} user={user}/>
         </>
     );
 }

@@ -78,6 +78,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const [ingredients, setIngredients] = useState(ingredients_init);
     const [ingredientsMenu, setIngredientsMenu] = useState(menuIngredients_init);
     const [users, setUsers] = useState(users_init);
+    const [currentUser, setCurrentUser] = useState<Users | null>(user);
 
     // in case we need to listen to something
     const socket = useSocket();
@@ -104,12 +105,27 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             });
 
             socket.emit('users:read', undefined, (new_users: Users[]) => {
+                const moddedUser = new_users.find((u) => u.id === currentUser?.id);
+                if (moddedUser === undefined || moddedUser.role === Roles.Customer) {
+                    router.push("/menu");
+                }
+                if (moddedUser?.role !== currentUser?.role) {
+                    location.reload();
+                }
+                setCurrentUser(new_users.find((u) => u.id === user?.id) || null);
                 setUsers(new_users);
             });
 
             socket.on('users', (new_users: Users[]) => {
+                const moddedUser = new_users.find((u) => u.id === currentUser?.id);
+                if (moddedUser === undefined || moddedUser.role === Roles.Customer) {
+                    router.push("/menu");
+                }
+                if (moddedUser?.role !== currentUser?.role) {
+                    location.reload();
+                }
+                setCurrentUser(new_users.find((u) => u.id === user?.id) || null);
                 setUsers(new_users);
-                router.refresh();
             });
         }
     }, [socket]);
@@ -174,8 +190,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     }
 
     const auth: AuthPacket = {
-        email: user?.email ?? "",
-        jwt: user?.jwt ?? ""
+        email: currentUser?.email ?? "",
+        jwt: currentUser?.jwt ?? ""
     };
 
     const handleInputChange = (e: any, setter: any) => {
@@ -384,13 +400,13 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
                     <p className="text-lg font-bold"> Options </p>
                     <Separator />
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>}
-                    {user?.role === Roles.Admin && (<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
-                    {(user?.role === Roles.Admin || user?.role === Roles.Manager || user?.role === Roles.Kitchen) &&<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>}
+                    {currentUser?.role === Roles.Admin && (<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Kitchen) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
                     <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleBoard}>Menu Board</Button>
                 </div>
             </ScrollArea>
@@ -404,7 +420,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
             {/* if editing menu items */}
             {showEditDiv && (
-                <ScrollArea className="flex-col w-auto items-center h-[91vh]">
+                <ScrollArea className="flex-col items-center h-[91vh] w-[90vw]">
                     <div className="grid grid-cols-1 gap-4 p-4">
                         <Dialog>
                             <div className="flex flex-col w-auto justify-center items-center">
@@ -708,7 +724,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
 
             {showIngredientDiv && (
-                <ScrollArea className="flex-col w-auto items-center h-[91vh]">
+                <ScrollArea className="flex-col w-[90vw] items-center h-[91vh]">
                     <div className="grid grid-cols-1 gap-4 p-4">
                         <Dialog>
                             <div className="flex flex-col w-auto justify-center items-center">
@@ -918,20 +934,20 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
             {/* Employee management */}
             {showEmployeeDiv && (
-                <UsersList users={users} user={user} />
+                <UsersList users={users} user={currentUser} />
             )}
 
             {/* Order log */}
             {showOrder && (
                 <ScrollArea className="w-[90vw]">
-                    <OrderHistoryDesktop/>
+                    <OrderHistoryDesktop />
                 </ScrollArea>
             )}
 
             {/* login history */}
             {showLogin && (
                 <ScrollArea className="w-[90vw]">
-                    <LoginLogDesktop/>
+                    <LoginLogDesktop />
                 </ScrollArea>
             )}
         </div>
