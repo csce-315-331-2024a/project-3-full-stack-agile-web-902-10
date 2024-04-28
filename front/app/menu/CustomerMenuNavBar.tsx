@@ -38,7 +38,7 @@ import { Separator } from "@/components/ui/separator";
 
 import { useCartStore } from "@/lib/provider/cart-store-provider";
 import { useLanguageStore } from "@/lib/provider/language-store-provider";
-import { useSocket } from "@/lib/socket";
+import { KitchenCreate, useSocket } from "@/lib/socket";
 import LanguageSelector from "@/components/LanguageSelector.";
 import { getTemperature } from "../api/weather";
 
@@ -161,6 +161,17 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
             setTemperature(temp);
         });
     });
+
+    function handleKitchenCreation() {
+        const kitchen_create: KitchenCreate = {
+            data :{
+                menu_id: 1,
+                ingredients_ids: "1, 2, 3",
+                order_id: 1,
+            }
+        }
+        socket.emit("kitchen:create", kitchen_create);
+    }
 
     return (
         <div className="border-b pt-4">

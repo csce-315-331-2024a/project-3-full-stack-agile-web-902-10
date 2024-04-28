@@ -689,15 +689,11 @@ export async function usersDelete(auth: AuthPacket, delete_query: UsersDelete) {
 
 /**
  * Route that creates a new kitchen cart
- * @param auth the {@link AuthPacket}
  * @param create_query the {@link KitchenCreate}
  * @returns void
  */
-export async function kitchenCreate(auth: AuthPacket, create_query: KitchenCreate) {
+export async function kitchenCreate(create_query: KitchenCreate) {
     try {
-        if (!verifyToken(auth.email, auth.jwt)) {
-            return;
-        }
         const newKitchen = await prisma.kitchen.create(create_query);
         io.emit("kitchen", await prisma.kitchen.findMany());
     } catch (error) {
@@ -821,6 +817,10 @@ export function setupListen() {
         socket.on("users:read", usersRead);
         socket.on("users:update", usersUpdate);
         socket.on("users:delete", usersDelete);
+        socket.on("kitchen:create", kitchenCreate);
+        socket.on("kitchen:read", kitchenRead);
+        socket.on("kitchen:update", kitchenUpdate);
+        socket.on("kitchen:delete", kitchenDelete);
         socket.on("translateJSON", translateJSON);
         socket.on("translateArray", translateArray);
         socket.onAny((event, ...args) => {
