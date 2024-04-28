@@ -9,7 +9,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
-import { Users } from "@prisma/client";
+import { Users, Ingredients_Menu, Menu_Item } from "@prisma/client";
+import { CartItem } from "@/lib/stores/cart-store"
 import {
     Drawer,
     DrawerClose,
@@ -55,7 +56,7 @@ const static_text = {
     sign_out: "Sign Out",
 }
 
-export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
+export default function CustomerMenuNavBar({ user, ingredient_menus }: { user: Users | null, ingredient_menus: Ingredients_Menu[] }) {
     const { theme, setTheme } = useTheme();
 
     // get add to cart store
@@ -66,6 +67,22 @@ export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
+    }
+
+    const findMissingIngredients = (cart_item: CartItem ) => {
+        let ingredients_in_menu_item = ingredient_menus.filter((ingredient_menu) => ingredient_menu.menu_id === cart_item.menu_item.id);
+        let selectedIngredients = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id);
+        return arrayDifference(selectedIngredients, cart_item.ingredient_ids);
+    }
+
+    const arrayDifference = (array1: number[], array2: number[]) => {
+        let difference = [];
+        for (let i = 0; i < array1.length; i++) {
+            if (array2.indexOf(array1[i]) === -1) {
+                difference.push(array1[i]);
+            }
+        }
+        return difference;
     }
 
     // All data that needs to be processed by the server should be sent through the socket
@@ -128,6 +145,10 @@ export default function CustomerMenuNavBar({ user }: { user: Users | null }) {
                                                 <p className="text-xl py-4 m-4">Qty: {item.quantity}</p>
                                                 <p className="text-xl py-4 m-4">{item.menu_item.name}</p>
                                                 <p className="text-xl py-4 m-4">${item.menu_item.price}</p>
+                                                <br></br>
+                                                {findMissingIngredients(item).map((ingredient_id) => (
+                                                    <p>{ingredient_id}</p>
+                                                ))}
                                             </div>
                                         ))}
                                     </ScrollArea>
