@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Users, Ingredients_Menu, Menu_Item, Ingredient, Roles } from "@prisma/client";
 import { CartItem } from "@/lib/stores/cart-store"
 import {
@@ -236,7 +236,9 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                                     <p>${cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0)}</p>
                                                 </div> 
                                                 <DialogFooter>
-                                                <Button type="submit">{translated.place_order}</Button>
+                                                    <DialogClose asChild>
+                                                        <Button type="submit" onClick={() => clearCart()}>{translated.place_order}</Button>
+                                                    </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
                                             </Dialog>
