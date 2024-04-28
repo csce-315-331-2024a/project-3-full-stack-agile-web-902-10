@@ -9,10 +9,22 @@ import { Menu_Item, Users, Ingredient, Ingredients_Menu } from "@prisma/client"
 import { useSocket } from "@/lib/socket";
 import { useLanguageStore } from "@/lib/provider/language-store-provider";
 import CustomerMenuItem from "@/app/menu/CustomerMenuItem";
+import Confetti from "react-confetti";
 
 const static_text = {
     category: "Category",
     add_to_cart: "Add to Cart",
+}
+let show_confetti = false;
+
+export function confettiOn = (): undefined => {
+    show_confetti = true;
+    return;
+}
+
+export function confettiOff = (): undefined => {
+    show_confetti = false;
+    return;
 }
 
 export default function CustomerMenuDesktop({ menu_items_init, ingredients_init, ingredient_menus_init, user }: { menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredient_menus_init: Ingredients_Menu[], user: Users | null}) {
@@ -22,6 +34,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
     const [ingredients, setIngredients] = useState<Ingredient[]>(ingredients_init);
     const [ingredient_menus, setIngredientMenus] = useState<Ingredients_Menu[]>(ingredient_menus_init);
     const [categories, setCategories] = useState<string[]>(Array.from(new Set(menu_items_init.map((item) => item.category))));
+
 
     const onCategoryClick = (category: string) => {
         if (selectedCategory === category) {
@@ -129,8 +142,15 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
         }
     }, [socket, language]);
 
+    useEffect(()=> {
+        show_confetti && setTimeout(() => {
+            confettiOff(), 8000
+        })
+    }, [show_confetti]);
+
     return (
         <div className="flex flex-row">
+        {show_confetti && <Confetti/>}
             <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center transition-all">
                     <h1 className="text-xl font-bold"> {translated.category} </h1>
