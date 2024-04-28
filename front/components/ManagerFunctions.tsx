@@ -396,20 +396,34 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     return (
         <div className="flex h-[90vh] overflow-hidden flex-row gap-4">
             {/* Manager Options */}
-            <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
+            <div className="flex flex-col w-auto justify-center items-center">
+            <p className="text-xl py-4 font-bold"> Options </p>
+            <Separator/>
+            <ScrollArea className="h-[100vh] w-auto p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
-                    <p className="text-lg font-bold"> Options </p>
-                    <Separator />
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Cashier) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/cashier")}>Cashier</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Kitchen) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) &&
+                        <div className="w-[9vw] h-[4vh] flex flex-col justify-center">
+                            <Separator />
+                            <h2 className="pt-4 text-lg flex-grow text-center">Management</h2>
+                            <h2 className="text-lg flex-grow text-center">Functions</h2>
+                        </div>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleBoard}>Menu Board</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>}
                     {currentUser?.role === Roles.Admin && (<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) &&
+                        <div className="w-[9vw] h-[4vh] flex flex-col justify-center">
+                            <Separator />
+                            <h2 className="pt-6 text-lg flex-grow text-center">Trend Data</h2>
+                        </div>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
-                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Kitchen) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleBoard}>Menu Board</Button>
                 </div>
             </ScrollArea>
+            </div>
 
             {!showEditDiv && !showEmployeeDiv && !showIngredientDiv && !showOrder && !showLogin && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
