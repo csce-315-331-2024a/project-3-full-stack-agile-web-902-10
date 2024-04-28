@@ -190,7 +190,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                                     </p>
                                                     <p className="text-xl py-4 m-4">Qty: {item.quantity}</p>
                                                     <p className="text-xl py-4 m-4">{item.menu_item.name}</p>
-                                                    <p className="text-xl py-4 m-4">${item.menu_item.price}</p>
+                                                    <p className="text-xl py-4 m-4">${item.menu_item.price * item.quantity}</p>
                                                 </div>
                                                 <div className="indent-24">
                                                 {findMissingIngredients(item).map((ingredient_id) => (
