@@ -78,14 +78,14 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
     return (
         <Dialog key={menu_item.id} onOpenChange={reset_ingredients}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="flex-col justify-evenly w-[25vw] h-[40vh]">
-                    <h2 className="text-2xl font-bold">{menu_item.name}</h2>
+                <Button variant="outline" className="flex-col justify-evenly items-center w-[25vw] h-[40vh]">
+                    <h2 className="text-2xl font-bold snap-center">{menu_item.name}</h2>
                     <Image
                         src={menu_item.image_url}
                         width={200}
                         height={200}
                         alt={menu_item.name}
-                        className="aspect-[1/1] h-[200px] w-[200px] object-cover rounded-3xl border" />
+                        className="aspect-[1/1] h-[16vh] w-[8vw] object-cover rounded-3xl border" />
                     <h2 className="text-2xl">${menu_item.price}</h2>
                 </Button>
             </DialogTrigger>

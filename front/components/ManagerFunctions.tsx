@@ -434,7 +434,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
             {/* if editing menu items */}
             {showEditDiv && (
-                <ScrollArea className="flex-col items-center h-[91vh] w-[90vw]">
+                <ScrollArea className="flex-col items-center h-[88vh] w-[90vw] pb-4">
                     <div className="grid grid-cols-1 gap-4 p-4">
                         <Dialog>
                             <div className="flex flex-col w-auto justify-center items-center">
@@ -590,7 +590,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             width={150}
                                             height={150}
                                             alt={menu_item.name}
-                                            className="aspect-[1/1] h-auto w-auto object-cover rounded-3xl border"
+                                            className="aspect-[1/1] h-[16vh] w-[8vw] object-cover rounded-3xl border"
                                         />
                                         <h2 className="text-base snap-center">
                                             {menu_item.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-500">Inactive</div>}
@@ -841,10 +841,10 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     <div className="grid grid-cols-3 gap-4">
                         {ingredients.map((ingredient) => (
                             <div key={ingredient.id}>
-                                <div className="flex flex-col w-[25vw] h-[12vh] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
+                                <div className="flex flex-col w-[25vw] h-[20vh] border-solid justify-center items-center border-2 rounded-lg hover:bg-foreground/5 transition-all">
                                     <div className="flex flex-col w-[25vw] h-[12vh] justify-center items-center">
-                                        <h2 className="text-base font-bold snap-center">{ingredient.name}</h2>
-                                        <h2 className="text-base snap-center">
+                                        <h2 className="text-2xl py-2 font-bold snap-center">{ingredient.name}</h2>
+                                        <h2 className="text-base pb-2 snap-center">
                                             {ingredient.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-700">Inactive</div>}
                                         </h2>
                                         <div className="flex justify-center items-center gap-4">
