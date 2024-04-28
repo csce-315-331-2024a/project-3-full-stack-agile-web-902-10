@@ -130,6 +130,10 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
         return "";
     }
 
+    const placeOrder = () => {
+        clearCart();
+    }
+
     // All data that needs to be processed by the server should be sent through the socket
     const language = useLanguageStore((state) => state.language);
     const setLanguage = useLanguageStore((state) => state.setLanguage);
@@ -237,7 +241,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                                 </div> 
                                                 <DialogFooter>
                                                     <DialogClose asChild>
-                                                        <Button type="submit" onClick={() => clearCart()}>{translated.place_order}</Button>
+                                                        <Button type="submit" onClick={() => placeOrder()}>{translated.place_order}</Button>
                                                     </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
