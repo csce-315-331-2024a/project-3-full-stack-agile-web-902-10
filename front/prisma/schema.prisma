@@ -65,6 +65,12 @@ model Users {
   Login_Log   Login_Log[]
 }
 
+model Kitchen {
+  id              Int    @id @default(autoincrement())
+  menu_id         Int
+  ingredients_ids String
+}
+
 model schema_migrations {
   version String @id @unique(map: "schema_migrations_version_idx") @db.VarChar(14)
 }
