@@ -8,7 +8,6 @@ export async function getTemperature() {
         const everything = await fetch(url);
         const everythingJson = await everything.json(); 
         const temperature = parseFloat(everythingJson.main.temp);
-        // const temperature = 81;//test temperature
         return temperature;
     }
     catch (error) {
@@ -18,13 +17,12 @@ export async function getTemperature() {
 
 //gets the temperature from openweathermap
 export async function getCondition() {
-    //const url = 'https://api.openweathermap.org/data/2.5/weather?lat=30.601389&lon=-96.314445&appid='+ API_Key;
+    const url = 'https://api.openweathermap.org/data/2.5/weather?lat=30.601389&lon=-96.314445&appid='+ API_Key;
 
     try {
-        //const everything = await fetch(url);
-        //const everythingJson = await everything.json(); 
-        //const temperature = String(everythingJson.weather[0].description);
-        const temperature = 'test condition';
+        const everything = await fetch(url);
+        const everythingJson = await everything.json(); 
+        const temperature = String(everythingJson.weather[0].description);
         return temperature;
     }
     catch (error) {
