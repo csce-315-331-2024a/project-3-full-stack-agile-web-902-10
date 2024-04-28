@@ -45,7 +45,7 @@
   .dark {
     --background: 20 14% 4%;             /* Darker background */
     --foreground: 0 0% 100%;             /* Pure white text for high contrast */
-    --card: 24 9% 8%;                    /* Darker card backgrounds */
+    --card: 20 14% 4%;                    /* Darker card backgrounds */
     --card-foreground: 0 0% 100%;        /* Pure white text on cards */
     --popover: 0 0% 7%;                  /* Darker popover background */
     --popover-foreground: 0 0% 100%;     /* Pure white text on popovers */

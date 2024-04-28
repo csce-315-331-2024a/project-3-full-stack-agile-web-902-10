@@ -119,7 +119,7 @@ export default function OrderHistoryDesktop() {
                     <PaginationContent>
                         <PaginationPrevious onClick={() => setPageIndex( (pageIndex - 1) >= 0 ? (pageIndex - 1) : 0 )} />
                         <PaginationItem>
-                            <PaginationEllipsis />
+                            <PaginationLink>{pageIndex + 1}</PaginationLink>
                         </PaginationItem>
                         <PaginationNext onClick={() => setPageIndex(pageIndex + 1)} />
                     </PaginationContent>

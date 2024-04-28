@@ -1,7 +1,7 @@
 "use client";
 
 import { Login_Log, Roles, Users } from "@prisma/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useSocket, LoginLogRead } from "@/lib/socket";
 
 import Image from "next/image"
@@ -70,7 +70,7 @@ export default function LoginLogDesktop() {
                     time: "desc",
                 },
             };
-            socket.emit("loginLog:read", {}, (obj: Login_Log[]) => {
+            socket.emit("loginLog:read", loginLogRead, (obj: Login_Log[]) => {
                 setLoginLogs(obj);
             });
             socket.on("loginLog", (obj: Login_Log[]) => {
@@ -115,6 +115,10 @@ export default function LoginLogDesktop() {
         }
     }, [pageIndex, selectedUser]);
 
+    useEffect(() => {
+        setPageIndex(0);
+    }, [selectedUser]);
+
     function onPreviousPage() {
         console.log(pageIndex, "pageIndex");
         if (pageIndex == 0) {
@@ -130,7 +134,7 @@ export default function LoginLogDesktop() {
                     <PaginationContent>
                         <PaginationPrevious onClick={() => setPageIndex((pageIndex - 1) >= 0 ? (pageIndex - 1) : 0)} />
                         <PaginationItem>
-                            <PaginationEllipsis />
+                            <PaginationLink>{pageIndex + 1}</PaginationLink>
                         </PaginationItem>
                         <PaginationNext onClick={() => setPageIndex(pageIndex + 1)} />
                     </PaginationContent>

@@ -109,6 +109,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
             socket.on('users', (new_users: Users[]) => {
                 setUsers(new_users);
+                router.refresh();
             });
         }
     }, [socket]);
@@ -383,13 +384,13 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
                     <p className="text-lg font-bold"> Options </p>
                     <Separator />
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>
+                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEditDiv) ? "default" : "secondary"} onClick={toggleEditMenuDiv}>Edit Menu</Button>}
+                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showIngredientDiv) ? "default" : "secondary"} onClick={toggleIngredientDiv}>Edit Ingredients</Button>}
                     {user?.role === Roles.Admin && (<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showEmployeeDiv) ? "default" : "secondary"} onClick={toggleEmployee}>Employees</Button>)}
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>
-                    <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>
+                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
+                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>}
+                    {(user?.role === Roles.Admin || user?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
+                    {(user?.role === Roles.Admin || user?.role === Roles.Manager || user?.role === Roles.Kitchen) &&<Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
                     <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleBoard}>Menu Board</Button>
                 </div>
             </ScrollArea>
@@ -397,23 +398,8 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             {!showEditDiv && !showEmployeeDiv && !showIngredientDiv && !showOrder && !showLogin && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
                     <h1 className="text-2xl font-bold p-16">Select a function using the buttons on the left.</h1>
-                </ScrollArea>)}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                </ScrollArea>
+            )}
 
 
             {/* if editing menu items */}
@@ -721,32 +707,6 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             {showIngredientDiv && (
                 <ScrollArea className="flex-col w-auto items-center h-[91vh]">
                     <div className="grid grid-cols-1 gap-4 p-4">
@@ -968,7 +928,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 </ScrollArea>
             )}
 
-            {/* lgin history */}
+            {/* login history */}
             {showLogin && (
                 <ScrollArea className="w-[90vw]">
                     <LoginLogDesktop/>
