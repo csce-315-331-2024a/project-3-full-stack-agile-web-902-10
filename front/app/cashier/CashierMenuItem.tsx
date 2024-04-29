@@ -18,11 +18,14 @@ import { CartItem } from "@/lib/stores/cart-store"
 import { createWriteStream } from "fs"
 import { Label } from "@radix-ui/react-label"
 import { Input } from "@/components/ui/input"
+import { CatIcon } from "lucide-react"
 
 export default function CashierMenuItem({ menu_item, ingredients, ingredient_menus }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[] }) {
     const cart = useCartStore((state) => state.cart);
     const setCart = useCartStore((state) => state.setCart);
-    
+    const [quantity, setQuantity] = useState(1);
+    let maxQuantity = 26;
+
     const ingredients_in_menu_item = ingredient_menus.filter((ingredient_menu) => ingredient_menu.menu_id === menu_item.id);
     const [selectedIngredients, setSelectedIngredients] = useState<number[]>(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
 
@@ -42,7 +45,7 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
     const reset_ingredients = () => {
         setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
     }
-    
+
     const compare = (array1: number[], array2: number[]) => {
 
         if (array1.length != array2.length) {
@@ -58,28 +61,52 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
         return true;
     }
 
-    const updateCart = (menu_item: Menu_Item, ingredient_ids: number[]) => {
+    const updateCart = (menu_item: Menu_Item, ingredient_ids: number[], quantity: number) => {
         const cartItem: CartItem = {
             menu_item: menu_item,
             ingredient_ids: ingredient_ids,
-            quantity: 1
+            quantity: quantity
         }
 
         for (let i = 0; i < cart.length; ++i) {
             if ((cartItem.menu_item.id === cart[i].menu_item.id) && (compare(cartItem.ingredient_ids, cart[i].ingredient_ids))) {
-                cart[i].quantity += 1;
+                cart[i].quantity += cartItem.quantity;
                 setCart(cart);
                 return;
             }
         }
-        
+
         cart.push(cartItem);
+        cart[cart.length - 1].quantity = cartItem.quantity
         setCart(cart);
+    }
+
+    const ingredientChecker = (item: Menu_Item) => {
+        let ingredients_in_menu_item = ingredient_menus.filter((ingredient_menu) => ingredient_menu.menu_id === item.id);
+        let selectedIngredientIDs = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id);
+        let selectedIngredientQuantities = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.quantity);
+        let selectedIngredients = ingredients.filter((ingredient) => compareNumArray(ingredient.id, selectedIngredientIDs));
+
+        for (let i = 0; i < selectedIngredients.length; ++i) {
+            if (!(selectedIngredients[i].stock >= selectedIngredientQuantities[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const compareNumArray = (num: number, array: number[]) => {
+        for (let i = 0; i < array.length; ++i) {
+            if (array[i] === num) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
     return (
-        <Dialog key={menu_item.id} onOpenChange={reset_ingredients}>
+        <Dialog key={menu_item.id} onOpenChange={() => { reset_ingredients(), setQuantity(1) }}>
             <DialogTrigger asChild>
                 <Button variant="outline" className="flex-col justify-evenly items-center w-[23vw] h-[10vh]">
                     <h2 className="text-2xl font-bold snap-center">{menu_item.name}</h2>
@@ -110,15 +137,21 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
                             const ingredient = ingredients.find((ingredient) => ingredient.id === ingredient_in_menu_item.ingredients_id);
                             if (ingredient) {
                                 return (
-                                    <Button key={ingredient.id} variant={ (selectedIngredients.includes(ingredient.id)) ? "default" : "destructive"} className="w-[10vw] h-[10vh] text-xl font-bold whitespace-normal" onClick={() => on_ingredient_click(ingredient.id)}> <p className={(selectedIngredients.includes(ingredient.id)) ? "" : "line-through"}> {ingredient.name}</p> </Button>
+                                    <Button key={ingredient.id} variant={(selectedIngredients.includes(ingredient.id)) ? "default" : "destructive"} className="w-[10vw] h-[10vh] text-xl font-bold whitespace-normal" onClick={() => on_ingredient_click(ingredient.id)}> <p className={(selectedIngredients.includes(ingredient.id)) ? "" : "line-through"}> {ingredient.name}</p> </Button>
                                 );
-                            } 
+                            }
                         })}
                     </div>
                 </div>
                 <DialogFooter className="justify-between gap-4">
                     <DialogClose asChild>
-                        <Button key={"add cart"} variant={"default"} className="w-[12vw] h-[8vh] text-xl font-bold whitespace-normal" onClick={() => updateCart(menu_item, selectedIngredients)}>Add to Cart</Button>
+                        {quantity === maxQuantity && (
+                            <div className="warning-label">
+                                Warning: You've reached the maximum allowed quantity!
+                            </div>
+                        )}
+                        <Input type="number" min="0" max="25" value={quantity} className="h-[3vh] w-[5vw]" />
+                        <Button key={"add cart"} variant={"default"} className="w-[12vw] h-[8vh] text-xl font-bold whitespace-normal" onClick={() => updateCart(menu_item, selectedIngredients, quantity)}>Add to Cart</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>
