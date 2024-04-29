@@ -187,11 +187,11 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
 
     return (
         <div className="border-b pt-4">
-            <div className="flex h-[6vh] items-center justify-center px-4">
+            <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
-                    <div className="flex justify-start border-2 p-4 rounded-full">
-                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="text-lg font-bold transition-colors hover:text-primary">Dashboard</Link>}
-                        {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="text-lg font-bold transition-colors"> {temprature + " °F"} </p>}
+                    <div className="flex justify-start border-2 rounded-sm">
+                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">Dashboard</Link>}
+                        {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="px-2 py-1 text-lg font-bold transition-colors"> {temprature + " °F"} </p>}
                     </div>
                     <div className="flex justify-center flex-grow flex-col">
                         {cart.length <= 0 ?
@@ -258,9 +258,9 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                             </Drawer>
                         }
                     </div>
-                    <div className="flex justify-end gap-x-16 border-2 p-4 rounded-full">
+                    <div className="flex justify-end gap-x-16 border-2 rounded-sm">
                         <Dialog>
-                            <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
+                            <DialogTrigger className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>{translated.settings}</DialogTitle>

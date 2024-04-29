@@ -177,7 +177,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
 
     return (
         <div className="flex flex-row">
-            <ScrollArea className="h-[92vh] w-auto p-10 whitespace-nowrap">
+            <ScrollArea className="h-[90vh] w-auto p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center transition-all">
                     <h1 className="text-xl font-bold"> {translated.category} </h1>
                     <Separator />
@@ -187,7 +187,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
                 </div>
                 <ScrollBar orientation="vertical" />
             </ScrollArea>
-            <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
+            <ScrollArea className="h-[90vh] w-[90vw] p-8 whitespace-nowrap">
                 <div className="grid grid-cols-3 gap-4 transition-all">
                     {menu_items.filter((menu_item) => (selectedCategory === undefined || menu_item.category === selectedCategory) && ingredientChecker(menu_item)).map((menu_item) => (
                         <CustomerMenuItem key={menu_item.name} menu_item={menu_item} ingredients={ingredients} ingredient_menus={ingredient_menus} translated={translated} />

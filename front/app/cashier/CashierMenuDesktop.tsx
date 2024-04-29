@@ -78,7 +78,7 @@ export default function CashierMenuDesktop({ menu_items_init, ingredients_init, 
 
     return (
         <div className="flex flex-row">
-            <div className="h-[90vh] w-[30vw] p-10 whitespace-nowrap">
+            <div className="h-[70vh] w-[30vw] p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[20vw] space-y-8 justify-center items-center transition-all">
                     <h1 className="text-xl font-bold items-center"> Current Cart </h1>
                     <Separator />
