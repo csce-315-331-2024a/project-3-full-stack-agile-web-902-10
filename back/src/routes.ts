@@ -166,7 +166,7 @@ export type KitchenUpdate = Parameters<typeof prisma.kitchen.update>[0];
 /**
  * The kitchen delete query
  */
-export type KitchenDelete = Parameters<typeof prisma.kitchen.delete>[0];
+export type KitchenDelete = Parameters<typeof prisma.kitchen.deleteMany>[0];
 
 /**
  * Helper function that verifies the {@link AuthPacket}
@@ -744,7 +744,7 @@ export async function kitchenDelete(auth: AuthPacket, delete_query: KitchenDelet
         if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        await prisma.kitchen.delete(delete_query);
+        await prisma.kitchen.deleteMany(delete_query);
         io.emit("kitchen", await prisma.kitchen.findMany());
     } catch (error) {
         console.error("ERROR: " + error);

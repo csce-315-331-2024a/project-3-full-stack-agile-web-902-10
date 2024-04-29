@@ -17,6 +17,7 @@ import { useCartStore } from "@/lib/provider/cart-store-provider"
 import { CartItem } from "@/lib/stores/cart-store"
 import { createWriteStream } from "fs"
 import { Label } from "@radix-ui/react-label"
+import { Input } from "@/components/ui/input"
 
 export default function CashierMenuItem({ menu_item, ingredients, ingredient_menus }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[] }) {
     const cart = useCartStore((state) => state.cart);
@@ -117,7 +118,14 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
                 </div>
                 <DialogFooter className="justify-between gap-4">
                     <Label htmlFor="input"></Label>
-                    <input id="input" type="number" placeholder="1" className="border-4 w-[5vw] rounded-sm text-xl" min="1" max="100" />
+                    <Input 
+                        id="input" 
+                        type="number" 
+                        placeholder="1" 
+                        className="border-4 w-[5vw] rounded-sm text-xl" 
+                        min="1" 
+                        max="100" 
+                    />
                     <DialogClose asChild>
                         <Button key={"add cart"} variant={"default"} className="w-[12vw] h-[8vh] text-xl font-bold whitespace-normal" onClick={() => updateCart(menu_item, selectedIngredients)}>Add to Cart</Button>
                     </DialogClose>
