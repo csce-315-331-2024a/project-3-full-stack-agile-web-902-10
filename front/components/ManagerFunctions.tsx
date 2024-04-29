@@ -422,9 +422,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                             <Separator />
                             <h2 className="pt-6 text-lg flex-grow text-center">Trend Data</h2>
                         </div>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showOrder) ? "default" : "secondary"} onClick={toggleOrder}>Order History</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant={(showLogin) ? "default" : "secondary"} onClick={toggleLogin}>Login History</Button>}
-                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={toggleTrends}>Trends</Button>}
                 </div>
             </ScrollArea>
             </div>
@@ -601,11 +601,11 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                         </h2>
                                         <div className="flex justify-center items-center gap-4">
                                             <Dialog>
-                                                <DialogTrigger onClick={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false) }}>
+                                                <DialogTrigger onClick={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false), setUploadedImageURL('') }}>
                                                     <Button variant="default">Edit</Button>
                                                 </DialogTrigger>
 
-                                                <DialogContent onAbort={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false) }}>
+                                                <DialogContent onAbort={() => { setIngredientList([]), setRatios([]), setShowIngredientScroll(false), setUploadedImageURL('') }}>
 
                                                     <DialogHeader>
                                                         <DialogTitle className="text-lg font-bold">Edit Menu Item</DialogTitle>

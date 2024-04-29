@@ -22,22 +22,11 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-    SelectGroup,
-    SelectLabel
-} from "@/components/ui/select"
-
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator";
 
 
 import { useCartStore } from "@/lib/provider/cart-store-provider";
-import { useLanguageStore } from "@/lib/provider/language-store-provider";
 import { KitchenCreate, useSocket } from "@/lib/socket";
 import LanguageSelector from "@/components/LanguageSelector.";
 import { getTemperature } from "../api/weather";
@@ -59,7 +48,7 @@ const static_text = {
     checkout_desc: "Checkout here.",
 }
 
-export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients }: { user: Users | null, ingredient_menus: Ingredients_Menu[], ingredients: Ingredient[] }) {
+export default function CashierMenuNavBar({ user, ingredient_menus, ingredients }: { user: Users | null, ingredient_menus: Ingredients_Menu[], ingredients: Ingredient[] }) {
     const { theme, setTheme } = useTheme();
 
     // get add to cart store
@@ -139,9 +128,6 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
     }
 
     // All data that needs to be processed by the server should be sent through the socket
-    const language = useLanguageStore((state) => state.language);
-    const setLanguage = useLanguageStore((state) => state.setLanguage);
-    let [translated, setTranslated] = useState(static_text);
 
     useEffect(() => {
         cart = some_cart;
@@ -150,19 +136,11 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
     const socket = useSocket();
     useEffect(() => {
         if (socket) {
-            if (language !== "English") {
-                socket.emit("translateJSON", translated, language, (new_translated: typeof translated) => {
-                    setTranslated(new_translated);
-                });
-            } else {
-                setTranslated(static_text);
-            }
-
             socket.on("users", (users: Users[]) => {
                 setCurrentUser(users.find((user) => user.id === currentUser?.id) || null);
             });
         }
-    }, [socket, language]);
+    }, [socket]);
 
     const [temprature, setTemperature] = useState(0);
 
@@ -185,25 +163,25 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
 
     return (
         <div className="border-b pt-4">
-            <div className="flex h-[6vh] items-center justify-center px-4">
-                <nav className="flex w-full item-center justify-center md:mx-12">
-                    <div className="flex justify-start border-2 p-4 rounded-full">
-                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="text-lg font-bold transition-colors hover:text-primary">Dashboard</Link>}
-                        {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="text-lg font-bold transition-colors"> {temprature + " °F"} </p>}
+            <div className="flex h-[8vh] items-center justify-center px-4">
+                <nav className="flex w-full items-center justify-center md:mx-12">
+                    <div className="flex justify-left border-2 rounded-sm">
+                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">Dashboard</Link>}
+                        {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="px-2 py-1 text-lg font-bold transition-colors"> {temprature + " °F"} </p>}
                     </div>
-                    <div className="flex justify-center flex-grow flex-col">
+                    <div className="flex justify-center flex-grow">
                         {cart.length <= 0 ?
-                            <p className="text-xl font-bold text-center">{user?.name === undefined ? "Rev's American Grill" : translated.welcome + ", " + user.name.split(" ")[0]}</p> :
+                            <p className="text-xl font-bold text-center">{user?.name === undefined ? "Rev's American Grill" : static_text.welcome + ", " + user.name.split(" ")[0]}</p> :
                             <Drawer direction="right">
-                                <DrawerTrigger>
-                                    <Button variant="default" className="text-lg font-bold">{"Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
+                                <DrawerTrigger asChild className="items-center">
+                                    <Button variant="default" className="text-lg w-[8vw] font-bold">{"Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
                                 </DrawerTrigger>
                                 <DrawerContent showBar={false} className="h-screen top-0 right-0 left-auto mt-0 w-auto rounded-none">
                                     <DrawerHeader>
-                                        <DrawerTitle>{translated.cart}</DrawerTitle>
-                                        <DrawerDescription>{translated.review_order}</DrawerDescription>
+                                        <DrawerTitle>{static_text.cart}</DrawerTitle>
+                                        <DrawerDescription>{static_text.review_order}</DrawerDescription>
                                     </DrawerHeader>
-                                    <ScrollArea className="flex-col space-y-4 m-8">
+                                    <ScrollArea className="flex-col space-y-4 pr-4 m-8">
                                         {cart.map((item) => (
                                             <div key={item.menu_item.id}>
                                                 <div className="flex justify-between space-x-12">
@@ -225,58 +203,54 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                     <DrawerFooter>
                                         {/* Calculate total */}
                                         <div className="flex justify-between">
-                                            <p>{translated.total}</p>
+                                            <p>{static_text.total}</p>
                                             <p>${cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0)}</p>
                                         </div>
                                         <Dialog>
                                             <DialogTrigger asChild>
-                                                <Button variant="default" >{translated.checkout}</Button>
+                                                <Button variant="default" >{static_text.checkout}</Button>
                                             </DialogTrigger>
                                             <DialogContent className="sm:max-w-[400px]">
                                                 <DialogHeader>
-                                                <DialogTitle>{translated.checkout}</DialogTitle>
+                                                <DialogTitle>{static_text.checkout}</DialogTitle>
                                                 <DialogDescription>
-                                                    {translated.checkout_desc}
+                                                    {static_text.checkout_desc}
                                                 </DialogDescription>
                                                 </DialogHeader>
                                                 <div className="flex justify-between text-xl">
-                                                    <p>{translated.total}</p>
+                                                    <p>{static_text.total}</p>
                                                     <p>${cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0)}</p>
                                                 </div> 
                                                 <DialogFooter>
                                                     <DialogClose asChild>
-                                                        <Button type="submit" onClick={() => placeOrder()}>{translated.place_order}</Button>
+                                                        <Button type="submit" onClick={() => placeOrder()}>{static_text.place_order}</Button>
                                                     </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
                                             </Dialog>
-                                        <Button variant="destructive" className="p-4" onClick={() => clearCart()}>{translated.clear_cart}</Button>
+                                        <Button variant="destructive" className="p-4" onClick={() => clearCart()}>{static_text.clear_cart}</Button>
                                     </DrawerFooter>
                                 </DrawerContent>
                             </Drawer>
                         }
                     </div>
-                    <div className="flex justify-end gap-x-16 border-2 p-4 rounded-full">
+                    <div className="flex justify-end gap-x-16 border-2 rounded-sm">
                         <Dialog>
-                            <DialogTrigger className="text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
+                            <DialogTrigger className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">{static_text.settings}</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>{translated.settings}</DialogTitle>
-                                    <DialogDescription>{translated.make_changes}</DialogDescription>
+                                    <DialogTitle>{static_text.settings}</DialogTitle>
+                                    <DialogDescription>{static_text.make_changes}</DialogDescription>
                                 </DialogHeader>
                                 <div className="flex-col space-y-4">
                                     <div className="flex items-center gap-4">
                                         <Switch checked={theme === "dark" ? true : false} onCheckedChange={toggleTheme} id="dark-mode" />
-                                        <Label htmlFor="dark-mode">{translated.dark_mode}</Label>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <LanguageSelector translated={translated} id="language" />
-                                        <Label htmlFor="language">{translated.language}</Label>
+                                        <Label htmlFor="dark-mode">{static_text.dark_mode}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         {user?.name === undefined ?
-                                            <Button variant={"outline"} onClick={() => signIn('google', { callbackUrl: "/menu" })}>{translated.sign_in}</Button> :
-                                            <Button variant={"destructive"} onClick={() => signOut()}>{translated.sign_out}</Button>
+                                            <Button variant={"outline"} onClick={() => signIn('google', { callbackUrl: "/menu" })}>{static_text.sign_in}</Button> :
+                                            <Button variant={"destructive"} onClick={() => signOut()}>{static_text.sign_out}</Button>
                                         }
                                     </div>
                                 </div>

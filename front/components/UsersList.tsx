@@ -8,6 +8,16 @@ import { Button } from './ui/button';
 import { AuthPacket, useSocket } from '@/lib/socket';
 import { ScrollArea } from './ui/scroll-area';
 
+function maskEmail(email: string) {
+    const [localPart, domain] = email.split('@');
+    if (!localPart || !domain) {
+        return 'Invalid email';
+    }
+    const firstChar = localPart[0];
+    const maskedPart = '*'.repeat(localPart.length - 1);
+    return `${firstChar}${maskedPart}@${domain}`;
+};
+
 export default function UsersList({ users, user }:
     {
         users: Users[],
@@ -50,9 +60,10 @@ export default function UsersList({ users, user }:
         email: user?.email ?? "",
         jwt: user?.jwt ?? ""
     };
+    
     const onFireEmployee = (user: Users) => {
         socket?.emit("users:update", auth, user);
-    }
+    };
 
     return (
         <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
@@ -62,7 +73,7 @@ export default function UsersList({ users, user }:
                         <DialogTrigger asChild>
                             <Button variant="outline" className="flex-col w-[25vw] h-[20vh]">
                                 <h2 className="text-3xl font-bold">{user.name}</h2>
-                                {/* <p className="text-slate-500 py-4">{user.email}</p> */}
+                                <p className="text-slate-500 py-4">{maskEmail(user.email)}</p>
                                 <h1 className="text-xl">{user?.role}</h1>
                             </Button>
                         </DialogTrigger>

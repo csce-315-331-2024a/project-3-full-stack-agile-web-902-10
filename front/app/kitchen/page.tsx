@@ -35,11 +35,12 @@ export default async function KitchenPage() {
     const menu_items = await prisma.menu_Item.findMany();
     const ingredients = await prisma.ingredient.findMany();
     const ingredients_menu = await prisma.ingredients_Menu.findMany();
+    const kitchen = await prisma.kitchen.findMany();
 
     return (
         <>
             <KitchenNavBar user={user} />
-            <KitchenDesktop orders_init={orders.sort( (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())} menu_items_init={menu_items} ingredients_init={ingredients} ingredients_menu_init={ingredients_menu} user={user} />
+            <KitchenDesktop user={user}/>
         </>
     );
 }
