@@ -406,7 +406,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             <ScrollArea className="h-[100vh] w-auto p-10 whitespace-nowrap">
                 <div className="flex flex-col w-[10vw] space-y-8 justify-center items-center">
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Cashier) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/cashier")}>Cashier</Button>}
-                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Kitchen) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
+                    {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager || currentUser?.role === Roles.Kitchen || currentUser?.role === Roles.Cashier) && <Button className="w-[9vw] h-[9vh] text-lg font-bold whitespace-normal" variant="secondary" onClick={(e) => router.push("/kitchen")}>Kitchen</Button>}
                     {(currentUser?.role === Roles.Admin || currentUser?.role === Roles.Manager) &&
                         <div className="w-[9vw] h-[4vh] flex flex-col justify-center">
                             <Separator />
