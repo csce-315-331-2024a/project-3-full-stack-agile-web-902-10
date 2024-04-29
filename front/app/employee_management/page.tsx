@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { Roles } from "@prisma/client";
 import UsersList from "@/components/UsersList";
 
 import { getUserSession } from "@/lib/session";
@@ -11,7 +12,7 @@ export default async function UsersPage() {
     const session = await getUserSession();
     const user = await prisma.users.findUnique({ where: { email: session?.email ?? undefined } });
 
-    if (!user || user.is_manager === false) {
+    if (!user || user.role !== Roles.Admin ) {
         return <Redirect to="/menu" />;
     };
 

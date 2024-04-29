@@ -6,9 +6,10 @@ import { Separator } from "@/components/ui/separator"
 import { useState, useEffect } from "react";
 import { CartItem } from "@/lib/stores/cart-store"
 import { useCartStore } from "@/lib/provider/cart-store-provider"
-import { Menu_Item, Users, Ingredient, Ingredients_Menu } from "@prisma/client"
+import { Menu_Item, Users, Ingredient, Ingredients_Menu, Roles } from "@prisma/client"
 import { useSocket } from "@/lib/socket";
 import CashierMenuItem from "./CashierMenuItem";
+import { useRouter } from "next/navigation";
 
 export default function CashierMenuDesktop({ menu_items_init, ingredients_init, ingredient_menus_init, user }: { menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredient_menus_init: Ingredients_Menu[], user: Users | null }) {
     // make a state for the selected category
@@ -47,6 +48,7 @@ export default function CashierMenuDesktop({ menu_items_init, ingredients_init, 
     }
 
     const socket = useSocket();
+    const router = useRouter();
     useEffect(() => {
         if (socket) {
             socket.emit("ingredientMenu:read", undefined, (new_ingredient_menus: Ingredients_Menu[]) => {
@@ -72,6 +74,12 @@ export default function CashierMenuDesktop({ menu_items_init, ingredients_init, 
             });
             socket.on("ingredient", (new_ingredients: Ingredient[]) => {
                 setIngredients(new_ingredients);
+            });
+            socket.on("users", (new_users: Users[]) => {
+                const updated_user = new_users.find((u) => u.id === user?.id);
+                if (updated_user === undefined || (updated_user.role !== Roles.Cashier && updated_user.role !== Roles.Manager && updated_user.role !== Roles.Admin) ) {
+                    router.push("/menu");
+                }
             });
         }
     }, [socket]);

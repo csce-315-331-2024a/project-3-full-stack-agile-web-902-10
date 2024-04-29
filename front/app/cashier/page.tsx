@@ -1,8 +1,10 @@
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
+import { Roles } from "@prisma/client";
 
 import CashierMenuDesktop from "./CashierMenuDesktop";
 import CashierMenuNavBar from "./CashierMenuNavBar";
+import Redirect from "@/components/Redirect";
 
 export const metadata = {
     title: "Menu | Rev's Grill",
@@ -24,6 +26,10 @@ export default async function MenuPage() {
     });
     const ingredients = await prisma.ingredient.findMany();
     const ingredients_menus = await prisma.ingredients_Menu.findMany();
+
+    if (!user || (user.role !== Roles.Cashier && user.role !== Roles.Manager && user.role !== Roles.Admin)) {
+        return <Redirect to="/menu" />;
+    }
 
     return (
         <>

@@ -52,19 +52,19 @@ export default function EditButton({ user, menu_item, ingredients_menu, ingredie
             <DialogTrigger asChild>
                 <Button className="pb-2" variant={"outline"}>Edit</Button>
             </DialogTrigger>
-            <DialogContent className=" min-w-[80vw]">
+            <DialogContent className=" min-w-[39vw]">
                 <DialogHeader>
                     <DialogTitle>Edit Order</DialogTitle>
                     <DialogDescription>
                         Select
                     </DialogDescription>
                 </DialogHeader>
-                <div>
+                <div className=" grid grid-cols-3 gap-2">
                     {ingredients_in_menu_item.map((ingredient_in_menu_item) => {
                         const ingredient = ingredients.find((ingredient) => ingredient.id === ingredient_in_menu_item.ingredients_id);
                         if (ingredient) {
                             return (
-                                <Button key={ingredient.id} variant={(selectedIngredients.includes(ingredient.id)) ? "default" : "destructive"} className="w-[10vw] h-[10vh] text-xl p-8 font-bold whitespace-normal" onClick={() => on_ingredient_click(ingredient.id)}> <p className={(selectedIngredients.includes(ingredient.id)) ? "" : "line-through"}> {ingredient.name}</p> </Button>
+                                <Button key={ingredient.id} variant={(selectedIngredients.includes(ingredient.id)) ? "default" : "destructive"} className="w-[12vw] h-[10vh] text-xl font-bold whitespace-normal" onClick={() => on_ingredient_click(ingredient.id)}> <p className={(selectedIngredients.includes(ingredient.id)) ? "" : "line-through"}> {ingredient.name}</p> </Button>
                             );
                         }
                     })}

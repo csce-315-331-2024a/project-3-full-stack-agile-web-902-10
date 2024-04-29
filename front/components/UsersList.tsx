@@ -7,6 +7,7 @@ import { Button } from './ui/button';
 
 import { AuthPacket, useSocket } from '@/lib/socket';
 import { ScrollArea } from './ui/scroll-area';
+import { useRouter } from 'next/navigation';
 
 function maskEmail(email: string) {
     const [localPart, domain] = email.split('@');
@@ -37,6 +38,7 @@ export default function UsersList({ users, user }:
 
 
     const socket = useSocket();
+    const router = useRouter();
     useEffect(() => {
         if (socket) {
             socket.emit("users:read", undefined, (new_users: Users[]) => {
@@ -47,6 +49,10 @@ export default function UsersList({ users, user }:
                 setFilteredUsers(new_users);
             });
             socket.on("users", (new_users: Users[]) => {
+                const updated_user = new_users.find((u) => u.id === user?.id);
+                if (updated_user === undefined || (updated_user.role !== Roles.Kitchen && updated_user.role !== Roles.Cashier && updated_user.role !== Roles.Manager && updated_user.role !== Roles.Admin) ) {
+                    router.push("/menu");
+                }
                 // sort by role
                 new_users.sort((a, b) => {
                     return roleOrder[a.role] - roleOrder[b.role];

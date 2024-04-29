@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator";
 import KitchenEditButton from "./KitchenEditButton";
+import { useRouter } from "next/navigation";
 
 
 export default function KitchenDesktop({ user }: { user: Users }) {
@@ -43,6 +44,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
         }
     };
 
+    const router = useRouter();
     useEffect(() => {
         if (socket) {
             socket.emit("orderLog:read", orderLogRead, (new_orders: Order_Log[]) => {
@@ -77,6 +79,12 @@ export default function KitchenDesktop({ user }: { user: Users }) {
             });
             socket.on("kitchen", (new_kitchen: Kitchen[]) => {
                 setKitchen(new_kitchen);
+            });
+            socket.on("users", (new_users: Users[]) => {
+                const updated_user = new_users.find((u) => u.id === user?.id);
+                if (updated_user === undefined || (updated_user.role !== Roles.Kitchen && updated_user.role !== Roles.Cashier && updated_user.role !== Roles.Manager && updated_user.role !== Roles.Admin) ) {
+                    router.push("/menu");
+                }
             });
         }
     }, [socket]);
