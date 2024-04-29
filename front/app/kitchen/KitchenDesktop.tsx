@@ -1,20 +1,9 @@
 "use client";
 
-import { Order_Log, Order_Status, Menu_Item, Ingredient, Ingredients_Menu, Users, Kitchen, Roles } from "@prisma/client";
+import { Menu_Item, Ingredient, Ingredients_Menu, Users, Kitchen, Roles } from "@prisma/client";
 import { useState, useEffect } from "react";
-import { useSocket, OrderLogRead, OrderLogCreate } from "@/lib/socket";
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table";
+import { useSocket, OrderLogCreate } from "@/lib/socket";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
 import {
     Card,
     CardContent,
@@ -23,39 +12,21 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator";
 import KitchenEditButton from "./KitchenEditButton";
 import { useRouter } from "next/navigation";
 
 
 export default function KitchenDesktop({ user }: { user: Users }) {
-    const [orders, setOrders] = useState<Order_Log[]>([]);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>([]);
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [ingredients_menu, setIngredientsMenu] = useState<Ingredients_Menu[]>([]);
     const [kitchen, setKitchen] = useState<Kitchen[]>([]);
 
     const socket = useSocket();
-    const orderLogRead: OrderLogRead = {
-        where: {
-            status: {
-                not: Order_Status.Completed,
-            }
-        }
-    };
 
     const router = useRouter();
     useEffect(() => {
         if (socket) {
-            socket.emit("orderLog:read", orderLogRead, (new_orders: Order_Log[]) => {
-                new_orders.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
-                setOrders(new_orders);
-            });
-            socket.on("orderLog", (new_orders: Order_Log[]) => {
-                new_orders.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
-                setOrders(new_orders);
-
-            });
             socket.emit("menuItem:read", {}, (new_menu_items: Menu_Item[]) => {
                 setMenuItems(new_menu_items);
             });
@@ -82,7 +53,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
             });
             socket.on("users", (new_users: Users[]) => {
                 const updated_user = new_users.find((u) => u.id === user?.id);
-                if (updated_user === undefined || (updated_user.role !== Roles.Kitchen && updated_user.role !== Roles.Cashier && updated_user.role !== Roles.Manager && updated_user.role !== Roles.Admin) ) {
+                if (updated_user === undefined || (updated_user.role !== Roles.Kitchen && updated_user.role !== Roles.Cashier && updated_user.role !== Roles.Manager && updated_user.role !== Roles.Admin)) {
                     router.push("/menu");
                 }
             });
@@ -95,7 +66,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
     }
 
     function getIngredientNames(kitchenIngredients: string) {
-        const ingredientIds = kitchenIngredients.split(","); 
+        const ingredientIds = kitchenIngredients.split(",");
         return ingredientIds.map(id => {
             const ingredient = ingredients.find(ingredient => ingredient.id === Number(id));
             return ingredient ? ingredient.name : id.toString();
@@ -136,7 +107,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
 
     function combineIngredients(orders: Kitchen[]) {
         let combinedArray: string[] = [];
-        orders.forEach(function (order) {
+        orders.forEach(function(order) {
             // Split each ingredients_ids string by ',' and filter out empty elements
             let ingredients = order.ingredients_ids.split(',').filter(n => n !== '');
             // Concatenate the cleaned ingredients list to the combined array
@@ -164,10 +135,12 @@ export default function KitchenDesktop({ user }: { user: Users }) {
                 price: totalPrice,
                 menu_items: menuItemIdString,
                 ingredients: ingredientsString,
-
             }
         }
         socket.emit("orderLog:create", auth, create_query);
+        if (kitchen[0].email !== null) {
+            fetch("/api/send", {body: JSON.stringify(kitchen)});
+        }
     }
 
     // show orders in a table
@@ -189,7 +162,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
                                             <p className="pt-2">Menu Item: {menuItem ? menuItem.name : `ID ${kitchen.menu_id}`}</p>
                                             <p className="pb-2">Ingredients: {getIngredientNames(kitchen.ingredients_ids)}</p>
                                             {(user.role === Roles.Cashier || user.role === Roles.Manager || user.role === Roles.Admin) &&
-                                                <KitchenEditButton user={user} menu_item={menuItem as Menu_Item} ingredients_menu={ingredients_menu} ingredients={ingredients} currentIDS={ kitchen.ingredients_ids.split(",").map(Number)} kitchenID  ={kitchen.id}/>
+                                                <KitchenEditButton user={user} menu_item={menuItem as Menu_Item} ingredients_menu={ingredients_menu} ingredients={ingredients} currentIDS={kitchen.ingredients_ids.split(",").map(Number)} kitchenID={kitchen.id} />
                                             }
                                         </div>
                                     );

@@ -5,7 +5,6 @@ import {
     Menu_Item,
     Order_Log,
     Users,
-    Order_Status,
     Roles,
 } from "@prisma/client";
 
@@ -588,13 +587,7 @@ export async function orderLogUpdate(auth: AuthPacket, update_query: OrderLogUpd
             return;
         }
         const updatedOrderLog = await prisma.order_Log.update(update_query);
-        const orders = await prisma.order_Log.findMany({
-            where: {
-                status: {
-                    not: Order_Status.Completed,
-                }
-            },
-        });
+        const orders = await prisma.order_Log.findMany();
         io.emit("orderLog", orders);
     } catch (error) {
         console.error("ERROR: " + error);

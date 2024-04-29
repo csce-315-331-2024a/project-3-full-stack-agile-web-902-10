@@ -1,6 +1,6 @@
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { Order_Log, Order_Status, Roles } from "@prisma/client";
+import { Order_Log, Roles } from "@prisma/client";
 
 import OrderHistoryDesktop from "./OrderHistoryDesktop";
 import OrderNavBar from "./OrderNavBar";
