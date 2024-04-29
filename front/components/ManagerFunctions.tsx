@@ -110,7 +110,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     router.push("/menu");
                 }
                 if (moddedUser?.role !== currentUser?.role) {
-                    location.reload();
+                    router.refresh();
                 }
                 setCurrentUser(new_users.find((u) => u.id === user?.id) || null);
                 setUsers(new_users);
@@ -122,7 +122,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     router.push("/menu");
                 }
                 if (moddedUser?.role !== currentUser?.role) {
-                    location.reload();
+                    router.refresh();
                 }
                 setCurrentUser(new_users.find((u) => u.id === user?.id) || null);
                 setUsers(new_users);
@@ -225,14 +225,12 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             newIngArray.splice(index, 1);
             setIngredientList(newIngArray);
             newRatioArray.pop();
-            console.log("Removed ingredient from list", ingredientList);
         }
         else {
             newIngArray.push(ingredient);
             setIngredientList(newIngArray);
             newRatioArray.push(1);
             setRatios(newRatioArray);
-            console.log("Added ingredient to list", ingredientList);
         }
     }
 
@@ -246,8 +244,6 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             date
         };
 
-        console.log("URL: ", url);
-        console.log("Before emitting:", ingredientList);
         socket?.emit('menuItem:add', auth, {
             name: formData.itemName,
             price: formData.intPrice,
@@ -256,7 +252,6 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
             is_active: true,
             date: formData.date
         }, ingredientList, ratios, () => { });
-        console.log("Emit callback executed", ingredientList);
         setIngredientList([]);
         setRatios([]);
     };
@@ -264,9 +259,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
     const handleEditMenu = async (e: any, menu_item: Menu_Item) => {
         e.preventDefault();
         if (ingredientList.length > 0) {
-            console.log("Before emitting clear:", ingredientList);
             socket?.emit('menuItem:clear', auth, menu_item);
-            console.log("After clear: ", ingredientList);
 
             ingredientList.forEach((ing) => {
                 const create_query: IngredientsMenuCreate = {
@@ -299,9 +292,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     date: (formData.date == undefined ? menu_item.date : formData.date)
                 }
             }
-            console.log("Editing attributes with: ", update_query.data.name, update_query.data.category, update_query.data.price);
             socket?.emit('menuItem:update', auth, update_query, () => { });
-            console.log("Emit menuItem:update callback executed");
         }
     };
 
@@ -344,9 +335,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                 min_stock: parseInt((formData.minstock == '' ? (ing.min_stock).toString() : formData.minstock), 10),
             }
         }
-        console.log("Editing attributes with: ", update_query.data.name, update_query.data.category, update_query.data.stock, update_query.data.min_stock);
         socket?.emit('ingredient:update', auth, update_query, () => { });
-        console.log("Emit menuItem:update callback executed");
     }
 
     function deactivateItem(menu_item: Menu_Item) {

@@ -43,7 +43,6 @@ const authOptions: NextAuthOptions = {
         },
         async jwt ({ token, user }) {
             const id = Math.floor(Math.random() * 1000000) + 1;
-            console.log("JWT", id);
             await prisma.users.update({where: {email: user.email ?? undefined}, data: {jwt: id.toString() }});
             if (user) {
                 token.user = user;
