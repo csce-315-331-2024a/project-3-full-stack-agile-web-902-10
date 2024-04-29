@@ -183,12 +183,16 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
     });
 
     function handleKitchenCreation(menu_id: number, ingredient_ids: string, order_id: number) {
-        const kitchen_create: KitchenCreate = {
+        const email = user?.email;
+        let kitchen_create: KitchenCreate = {
             data: {
                 menu_id: menu_id,
                 ingredients_ids: ingredient_ids,
                 order_id: order_id,
             }
+        }
+        if (user && (user.role === Roles.Customer)) {
+            kitchen_create.data.email = email;
         }
         socket.emit("kitchen:create", kitchen_create);
     }

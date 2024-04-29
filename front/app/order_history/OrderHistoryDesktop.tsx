@@ -1,6 +1,6 @@
 "use client";
 
-import { Order_Log, Order_Status, Menu_Item } from "@prisma/client";
+import { Order_Log, Menu_Item } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { useSocket, OrderLogRead } from "@/lib/socket";
 

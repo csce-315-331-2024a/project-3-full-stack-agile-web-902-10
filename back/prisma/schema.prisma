@@ -46,12 +46,11 @@ model Menu_Item {
 }
 
 model Order_Log {
-  id          Int          @id @default(autoincrement())
-  time        DateTime     @default(now())
+  id          Int      @id @default(autoincrement())
+  time        DateTime @default(now())
   price       Int
   menu_items  String
   ingredients String
-  status      Order_Status @default(Completed)
 }
 
 model Users {
@@ -71,16 +70,11 @@ model schema_migrations {
 }
 
 model Kitchen {
-  id              Int    @id @default(autoincrement())
+  id              Int     @id @default(autoincrement())
   menu_id         Int
   ingredients_ids String
   order_id        Int
-}
-
-enum Order_Status {
-  Created
-  Cooking
-  Completed
+  email           String?
 }
 
 enum Roles {
