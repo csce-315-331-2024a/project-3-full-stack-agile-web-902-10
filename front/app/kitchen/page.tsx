@@ -20,7 +20,7 @@ export default async function KitchenPage() {
         }
     }) : null;
 
-    if (!user || !(user.role === Roles.Admin || user.role === Roles.Manager || user.role === Roles.Kitchen)) {
+    if (!user || !(user.role === Roles.Admin || user.role === Roles.Manager || user.role === Roles.Kitchen || user.role === Roles.Cashier)) {
         return <Redirect to="/menu" />;
     }
 
