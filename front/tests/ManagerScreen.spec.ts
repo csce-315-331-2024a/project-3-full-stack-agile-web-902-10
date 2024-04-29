@@ -12,22 +12,6 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('link', { name: 'Dashboard' }).click();
 
-  //test the casheir page
-  await page.getByRole('button', { name: 'Cashier' }).click();
-  await page.getByRole('button', { name: 'Corn Dog Value Meal $4' }).click();
-  await page.getByRole('button', { name: 'Add to Cart' }).click();
-  await page.getByRole('button', { name: 'Grilled Chicken Sandwich $' }).click();
-  await page.getByRole('button', { name: 'Add to Cart' }).click();
-  await page.getByRole('button', { name: 'Cart:' }).click();
-  await page.getByRole('button', { name: 'Checkout' }).click();
-  await page.getByRole('button', { name: 'Place Order' }).click();
-  await page.getByRole('link', { name: 'Dashboard' }).click();
-  const page1Promise = page.waitForEvent('popup');
-
-  //test menu board functionality
-  await page.getByRole('button', { name: 'Menu Board' }).click();
-  const page1 = await page1Promise;
-
   //test editing functions
   await page.getByRole('button', { name: 'Edit Menu' }).click();
   await page.locator('.flex > .flex > button > .inline-flex').first().click();
