@@ -24,6 +24,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator";
+import KitchenEditButton from "./KitchenEditButton";
 
 
 export default function KitchenDesktop({ user }: { user: Users }) {
@@ -65,10 +66,10 @@ export default function KitchenDesktop({ user }: { user: Users }) {
             socket.on("ingredient", (new_ingredients: Ingredient[]) => {
                 setIngredients(new_ingredients);
             });
-            socket.emit("ingredients_Menu:read", {}, (new_ingredients_menu: Ingredients_Menu[]) => {
+            socket.emit("ingredientMenu:read", {}, (new_ingredients_menu: Ingredients_Menu[]) => {
                 setIngredientsMenu(new_ingredients_menu);
             });
-            socket.on("ingredients_Menu", (new_ingredients_menu: Ingredients_Menu[]) => {
+            socket.on("ingredientMenu", (new_ingredients_menu: Ingredients_Menu[]) => {
                 setIngredientsMenu(new_ingredients_menu);
             });
             socket.emit("kitchen:read", {}, (new_kitchen: Kitchen[]) => {
@@ -86,8 +87,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
     }
 
     function getIngredientNames(kitchenIngredients: string) {
-        const ingredientIds = kitchenIngredients.split(",");
-        console.log(ingredientIds);
+        const ingredientIds = kitchenIngredients.split(","); 
         return ingredientIds.map(id => {
             const ingredient = ingredients.find(ingredient => ingredient.id === Number(id));
             return ingredient ? ingredient.name : id.toString();
@@ -181,19 +181,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
                                             <p className="pt-2">Menu Item: {menuItem ? menuItem.name : `ID ${kitchen.menu_id}`}</p>
                                             <p className="pb-2">Ingredients: {getIngredientNames(kitchen.ingredients_ids)}</p>
                                             {(user.role === Roles.Cashier || user.role === Roles.Manager || user.role === Roles.Admin) &&
-                                                <Dialog>
-                                                    <DialogTrigger asChild >
-                                                        <Button className="pb-2" variant={"outline"}>Edit</Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent>
-                                                        <DialogHeader>
-                                                            <DialogTitle>Edit Order</DialogTitle>
-                                                            <DialogDescription>
-                                                                Select
-                                                            </DialogDescription>
-                                                        </DialogHeader>
-                                                    </DialogContent>
-                                                </Dialog>
+                                                <KitchenEditButton user={user} menu_item={menuItem as Menu_Item} ingredients_menu={ingredients_menu} ingredients={ingredients} currentIDS={ kitchen.ingredients_ids.split(",").map(Number)} kitchenID  ={kitchen.id}/>
                                             }
                                         </div>
                                     );
