@@ -90,7 +90,6 @@ export default function OrderHistoryDesktop() {
     }, [pageIndex]);
 
     function onPreviousPage() {
-        console.log(pageIndex , "pageIndex");
         if (pageIndex == 0) {
             return;
         }

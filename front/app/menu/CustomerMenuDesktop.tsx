@@ -50,7 +50,6 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
         let selectedIngredientIDs = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id);
         let selectedIngredientQuantities = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.quantity);
         let selectedIngredients = ingredients.filter((ingredient) => compareNumArray(ingredient.id, selectedIngredientIDs));
-        console.log(selectedIngredients[0].name);
 
         for (let i = 0; i < selectedIngredients.length; ++i) {
             if (!(selectedIngredients[i].stock >= selectedIngredientQuantities[i])) {

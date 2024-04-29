@@ -120,7 +120,6 @@ export default function LoginLogDesktop() {
     }, [selectedUser]);
 
     function onPreviousPage() {
-        console.log(pageIndex, "pageIndex");
         if (pageIndex == 0) {
             return;
         }
