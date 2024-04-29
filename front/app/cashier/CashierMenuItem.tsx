@@ -117,15 +117,6 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
                     </div>
                 </div>
                 <DialogFooter className="justify-between gap-4">
-                    <Label htmlFor="input"></Label>
-                    <Input 
-                        id="input" 
-                        type="number" 
-                        placeholder="1" 
-                        className="border-4 w-[5vw] rounded-sm text-xl" 
-                        min="1" 
-                        max="100" 
-                    />
                     <DialogClose asChild>
                         <Button key={"add cart"} variant={"default"} className="w-[12vw] h-[8vh] text-xl font-bold whitespace-normal" onClick={() => updateCart(menu_item, selectedIngredients)}>Add to Cart</Button>
                     </DialogClose>
