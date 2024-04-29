@@ -1,15 +1,15 @@
 import { getUserSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 
-import CashierNavBar from "@/components/CashierNavBar";
-import CashierMenuDesktop from "@/components/CashierMenuDesktop";
-import Redirect from "@/components/Redirect";
+import CashierMenuDesktop from "./CashierMenuDesktop";
+import CashierMenuNavBar from "./CashierMenuNavBar";
 
 export const metadata = {
     title: "Menu | Rev's Grill",
 };
 
-export default async function CashierPage() {
+
+export default async function MenuPage() {
     const user_session = await getUserSession();
     const user = user_session ? await prisma.users.findUnique({
         where: {
@@ -17,17 +17,18 @@ export default async function CashierPage() {
         }
     }) : null;
 
-    const menu_items = await prisma.menu_Item.findMany();
-
-    if (!user || user.is_manager === false) {
-        return <Redirect to="/menu" />;
-    };
+    const menu_items = await prisma.menu_Item.findMany({
+        where : {
+            is_active: true
+        }
+    });
+    const ingredients = await prisma.ingredient.findMany();
+    const ingredients_menus = await prisma.ingredients_Menu.findMany();
 
     return (
         <>
-            <CashierNavBar user={user} />
-            <CashierMenuDesktop menu_items_init={menu_items} />
+            <CashierMenuNavBar user={user} ingredient_menus={ingredients_menus} ingredients={ingredients} />
+            <CashierMenuDesktop menu_items_init={menu_items} ingredients_init={ingredients} ingredient_menus_init={ingredients_menus} user={user}/>
         </>
     );
 }
-

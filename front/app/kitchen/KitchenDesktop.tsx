@@ -1,27 +1,37 @@
 "use client";
 
-import { Order_Log, Order_Status, Menu_Item, Ingredient, Ingredients_Menu, Users } from "@prisma/client";
+import { Order_Log, Order_Status, Menu_Item, Ingredient, Ingredients_Menu, Users, Kitchen, Roles } from "@prisma/client";
 import { useState, useEffect } from "react";
-import { useSocket, OrderLogRead } from "@/lib/socket";
+import { useSocket, OrderLogRead, OrderLogCreate } from "@/lib/socket";
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-
 import {
     Dialog,
     DialogClose,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator";
 
 
-export default function KitchenDesktop({ orders_init, menu_items_init, ingredients_init, ingredients_menu_init, user }: { orders_init: Order_Log[], menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredients_menu_init: Ingredients_Menu[], user: Users }) {
-    const [orders, setOrders] = useState<Order_Log[]>(orders_init);
-    const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
-    const [ingredients, setIngredients] = useState<Ingredient[]>(ingredients_init);
-    const [ingredients_menu, setIngredientsMenu] = useState<Ingredients_Menu[]>(ingredients_menu_init);
+export default function KitchenDesktop({ user }: { user: Users }) {
+    const [orders, setOrders] = useState<Order_Log[]>([]);
+    const [menu_items, setMenuItems] = useState<Menu_Item[]>([]);
+    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+    const [ingredients_menu, setIngredientsMenu] = useState<Ingredients_Menu[]>([]);
+    const [kitchen, setKitchen] = useState<Kitchen[]>([]);
 
     const socket = useSocket();
     const orderLogRead: OrderLogRead = {
@@ -43,10 +53,10 @@ export default function KitchenDesktop({ orders_init, menu_items_init, ingredien
                 setOrders(new_orders);
 
             });
-            socket.emit("menu_Item:read", {}, (new_menu_items: Menu_Item[]) => {
+            socket.emit("menuItem:read", {}, (new_menu_items: Menu_Item[]) => {
                 setMenuItems(new_menu_items);
             });
-            socket.on("menu_Item", (new_menu_items: Menu_Item[]) => {
+            socket.on("menuItem", (new_menu_items: Menu_Item[]) => {
                 setMenuItems(new_menu_items);
             });
             socket.emit("ingredient:read", {}, (new_ingredients: Ingredient[]) => {
@@ -61,8 +71,28 @@ export default function KitchenDesktop({ orders_init, menu_items_init, ingredien
             socket.on("ingredients_Menu", (new_ingredients_menu: Ingredients_Menu[]) => {
                 setIngredientsMenu(new_ingredients_menu);
             });
+            socket.emit("kitchen:read", {}, (new_kitchen: Kitchen[]) => {
+                setKitchen(new_kitchen);
+            });
+            socket.on("kitchen", (new_kitchen: Kitchen[]) => {
+                setKitchen(new_kitchen);
+            });
         }
     }, [socket]);
+
+    function getOrderIDs(kitchen: Kitchen[]) {
+        // return an array of unqiue order IDs
+        return Array.from(new Set(kitchen.map(kitchen => kitchen.order_id)));
+    }
+
+    function getIngredientNames(kitchenIngredients: string) {
+        const ingredientIds = kitchenIngredients.split(",");
+        console.log(ingredientIds);
+        return ingredientIds.map(id => {
+            const ingredient = ingredients.find(ingredient => ingredient.id === Number(id));
+            return ingredient ? ingredient.name : id.toString();
+        }).join(", ");
+    }
 
     function aggregateItems(itemIds: number[]) {
         return itemIds.reduce((acc: { [key: number]: number }, id) => {
@@ -91,69 +121,93 @@ export default function KitchenDesktop({ orders_init, menu_items_init, ingredien
         });
     }
 
-    function changeOrderStatus(order: Order_Log) {
-        const newStatus = order.status === Order_Status.Created ? Order_Status.Cooking : Order_Status.Completed;
-        socket?.emit("orderLog:update", { email: user.email, jwt: user.jwt }, { where: { id: order.id }, data: { status: newStatus } });
+    const auth = {
+        email: user.email,
+        jwt: user.jwt,
+    }
+
+    function combineIngredients(orders: Kitchen[]) {
+        let combinedArray: string[] = [];
+        orders.forEach(function (order) {
+            // Split each ingredients_ids string by ',' and filter out empty elements
+            let ingredients = order.ingredients_ids.split(',').filter(n => n !== '');
+            // Concatenate the cleaned ingredients list to the combined array
+            combinedArray = combinedArray.concat(ingredients);
+        });
+        // Join all elements with ', ' to create the final string
+        return combinedArray.join(', ');
+    }
+
+    function finishKitchenOrder(kitchenOrder: Kitchen[]) {
+        socket.emit("kitchen:delete", auth, { where: { order_id: kitchenOrder[0].order_id } });
+        // find the total price of the cart by taking the kitchenOrder and getting the menu_item fron the id, and reducing their prices
+        const totalPrice = kitchenOrder.reduce((acc, kitchen) => {
+            const menuItem = menu_items.find(item => item.id === kitchen.menu_id) as Menu_Item;
+            return acc + menuItem.price;
+        }, 0);
+
+        const menuItemIdString = kitchenOrder.map(kitchen => kitchen.menu_id).join(", ");
+
+        // make the string for the ingredients, and a space between each comma
+        const ingredientsString = combineIngredients(kitchenOrder);
+
+        const create_query: OrderLogCreate = {
+            data: {
+                price: totalPrice,
+                menu_items: menuItemIdString,
+                ingredients: ingredientsString,
+
+            }
+        }
+        socket.emit("orderLog:create", auth, create_query);
     }
 
     // show orders in a table
     return (
-        <div className="w-full overflow-x-auto px-8 rounded-sm">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Order ID</TableHead>
-                        <TableHead>Time</TableHead>
-                        <TableHead>Menu Items</TableHead>
-                        <TableHead>Ingredients</TableHead>
-                        <TableHead>Order Status</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {orders.map((order) => (
-                        <TableRow key={order.id} onClick={() => { }}>
-                            <TableCell>
-                                <p className="font-bold text-2xl">
-                                    #{order.id}
-                                </p>
-                            </TableCell>
-                            <TableCell className="font-bold text-xl">{new Date(order.time).toLocaleString()}</TableCell>
-                            <TableCell>
-                                <div className="flex flex-col gap-1 font-bold text-xl">
-                                    {renderMenuItemQuantities(order.menu_items.split(", ").map(Number))}
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <div className="flex flex-col gap-1 font-bold text-md">
-                                    {renderIngredientQuantities(order.menu_items.split(", ").map(Number))}
-                                </div>
-                            </TableCell>
-                            <TableCell>
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button variant={order.status == "Created" ? "destructive" : "default"} className="w-[10vw] h-[8vh] font-bold text-4xl">{order.status}</Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>
-                                                Change order state?
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                {order.status == "Created" ? "Change the order status to 'Cooking'?" : "Change the order status to 'Completed'?"}
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <DialogClose asChild>
-                                            <Button variant="default" className="w-[10vw] h-[8vh] font-bold text-2xl" onClick={() => changeOrderStatus(order)}>
-                                                {order.status == "Created" ? "Start Cooking" : "Complete Order"}
-                                            </Button>
-                                        </DialogClose>
-                                    </DialogContent>
-                                </Dialog>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+        <div className="pt-4 grid grid-cols-3 gap-4 transition-all w-full overflow-x-auto px-8 rounded-sm">
+            {getOrderIDs(kitchen).map(orderId => {
+                const kitchenOrder = kitchen.filter(kitchen => kitchen.order_id === orderId);
+                return (
+                    <Card key={orderId} className="w-auto h-auto">
+                        <CardHeader>
+                            <CardTitle>#{kitchenOrder[0].order_id}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <CardDescription>
+                                {kitchenOrder.map((kitchen) => {
+                                    const menuItem = menu_items.find(item => item.id === kitchen.menu_id);
+                                    return (
+                                        <div key={kitchen.id}>
+                                            <p className="pt-2">Menu Item: {menuItem ? menuItem.name : `ID ${kitchen.menu_id}`}</p>
+                                            <p className="pb-2">Ingredients: {getIngredientNames(kitchen.ingredients_ids)}</p>
+                                            {(user.role === Roles.Cashier || user.role === Roles.Manager || user.role === Roles.Admin) &&
+                                                <Dialog>
+                                                    <DialogTrigger asChild >
+                                                        <Button className="pb-2" variant={"outline"}>Edit</Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>Edit Order</DialogTitle>
+                                                            <DialogDescription>
+                                                                Select
+                                                            </DialogDescription>
+                                                        </DialogHeader>
+                                                    </DialogContent>
+                                                </Dialog>
+                                            }
+                                        </div>
+                                    );
+                                })}
+                            </CardDescription>
+                        </CardContent>
+                        <CardFooter className="flex flex-row gap-x-4">
+                            {(user.role === Roles.Kitchen || user.role === Roles.Manager || user.role === Roles.Admin) &&
+                                <Button variant="destructive" onClick={() => { finishKitchenOrder(kitchenOrder) }}>Complete Order</Button>
+                            }
+                        </CardFooter>
+                    </Card>
+                );
+            })}
         </div>
     );
-}
+};
