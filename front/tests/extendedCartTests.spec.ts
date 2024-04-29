@@ -1,0 +1,94 @@
+import { test, expect } from '@playwright/test';
+
+test('Cart1', async ({ page }) => {
+  await page.goto('http://localhost:3000/');
+  await page.goto('http://localhost:3000/menu');
+  await page.getByRole('button', { name: '2 Corn Dog Value Meal 2 Corn' }).click();
+  await page.getByRole('button', { name: 'Ketchup' }).click();
+  await page.getByRole('button', { name: 'Corn Dog' }).click();
+  await page.getByRole('button', { name: 'Add to Cart' }).click();
+  await page.getByText('Cart:').click();
+  await page.getByText('-No Corn Dog').click();
+  await page.getByText('-No Ketchup').click();
+  await page.getByRole('button', { name: 'X' }).click();
+});
+
+test('Cart2', async ({ page }) => {
+    await page.goto('http://localhost:3000/');
+    await page.goto('http://localhost:3000/menu');
+    await page.getByRole('button', { name: 'Spicy Chicken Sandwich Spicy' }).click();
+    await page.getByRole('button', { name: 'Ranch' }).click();
+    await page.getByRole('button', { name: 'Buffalo' }).click();
+    await page.getByRole('button', { name: 'Silverware Bundle' }).click();
+    await page.getByRole('button', { name: 'Add to Cart' }).click();
+    await page.getByText('Cart:').click();
+    await page.getByText('-No Ranch').click();
+    await page.getByText('-No Buffalo').click();
+    await page.getByText('-No Silverware Bundle').click();
+    await page.getByRole('button', { name: 'Checkout' }).click();
+    await page.getByLabel('Checkout').getByText('$').click();
+    await page.getByLabel('Checkout').getByText('Total').click();
+    await page.getByLabel('Checkout').getByText('$').click();
+    await page.getByRole('heading', { name: 'Checkout' }).click();
+    await page.getByRole('button', { name: 'Place Order' }).click();
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByLabel('Dark Mode').click();
+    await page.getByRole('button', { name: 'Close' }).click();
+    await page.locator('div').filter({ hasText: '2 Corn Dog Value Meal$43' }).nth(1).click();
+    await page.getByLabel('Grilled Chicken Sandwich').click();
+    await page.getByRole('button', { name: 'Close' }).click();
+  });
+
+  test('Cart3', async ({ page }) => {
+    await page.goto('http://localhost:3000/');
+    await page.goto('http://localhost:3000/menu');
+    await page.getByRole('button', { name: 'Value Meals' }).click();
+    await page.getByRole('button', { name: 'Chicken' }).click();
+    await page.getByRole('button', { name: 'Burgers' }).click();
+    await page.getByRole('button', { name: 'Black Bean Burger Black Bean' }).click();
+    await page.getByRole('button', { name: 'Tomato' }).click();
+    await page.getByRole('button', { name: 'Pickle' }).click();
+    await page.getByRole('button', { name: 'Napkin' }).click();
+    await page.getByRole('button', { name: 'Lettuce' }).click();
+    await page.getByRole('button', { name: 'Add to Cart' }).click();
+    await page.getByText('Cart:').click();
+    await page.getByText('-No Lettuce').click();
+    await page.getByText('-No Tomato').click();
+    await page.getByText('-No Pickle').click();
+    await page.getByText('-No Napkin').click();
+    await page.getByRole('button', { name: 'Clear Cart' }).click();
+    await page.getByRole('button', { name: 'Cheeseburger Cheeseburger $' }).click();
+    await page.getByRole('button', { name: 'Pickle' }).click();
+    await page.getByRole('button', { name: 'Add to Cart' }).click();
+    await page.getByText('Cart:').click();
+    await page.getByText('$6').nth(3).click();
+    await page.getByRole('button', { name: 'Checkout' }).click();
+    await page.getByLabel('Checkout').getByText('$').click();
+    await page.getByLabel('Checkout').click();
+    await page.getByRole('button', { name: 'Close' }).click();
+    await page.getByRole('button', { name: 'Clear Cart' }).click();
+  });
+
+  test('Cart4', async ({ page }) => {
+    await page.goto('http://localhost:3000/');
+    await page.goto('http://localhost:3000/menu');
+    await page.getByRole('button', { name: 'Dessert' }).click();
+    await page.getByRole('button', { name: 'Aggie Shakes Aggie Shakes $' }).click();
+    await page.getByRole('button', { name: 'Napkin' }).click();
+    await page.getByRole('button', { name: 'Cup' }).click();
+    await page.getByRole('button', { name: 'Add to Cart' }).click();
+    await page.getByRole('button', { name: 'Cookie Ice Cream Sundae' }).click();
+    await page.getByRole('button', { name: 'Ice Cream' }).click();
+    await page.getByRole('button', { name: 'Add to Cart' }).click();
+    await page.getByRole('button', { name: 'Cookie Ice Cream Sundae' }).click();
+    await page.getByRole('button', { name: 'Ice Cream' }).click();
+    await page.getByRole('button', { name: 'Add to Cart' }).click();
+    await page.getByText('Cart:').click();
+    await page.getByText('Qty: 2').click();
+    await page.getByText('-No Ice Cream').click();
+    await page.getByText('-No Napkin').click();
+    await page.getByText('-No Cup').click();
+    await page.getByRole('button', { name: '-' }).click();
+    await page.locator('div').filter({ hasText: /^XQty: 1Cookie Ice Cream Sundae\$4$/ }).getByRole('button').click();
+    await page.getByRole('button', { name: 'X' }).click();
+  });
