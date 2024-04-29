@@ -34,7 +34,7 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator";
-
+import { useToast } from "@/components/ui/use-toast"
 
 import { useCartStore } from "@/lib/provider/cart-store-provider";
 import { useLanguageStore } from "@/lib/provider/language-store-provider";
@@ -132,14 +132,20 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
         return "";
     }
 
+    const { toast } = useToast();
     const placeOrder = () => {
         const num = new Date().getTime() % 34212;
         for (let i = 0; i < cart.length; ++i) {
-            for (let j =0; j < cart[i].quantity; ++j) {
-                handleKitchenCreation(cart[i].menu_item.id, cart[i].ingredient_ids.toString(), num);    
+            for (let j = 0; j < cart[i].quantity; ++j) {
+                handleKitchenCreation(cart[i].menu_item.id, cart[i].ingredient_ids.toString(), num);
             }
         }
         clearCart();
+        const customer_text = "Order ID: " + num;
+        toast({
+            title: "Order Complete",
+            description: customer_text
+        });
     }
 
     // All data that needs to be processed by the server should be sent through the socket
@@ -178,7 +184,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
 
     function handleKitchenCreation(menu_id: number, ingredient_ids: string, order_id: number) {
         const kitchen_create: KitchenCreate = {
-            data :{
+            data: {
                 menu_id: menu_id,
                 ingredients_ids: ingredient_ids,
                 order_id: order_id,
@@ -238,22 +244,22 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                             </DialogTrigger>
                                             <DialogContent className="sm:max-w-[400px]">
                                                 <DialogHeader>
-                                                <DialogTitle>{translated.checkout}</DialogTitle>
-                                                <DialogDescription>
-                                                    {translated.checkout_desc}
-                                                </DialogDescription>
+                                                    <DialogTitle>{translated.checkout}</DialogTitle>
+                                                    <DialogDescription>
+                                                        {translated.checkout_desc}
+                                                    </DialogDescription>
                                                 </DialogHeader>
                                                 <div className="flex justify-between text-xl">
                                                     <p>{translated.total}</p>
                                                     <p>${cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0)}</p>
-                                                </div> 
+                                                </div>
                                                 <DialogFooter>
                                                     <DialogClose asChild>
                                                         <Button type="submit" onClick={() => placeOrder()}>{translated.place_order}</Button>
                                                     </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
-                                            </Dialog>
+                                        </Dialog>
                                         <Button variant="destructive" className="p-4" onClick={() => clearCart()}>{translated.clear_cart}</Button>
                                     </DrawerFooter>
                                 </DrawerContent>

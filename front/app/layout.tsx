@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import { CartStoreProvider } from "@/lib/provider/cart-store-provider";
 import { LanguageStoreProvider } from "@/lib/provider/language-store-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 import "@/app/globals.css"
 
@@ -17,6 +18,7 @@ export default function HomeLayout({ children, }: Readonly<{ children: React.Rea
     return (
         <html lang="en" className={overpass_mono.className}>
             <body>
+                <Toaster />
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="light"
