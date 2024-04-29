@@ -36,6 +36,30 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
     const [current_language, setCurrentLanguage] = useState(language);
     let [translated, setTranslated] = useState(static_text);
 
+    const compareNumArray = (num: number, array: number[]) => {
+        for (let i = 0; i < array.length; ++i) {
+            if (array[i] === num) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const ingredientChecker = (item: Menu_Item) => {
+        let ingredients_in_menu_item = ingredient_menus.filter((ingredient_menu) => ingredient_menu.menu_id === item.id);
+        let selectedIngredientIDs = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id);
+        let selectedIngredientQuantities = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.quantity);
+        let selectedIngredients = ingredients.filter((ingredient) => compareNumArray(ingredient.id, selectedIngredientIDs));
+        console.log(selectedIngredients[0].name);
+
+        for (let i = 0; i < selectedIngredients.length; ++i) {
+            if (!(selectedIngredients[i].stock >= selectedIngredientQuantities[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Deal with realtime update + translation
     // the translating makes this code realllllly long
     const socket = useSocket();
@@ -49,7 +73,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
             });
 
             socket.emit("menuItem:read", {where: {is_active : true}}, (new_menu_items: Menu_Item[]) => {
-                new_menu_items = new_menu_items.filter((item) => item.is_active && (item.date === null || new Date(item.date).getTime() >= new Date().getTime()));
+                new_menu_items = new_menu_items.filter((item) => item.is_active && ingredientChecker(item) && (item.date === null || new Date(item.date).getTime() >= new Date().getTime()));
                 if (language !== "English") {
                     socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
                         new_menu_items.forEach((item, index) => {
@@ -72,7 +96,29 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
             });
             socket.on("menuItem", (new_menu_items: Menu_Item[]) => {
                 // filter out non-active items
-                new_menu_items = new_menu_items.filter((item) => item.is_active && (item.date === null || new Date(item.date).getTime() >= new Date().getTime()));
+                new_menu_items = new_menu_items.filter((item) => item.is_active && ingredientChecker(item) && (item.date === null || new Date(item.date).getTime() >= new Date().getTime()));
+                if (language !== "English") {
+                    socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
+                        new_menu_items.forEach((item, index) => {
+                            item.name = translated_names[index];
+                        });
+                        socket.emit("translateArray", new_menu_items.map((item) => item.category), language, (translated_categories: string[]) => {
+                            new_menu_items.forEach((item, index) => {
+                                item.category = translated_categories[index];
+                            });
+                            setMenuItems(new_menu_items);
+                            setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
+                        });
+                    });
+                }
+                else {
+                    setMenuItems(new_menu_items);
+                    setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
+                }
+            });
+            socket.on("menuItem", (new_ingredients: Ingredient[]) => {
+                // filter out non-active items
+                let new_menu_items = menu_items.filter((item) => item.is_active && ingredientChecker(item) && (item.date === null || new Date(item.date).getTime() >= new Date().getTime()));
                 if (language !== "English") {
                     socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
                         new_menu_items.forEach((item, index) => {
@@ -143,7 +189,7 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
             </ScrollArea>
             <ScrollArea className="h-[92vh] w-[90vw] p-8 whitespace-nowrap">
                 <div className="grid grid-cols-3 gap-4 transition-all">
-                    {menu_items.filter((menu_item) => selectedCategory === undefined || menu_item.category === selectedCategory).map((menu_item) => (
+                    {menu_items.filter((menu_item) => (selectedCategory === undefined || menu_item.category === selectedCategory) && ingredientChecker(menu_item)).map((menu_item) => (
                         <CustomerMenuItem key={menu_item.name} menu_item={menu_item} ingredients={ingredients} ingredient_menus={ingredient_menus} translated={translated} />
                     ))}
                 </div>
