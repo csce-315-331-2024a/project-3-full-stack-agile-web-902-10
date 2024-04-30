@@ -31,9 +31,9 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
     const [selectedIngredients, setSelectedIngredients] = useState<number[]>(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
 
     // UHH idk why this was here it works without it so im taking it out, it randomly appeared in the merge. -Alex
-    // useEffect(() => {
-    //     setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
-    // }, [ingredient_menus]);
+    useEffect(() => {
+        setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
+    }, [ingredient_menus]);
 
     const on_ingredient_click = (ingredient_id: number) => {
         if (selectedIngredients.includes(ingredient_id)) {
@@ -148,7 +148,7 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
                 max={maxQuantity + 2}
                 value={quantity}
                 onChange={handleChange}
-                className="text-2xl h-[7vh] w-[5vw]"
+                className="text-2xl h-[7vh] w-[8vw]"
             />
         );
     }
@@ -181,7 +181,9 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
                         alt={menu_item.name}
                         className="aspect-[1/1] h-[500px] w-[500px] object-cover rounded-3xl border"
                     />
-                    <div className="grid grid-cols-3 gap-4 transition-all justify-end">
+                    <div>
+                        <h1 className="text-slate-500 font-bold">Tap to remove/add:</h1>
+                        <div className="grid grid-cols-3 gap-4 transition-all justify-end">
                         {ingredients_in_menu_item.map((ingredient_in_menu_item) => {
                             const ingredient = ingredients.find((ingredient) => ingredient.id === ingredient_in_menu_item.ingredients_id);
                             if (ingredient) {
@@ -190,6 +192,7 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
                                 );
                             }
                         })}
+                        </div>
                     </div>
                 </div>
                 <DialogFooter className="justify-between gap-4">
