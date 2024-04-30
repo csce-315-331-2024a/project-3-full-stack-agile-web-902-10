@@ -163,7 +163,7 @@ export default function KitchenDesktop({ user, menu_items_init, ingredients_init
             {getOrderIDs(kitchen).map(orderId => {
                 const kitchenOrder = kitchen.filter(kitchen => kitchen.order_id === orderId);
                 return (
-                    <Card key={orderId} className="w-auto h-auto">
+                    <Card key={orderId} className="w-auto h-auto ">
                         <CardHeader>
                             <CardTitle>#{kitchenOrder[0].order_id}</CardTitle>
                         </CardHeader>

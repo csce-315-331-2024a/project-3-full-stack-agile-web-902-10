@@ -425,7 +425,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
             {/* if editing menu items */}
             {showEditDiv && (
-                <ScrollArea className="flex-col items-center h-[88vh] w-[90vw] pb-4">
+                <ScrollArea className="flex-col items-center h-[93vh] w-[90vw] pb-4">
                     <div className="grid grid-cols-1 gap-4 p-4">
                         <Dialog>
                             <div className="flex flex-col w-auto justify-center items-center">

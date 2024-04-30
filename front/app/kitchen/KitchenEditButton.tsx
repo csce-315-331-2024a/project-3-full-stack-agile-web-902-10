@@ -48,7 +48,7 @@ export default function EditButton({ user, menu_item, ingredients_menu, ingredie
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className="pb-2 w-[8vw]" variant={"outline"} >Edit</Button>
+                <Button className="pb-2 w-[8vw]" variant={"secondary"} >Edit</Button>
             </DialogTrigger>
             <DialogContent className=" min-w-[39vw]">
                 <DialogHeader>

@@ -15,9 +15,6 @@ import { useState, useEffect } from "react"
 import { Menu_Item, Ingredient, Ingredients_Menu } from "@prisma/client"
 import { useCartStore } from "@/lib/provider/cart-store-provider"
 import { CartItem } from "@/lib/stores/cart-store"
-import { createWriteStream } from "fs"
-import { Label } from "@radix-ui/react-label"
-import { Input } from "@/components/ui/input"
 
 export default function CashierMenuItem({ menu_item, ingredients, ingredient_menus }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[] }) {
     const cart = useCartStore((state) => state.cart);
@@ -83,12 +80,6 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
             <DialogTrigger asChild>
                 <Button variant="outline" className="flex-col justify-evenly items-center w-[23vw] h-[10vh]">
                     <h2 className="text-2xl font-bold snap-center">{menu_item.name}</h2>
-                    {/* <Image
-                        src={menu_item.image_url}
-                        width={200}
-                        height={200}
-                        alt={menu_item.name}
-                        className="aspect-[1/1] h-[16vh] w-[8vw] object-cover rounded-3xl border" /> */}
                     <h2 className="text-2xl">${menu_item.price}</h2>
                 </Button>
             </DialogTrigger>
