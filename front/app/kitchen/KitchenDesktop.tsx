@@ -16,14 +16,13 @@ import KitchenEditButton from "./KitchenEditButton";
 import { useRouter } from "next/navigation";
 
 
-export default function KitchenDesktop({ user }: { user: Users }) {
-    const [menu_items, setMenuItems] = useState<Menu_Item[]>([]);
-    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-    const [ingredients_menu, setIngredientsMenu] = useState<Ingredients_Menu[]>([]);
-    const [kitchen, setKitchen] = useState<Kitchen[]>([]);
+export default function KitchenDesktop({ user, menu_items_init, ingredients_init, ingredients_menu_init, kitchen_init }: { user: Users, menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredients_menu_init: Ingredients_Menu[], kitchen_init: Kitchen[] }) {
+    const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
+    const [ingredients, setIngredients] = useState<Ingredient[]>(ingredients_init);
+    const [ingredients_menu, setIngredientsMenu] = useState<Ingredients_Menu[]>(ingredients_menu_init);
+    const [kitchen, setKitchen] = useState<Kitchen[]>(kitchen_init);
 
     const socket = useSocket();
-
     const router = useRouter();
     useEffect(() => {
         if (socket) {
@@ -139,7 +138,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
         }
         socket.emit("orderLog:create", auth, create_query);
         if (kitchen[0].email !== null) {
-            fetch("/api/send", {method: "POST", body: JSON.stringify(kitchen)});
+            fetch("/api/send/", {method: "POST", body: JSON.stringify(kitchen)});
         }
     }
 

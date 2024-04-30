@@ -23,10 +23,15 @@ export default async function KitchenPage() {
         return <Redirect to="/menu" />;
     }
 
+    const menu_items_init = await prisma.menu_Item.findMany();
+    const ingredients_init = await prisma.ingredient.findMany();
+    const ingredients_menu_init = await prisma.ingredients_Menu.findMany();
+    const kitchen_init = await prisma.kitchen.findMany();
+
     return (
         <>
             <KitchenNavBar user={user} />
-            <KitchenDesktop user={user}/>
+            <KitchenDesktop user={user} menu_items_init={menu_items_init} ingredients_init={ingredients_init}  ingredients_menu_init={ingredients_menu_init} kitchen_init={kitchen_init}/>
         </>
     );
 }
