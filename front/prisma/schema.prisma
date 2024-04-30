@@ -58,8 +58,6 @@ model Users {
   email       String      @unique
   name        String
   avatar      String?
-  is_manager  Boolean
-  is_employee Boolean
   jwt         String      @default("")
   role        Roles       @default(Customer)
   Login_Log   Login_Log[]
