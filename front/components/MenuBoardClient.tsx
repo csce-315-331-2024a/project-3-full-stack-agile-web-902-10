@@ -19,7 +19,6 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
         return item.name + ": $"+ item.price.toString();
     }
 
-    //let temperature = 79;//temporary until weather is implimented
     let temperature_threshold = 80;//at what temperature do we switch between hot and cold items
 
 
@@ -212,8 +211,6 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
         const scroll = () => {
             let next1 = (index1 + 1)%preCategories1.length ;
             let next2 = (index2 + 1)%preCategories2.length ;
-            //let next11 = next1;
-            //let next21 = next2;
 
             //for cycling
             let m1s = m1_start;
@@ -224,9 +221,6 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
 
             let m1f = m1_fin;
             let m2f = m2_fin;
-
-            //let m1t = m1_start;
-            //let m2t = m2_start;
 
 
 
@@ -268,9 +262,6 @@ export default function MenuBoardClient({ menu_items, categories, temperature, c
             setm2_fin(m2f);
             setm1_next(m1n);
             setm2_next(m2n);
-
-            //next1 = next11;
-            //next2 = next21;
 
             setIndex1(next1);
             setIndex2(next2);
