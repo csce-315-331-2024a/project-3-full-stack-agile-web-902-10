@@ -228,11 +228,11 @@ test("menuItemDelete", async () => {
 test("orderLogCreate", async () => {
     const orderLog: OrderLogCreate = {
         data: {
+            id: 999999,
             time: new Date(),
             price: 1,
             menu_items: "1, 2, 3",
             ingredients: "1, 2, 3",
-            status: "Completed"
         }
     }
     socket.on("orderLog", (data: Order_Log[]) => {
@@ -249,9 +249,9 @@ test("orderLogRead", async () => {
 
 test("orderLogUpdate", async () => {
     const orderLog: OrderLogUpdate = {
-        where: { id: 1 },
+        where: { id: 999999 },
         data: {
-            status: "Completed",
+            price: 2,
         }
     }
     socket.on("orderLog", (data: Order_Log[]) => {
@@ -262,7 +262,7 @@ test("orderLogUpdate", async () => {
 
 test("orderLogDelete", async () => {
     const orderLog: OrderLogDelete = {
-        where: { id: 1 }
+        where: { id: 999999 }
     }
     socket.on("orderLog", (data: Order_Log[]) => {
         expect(data).toEqual(prisma.order_Log.findMany());

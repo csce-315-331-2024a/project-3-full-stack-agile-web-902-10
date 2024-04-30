@@ -827,8 +827,6 @@ export function setupListen() {
     io.on("disconnect", (socket) => {
         console.log("Disconnected: " + socket.id);
     });
-
-    console.log("Got here");
 }
 
 export function setupTestListen(io: any) {
@@ -860,12 +858,16 @@ export function setupTestListen(io: any) {
         socket.on("users:read", usersRead);
         socket.on("users:update", usersUpdate);
         socket.on("users:delete", usersDelete);
+        socket.on("kitchen:create", kitchenCreate);
+        socket.on("kitchen:read", kitchenRead);
+        socket.on("kitchen:update", kitchenUpdate);
+        socket.on("kitchen:delete", kitchenDelete);
         socket.on("translateJSON", translateJSON);
         socket.on("translateArray", translateArray);
-        socket.onAny((event: string, ...args: any[]) => {
+        socket.onAny((event: any, ...args: any) => {
             console.log("Event: " + event);
         });
-        socket.on("disconnect", (reason: string) => {
+        socket.on("disconnect", (reason: any) => {
             console.log("Disconnected: " + socket.id + " (" + reason + ")");
         });
     });
