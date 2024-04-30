@@ -90,7 +90,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                         )}
                         {selectedTrend == undefined && (
                             <div>
-                                Select a trend using the buttons to the right
+                                Select a trend using the buttons to the left.
                             </div>
                         )}
                     </HoverCardContent>
@@ -122,7 +122,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                 )}
                 {selectedTrend == undefined && (
                     <div>
-                        <h1 className="text-lg font-bold"> Select a trend with the buttons to the right!! </h1>
+                        <h1 className="text-lg font-bold"> Select a trend with the buttons to the left.</h1>
                     </div>
                 )}
             </ScrollArea>
