@@ -1,14 +1,9 @@
 "use client";
 
 import { Login_Log, Roles, Users } from "@prisma/client";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useSocket, LoginLogRead } from "@/lib/socket";
 
-import Image from "next/image"
-import { MoreHorizontal } from "lucide-react"
-
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
@@ -17,13 +12,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
     Table,
     TableBody,
@@ -127,58 +115,57 @@ export default function LoginLogDesktop() {
     }
 
     return (
-        <Card className="px-16">
-            <CardHeader>
-                <Pagination className="select-none">
-                    <PaginationContent>
-                        <PaginationPrevious onClick={() => setPageIndex((pageIndex - 1) >= 0 ? (pageIndex - 1) : 0)} />
-                        <PaginationItem>
-                            <PaginationLink>{pageIndex + 1}</PaginationLink>
-                        </PaginationItem>
-                        <PaginationNext onClick={() => setPageIndex(pageIndex + 1)} />
-                    </PaginationContent>
-                </Pagination>
-                <Select onValueChange={setSelectedUser} defaultValue="Users">
-                    <SelectTrigger className="">
+        <div className="p-4">
+            <Pagination className="select-none">
+                <PaginationContent>
+                    <PaginationPrevious onClick={() => setPageIndex((pageIndex - 1) >= 0 ? (pageIndex - 1) : 0)} />
+                    <PaginationItem>
+                        <PaginationLink>{pageIndex + 1}</PaginationLink>
+                    </PaginationItem>
+                    <PaginationNext onClick={() => setPageIndex(pageIndex + 1)} />
+                </PaginationContent>
+            </Pagination>
+            <Select onValueChange={setSelectedUser} defaultValue="Users">
+                <div className="flex justify-center">
+                    <SelectTrigger className="w-[30vw]">
                         <SelectValue>{users.find((user) => user.id === parseInt(selectedUser))?.email ?? "Users"}</SelectValue>
                     </SelectTrigger>
-                    <SelectContent className="w-[16vw]">
-                        <SelectGroup>
-                            {users.map((user) => (
-                                <SelectItem value={user.id.toString()} key={user.id} className="text-lg">
-                                    {user.email}
-                                </SelectItem>
-                            ))}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>User ID</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Time Stamp</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {loginLogs.map((loginLog) => {
-                            const user = users.find((user) => user.id === loginLog.user_id);
-                            return (
-                                <TableRow key={loginLog.id}>
-                                    <TableCell>#{loginLog.user_id}</TableCell>
-                                    <TableCell>{user ? user.role : ""}</TableCell>
-                                    <TableCell>{user ? user.email : ""}</TableCell>
-                                    <TableCell>{new Date(loginLog.time).toLocaleString()}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </CardContent>
-            <CardFooter></CardFooter>
-        </Card>
+                </div>
+                <SelectContent className="w-[30vw]">
+                    <SelectGroup>
+                        {users.map((user) => (
+                            <SelectItem value={user.id.toString()} key={user.id} className="text-lg">
+                                {user.email}
+                            </SelectItem>
+                        ))}
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>User ID</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Time Stamp</TableHead>
+                        <TableHead>Action</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {loginLogs.map((loginLog) => {
+                        const user = users.find((user) => user.id === loginLog.user_id);
+                        return (
+                            <TableRow key={loginLog.id}>
+                                <TableCell>#{loginLog.user_id}</TableCell>
+                                <TableCell>{user ? user.role : ""}</TableCell>
+                                <TableCell>{user ? user.email : ""}</TableCell>
+                                <TableCell>{new Date(loginLog.time).toLocaleString()}</TableCell>
+                                <TableCell>{loginLog.login ? "Login" : "Logout"}</TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
+        </div>
     );
 }

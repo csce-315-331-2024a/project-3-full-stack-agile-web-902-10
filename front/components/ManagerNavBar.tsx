@@ -35,20 +35,20 @@ export default function ManagerNavBar({ username }: {
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full items-center justify-center md:mx-12">
                     <div className="flex justify-left border-2 rounded-sm">
-                        <Link href="/menu" className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary" >Back To Menu</Link>
+                        <Link href="/menu" className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary" >Back To Menu</Link>
                     </div>
 
 
                     <div className="flex justify-center grow">
                         <div className="flex flex-col justify-center">
-                            <p className="text-lg font-bold">{username === undefined ? "Dashboard" : "Dashboard - " + username.split(" ")[0]}</p>
+                            <p className="text-xl font-bold">{username === undefined ? "Dashboard" : "Dashboard - " + username.split(" ")[0]}</p>
                         </div>
                     </div>
 
 
                     <div className="flex justify-left border-2 rounded-sm">
                         <Dialog>
-                        <DialogTrigger className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">Settings</DialogTrigger>
+                        <DialogTrigger className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary">Settings</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>Settings</DialogTitle>

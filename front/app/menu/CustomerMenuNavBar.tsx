@@ -150,7 +150,6 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
 
     // All data that needs to be processed by the server should be sent through the socket
     const language = useLanguageStore((state) => state.language);
-    const setLanguage = useLanguageStore((state) => state.setLanguage);
     let [translated, setTranslated] = useState(static_text);
 
     useEffect(() => {
@@ -198,19 +197,19 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
     }
 
     return (
-        <div className="border-b pt-4">
+        <div className="border-b">
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
                     <div className="flex justify-start border-2 rounded-sm">
-                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">Dashboard</Link>}
-                        {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="px-2 py-1 text-lg font-bold transition-colors"> {temprature + " °F"} </p>}
+                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary">Dashboard</Link>}
+                        {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="px-2 py-1 text-xl font-bold transition-colors"> {temprature + " °F"} </p>}
                     </div>
                     <div className="flex justify-center flex-grow flex-col">
                         {cart.length <= 0 ?
                             <p className="text-xl font-bold text-center">{user?.name === undefined ? "Rev's American Grill" : translated.welcome + ", " + user.name.split(" ")[0]}</p> :
                             <Drawer direction="right">
                                 <DrawerTrigger>
-                                    <Button variant="default" className="text-lg font-bold">{"Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
+                                    <Button variant="default" className="text-xl font-bold">{"Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
                                 </DrawerTrigger>
                                 <DrawerContent showBar={false} className="h-screen top-0 right-0 left-auto mt-0 w-auto rounded-none">
                                     <DrawerHeader>
@@ -272,7 +271,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                     </div>
                     <div className="flex justify-end gap-x-16 border-2 rounded-sm">
                         <Dialog>
-                            <DialogTrigger className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
+                            <DialogTrigger className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary">{translated.settings}</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>{translated.settings}</DialogTitle>
