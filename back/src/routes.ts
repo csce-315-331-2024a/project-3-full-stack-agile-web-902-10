@@ -187,8 +187,6 @@ export async function verifyToken(email: string, jwt: string): Promise<boolean> 
             return false;
         }
         return true;
-
-        return false;
     } catch (error) {
         console.error("ERROR: " + error);
         return false;
