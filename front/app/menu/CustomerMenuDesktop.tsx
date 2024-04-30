@@ -115,28 +115,6 @@ export default function CustomerMenuDesktop({ menu_items_init, ingredients_init,
                     setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
                 }
             });
-            socket.on("menuItem", (new_ingredients: Ingredient[]) => {
-                // filter out non-active items
-                let new_menu_items = menu_items.filter((item) => item.is_active && ingredientChecker(item) && (item.date === null || new Date(item.date).getTime() >= new Date().getTime()));
-                if (language !== "English") {
-                    socket.emit("translateArray", new_menu_items.map((item) => item.name), language, (translated_names: string[]) => {
-                        new_menu_items.forEach((item, index) => {
-                            item.name = translated_names[index];
-                        });
-                        socket.emit("translateArray", new_menu_items.map((item) => item.category), language, (translated_categories: string[]) => {
-                            new_menu_items.forEach((item, index) => {
-                                item.category = translated_categories[index];
-                            });
-                            setMenuItems(new_menu_items);
-                            setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
-                        });
-                    });
-                }
-                else {
-                    setMenuItems(new_menu_items);
-                    setCategories(Array.from(new Set(new_menu_items.map((item) => item.category))));
-                }
-            });
             socket.emit("ingredient:read", undefined, (new_ingredients: Ingredient[]) => {
                 if (language !== "English") {
                     socket.emit("translateArray", new_ingredients.map((item) => item.name), language, (translated_names: string[]) => {

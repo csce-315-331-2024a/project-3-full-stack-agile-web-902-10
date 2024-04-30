@@ -43,7 +43,6 @@ export default function MenuBoardClient({menu_items_init, categories_init, tempe
         return item.name + ": $" + item.price.toString();
     }
 
-    //let temperature = 79;//temporary until weather is implimented
     let temperature_threshold = 80;//at what temperature do we switch between hot and cold items
 
 
@@ -234,10 +233,8 @@ export default function MenuBoardClient({menu_items_init, categories_init, tempe
     //function that updates the menu board
     useEffect(() => {
         const scroll = () => {
-            let next1 = (index1 + 1) % preCategories1.length;
-            let next2 = (index2 + 1) % preCategories2.length;
-            let next11 = next1;
-            let next21 = next2;
+            let next1 = (index1 + 1)%preCategories1.length ;
+            let next2 = (index2 + 1)%preCategories2.length ;
 
             //for cycling
             let m1s = m1_start;
@@ -249,37 +246,35 @@ export default function MenuBoardClient({menu_items_init, categories_init, tempe
             let m1f = m1_fin;
             let m2f = m2_fin;
 
-            let m1t = m1_start;
-            let m2t = m2_start;
 
 
 
-
-            if ((preCategories1[next1] == preCategories1[index1] && preCategories2[next2] != preCategories2[index2]) || (next2 == 0 && next1 != 0)) {//stall index 2 (added for if odd, stall till index 1 is done)
-                m2n = next21;
+            if ((preCategories2[next2] != preCategories2[index2])){//stall index 2 (added for if odd, stall till index 1 is done)
+                m2n = next2;
                 m2f = true;
                 next2 = m2s;
             }
 
-            if (preCategories2[next2] == preCategories2[index2] && preCategories1[next1] != preCategories1[index1]) {//stall index 1
-                m1n = next11;
+            if (preCategories1[next1] != preCategories1[index1]){//stall index 1
+                m1n = next1;
                 m1f = true;
                 next1 = m1s;
             }
 
-            if (m1f && m2f) {
+            if(m1f && m2f){
                 m1f = false;
                 m1s = m1n;
                 next1 = m1n;
 
-                if (m2n == 0 && m1n != 0) {
+                if(m2n == 0 && m1n != 0){
                     next2 = m2s;
-
+                    
                 }
-                else {
+                else{ 
                     m2f = false;
                     m2s = m2n;
                     next2 = m2n;
+                    
                 }
             }
 
@@ -291,9 +286,6 @@ export default function MenuBoardClient({menu_items_init, categories_init, tempe
             setm2_fin(m2f);
             setm1_next(m1n);
             setm2_next(m2n);
-
-            //next1 = next11;
-            //next2 = next21;
 
             setIndex1(next1);
             setIndex2(next2);
@@ -314,11 +306,11 @@ export default function MenuBoardClient({menu_items_init, categories_init, tempe
             let img12_temp = Math.floor(Math.random() * (preMenu1[next1].length));
             let img22_temp = Math.floor(Math.random() * (preMenu2[next2].length));
 
-            if (img1_temp == img12_temp) {
-                img12_temp = (img1_temp + 1) % (preMenu1[next1].length);
+           if(img1_temp == img12_temp){
+                img12_temp = (img1_temp+1)%(preMenu1[next1].length);
             }
-            if (img2_temp == img22_temp) {
-                img22_temp = (img2_temp + 1) % (preMenu2[next2].length);
+            if(img2_temp == img22_temp){
+                img22_temp = (img2_temp+1)%(preMenu2[next2].length);
             }
 
             setimgIndex12(img12_temp);
@@ -326,10 +318,10 @@ export default function MenuBoardClient({menu_items_init, categories_init, tempe
 
 
 
-            if (temperature >= temperature_threshold) {//if hot
+            if (temperature >= temperature_threshold){//if hot
                 x = 1;
             }
-            else {
+            else{
                 x = 0;
             }
 
@@ -338,7 +330,7 @@ export default function MenuBoardClient({menu_items_init, categories_init, tempe
             setWIndex(Math.floor(Math.random() * (weather_items[x].length)));
         };
 
-        const intervalId = setInterval(scroll, 10000);
+        const intervalId = setInterval(scroll, 10000); 
 
         return () => clearInterval(intervalId);
     }, [index1, index2]);

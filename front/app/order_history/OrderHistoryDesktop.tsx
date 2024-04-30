@@ -112,48 +112,40 @@ export default function OrderHistoryDesktop() {
     }
 
     return (
-        <Card className="px-16">
-            <CardHeader>
-                <Pagination className="select-none">
-                    <PaginationContent>
-                        <PaginationPrevious onClick={() => setPageIndex( (pageIndex - 1) >= 0 ? (pageIndex - 1) : 0 )} />
-                        <PaginationItem>
-                            <PaginationLink>{pageIndex + 1}</PaginationLink>
-                        </PaginationItem>
-                        <PaginationNext onClick={() => setPageIndex(pageIndex + 1)} />
-                    </PaginationContent>
-                </Pagination>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Order ID</TableHead>
-                            <TableHead>Time</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead>Menu Items</TableHead>
+        <div className="p-4">
+            <Pagination className="select-none">
+                <PaginationContent>
+                    <PaginationPrevious onClick={() => setPageIndex((pageIndex - 1) >= 0 ? (pageIndex - 1) : 0)} />
+                    <PaginationItem>
+                        <PaginationLink>{pageIndex + 1}</PaginationLink>
+                    </PaginationItem>
+                    <PaginationNext onClick={() => setPageIndex(pageIndex + 1)} />
+                </PaginationContent>
+            </Pagination>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Order ID</TableHead>
+                        <TableHead>Time</TableHead>
+                        <TableHead>Price</TableHead>
+                        <TableHead>Menu Items</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {orders.map((order) => (
+                        <TableRow key={order.id}>
+                            <TableCell>#{order.id}</TableCell>
+                            <TableCell>{new Date(order.time).toLocaleString()}</TableCell>
+                            <TableCell>${order.price}</TableCell>
+                            <TableCell>
+                                <div className="grid grid-cols-3">
+                                    {renderMenuItemQuantities(order.menu_items.split(", ").map(Number))}
+                                </div>
+                            </TableCell>
                         </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {orders.map((order) => (
-                            <TableRow key={order.id}>
-                                <TableCell>#{order.id}</TableCell>
-                                <TableCell>{new Date(order.time).toLocaleString()}</TableCell>
-                                <TableCell>${order.price}</TableCell>
-                                <TableCell>
-                                    <div className="flex flex-col">
-                                        {renderMenuItemQuantities(order.menu_items.split(", ").map(Number))}
-                                    </div>
-                                </TableCell>
-
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
-            <CardFooter>
-
-            </CardFooter>
-        </Card>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
     );
 }

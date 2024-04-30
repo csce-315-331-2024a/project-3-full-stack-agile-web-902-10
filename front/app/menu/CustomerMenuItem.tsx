@@ -15,7 +15,6 @@ import { useState, useEffect } from "react"
 import { Menu_Item, Ingredient, Ingredients_Menu } from "@prisma/client"
 import { useCartStore } from "@/lib/provider/cart-store-provider"
 import { CartItem } from "@/lib/stores/cart-store"
-import { createWriteStream } from "fs"
 
 export default function CustomerMenuItem({ menu_item, ingredients, ingredient_menus, translated }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[], translated: any }) {
     const cart = useCartStore((state) => state.cart);

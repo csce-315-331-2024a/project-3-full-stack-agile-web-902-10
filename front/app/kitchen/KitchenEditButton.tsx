@@ -19,11 +19,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator";
 import { useSocket, KitchenUpdate, AuthPacket } from "@/lib/socket";
 
 export default function EditButton({ user, menu_item, ingredients_menu, ingredients, currentIDS, kitchenID }: { user: Users, menu_item: Menu_Item, ingredients_menu: Ingredients_Menu[], ingredients: Ingredient[], currentIDS: number[], kitchenID: number }) {
-
     const ingredients_in_menu_item = ingredients_menu.filter((ingredient_menu) => ingredient_menu.menu_id === menu_item.id);
     const [selectedIngredients, setSelectedIngredients] = useState<number[]>(currentIDS);
 
@@ -50,7 +48,7 @@ export default function EditButton({ user, menu_item, ingredients_menu, ingredie
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className="pb-2" variant={"outline"}>Edit</Button>
+                <Button className="pb-2 w-[8vw]" variant={"outline"} >Edit</Button>
             </DialogTrigger>
             <DialogContent className=" min-w-[39vw]">
                 <DialogHeader>

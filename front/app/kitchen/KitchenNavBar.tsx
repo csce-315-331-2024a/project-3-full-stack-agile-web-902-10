@@ -32,13 +32,13 @@ export default function KitchenMenuNavBar({ user }: { user: Users | null }) {
 
 
     return (
-        <div className="border-b pt-4">
+        <div className="border-b">
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full item-center justify-center md:mx-12">
                     <div className="flex justify-start border-2 rounded-sm">
                         <Link
                             href={"/manager"}
-                            className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary"
+                            className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary"
                         >
                             {"Back to Dashboard"}
                         </Link>
@@ -48,7 +48,7 @@ export default function KitchenMenuNavBar({ user }: { user: Users | null }) {
                     </div>
                     <div className="flex justify-end gap-x-16 border-2 rounded-sm">
                         <Dialog>
-                            <DialogTrigger className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">{"Settings"}</DialogTrigger>
+                            <DialogTrigger className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary">{"Settings"}</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>{"Settings"}</DialogTitle>
