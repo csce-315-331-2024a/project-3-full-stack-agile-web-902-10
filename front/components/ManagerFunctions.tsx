@@ -48,8 +48,6 @@ import {
 import UsersList from "./UsersList";
 
 import { AuthPacket, useSocket, MenuItemDelete, IngredientCreate, IngredientDelete, IngredientsMenuRead, MenuItemUpdate, IngredientUpdate, IngredientsMenuDelete, IngredientsMenuCreate } from "@/lib/socket";
-import { create } from "domain";
-import { ifError } from "assert";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/lib/imageFB";
@@ -575,9 +573,9 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     <div className="grid grid-cols-3 gap-4">
                         {menu_items.map((menu_item) => (
                             <div key={menu_item.id}>
-                                <div className="flex flex-col w-[25vw] border-solid border-2 rounded-lg hover:bg-foreground/5 transition-all">
+                                <div className={buttonVariants({className: "flex flex-col w-[25vw] h-[30vh]", variant: "outline"})}>
                                     <div className="flex flex-col w-[25vw] h-[30vh] justify-center items-center">
-                                        <h2 className="text-base font-bold snap-center">{menu_item.name}</h2>
+                                        <h2 className="text-base font-bold snap-center pb-2">{menu_item.name}</h2>
                                         <Image
                                             src={menu_item.image_url}
                                             width={150}
@@ -586,7 +584,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                                             className="aspect-[1/1] h-[16vh] w-[8vw] object-cover rounded-3xl border"
                                         />
                                         <h2 className="text-base snap-center">
-                                            {menu_item.is_active ? <div className="text-green-500">Active</div> : <div className="text-red-500">Inactive</div>}
+                                            {menu_item.is_active ? <div className="text-green-500 py-2">Active</div> : <div className="text-red-500 py-2">Inactive</div>}
                                         </h2>
                                         <div className="flex justify-center items-center gap-4">
                                             <Dialog>
@@ -860,7 +858,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
                     <div className="grid grid-cols-3 gap-4">
                         {ingredients.map((ingredient) => (
                             <div key={ingredient.id}>
-                                <div className="flex flex-col w-[25vw] h-[20vh] border-solid justify-center items-center border-2 rounded-lg hover:bg-foreground/5 transition-all">
+                                <div className={buttonVariants({variant: "outline", className: "flex flex-col w-[25vw] h-[20vh] justify-center items-center"})}>
                                     <div className="flex flex-col w-[25vw] h-[12vh] justify-center items-center">
                                         <h2 className="text-2xl py-2 font-bold snap-center">{ingredient.name}</h2>
                                         <h2 className="text-base pb-2 snap-center">

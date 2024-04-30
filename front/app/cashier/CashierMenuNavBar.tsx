@@ -23,13 +23,9 @@ import {
 } from "@/components/ui/drawer";
 
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator";
-
 
 import { useCartStore } from "@/lib/provider/cart-store-provider";
 import { KitchenCreate, useSocket } from "@/lib/socket";
-import LanguageSelector from "@/components/LanguageSelector.";
-import { getTemperature } from "../api/weather";
 
 const static_text = {
     welcome: "Welcome",
@@ -142,14 +138,6 @@ export default function CashierMenuNavBar({ user, ingredient_menus, ingredients 
         }
     }, [socket]);
 
-    const [temprature, setTemperature] = useState(0);
-
-    useEffect(() => {
-        getTemperature().then((temp) => {
-            setTemperature(temp);
-        });
-    });
-
     function handleKitchenCreation(menu_id: number, ingredient_ids: string, order_id: number) {
         const kitchen_create: KitchenCreate = {
             data :{
@@ -162,19 +150,18 @@ export default function CashierMenuNavBar({ user, ingredient_menus, ingredients 
     }
 
     return (
-        <div className="border-b pt-4">
+        <div className="border-b">
             <div className="flex h-[8vh] items-center justify-center px-4">
                 <nav className="flex w-full items-center justify-center md:mx-12">
                     <div className="flex justify-left border-2 rounded-sm">
-                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">Dashboard</Link>}
-                        {(currentUser === null || currentUser?.role === Roles.Customer) && <p className="px-2 py-1 text-lg font-bold transition-colors"> {temprature + " °F"} </p>}
+                        {(currentUser !== null && currentUser?.role !== Roles.Customer) && <Link href="/manager" className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary">Dashboard</Link>}
                     </div>
                     <div className="flex justify-center flex-grow">
                         {cart.length <= 0 ?
                             <p className="text-xl font-bold text-center">{user?.name === undefined ? "Rev's American Grill" : static_text.welcome + ", " + user.name.split(" ")[0]}</p> :
                             <Drawer direction="right">
                                 <DrawerTrigger asChild className="items-center">
-                                    <Button variant="default" className="text-lg w-[8vw] font-bold">{"Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
+                                    <Button variant="default" className="text-xl w-[8vw] font-bold">{"Cart: " + cart.reduce((acc, item) => acc + item.quantity, 0)}</Button>
                                 </DrawerTrigger>
                                 <DrawerContent showBar={false} className="h-screen top-0 right-0 left-auto mt-0 w-auto rounded-none">
                                     <DrawerHeader>
@@ -236,7 +223,7 @@ export default function CashierMenuNavBar({ user, ingredient_menus, ingredients 
                     </div>
                     <div className="flex justify-end gap-x-16 border-2 rounded-sm">
                         <Dialog>
-                            <DialogTrigger className="px-2 py-1 text-lg font-bold transition-colors hover:text-primary">{static_text.settings}</DialogTrigger>
+                            <DialogTrigger className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary">{static_text.settings}</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>{static_text.settings}</DialogTitle>

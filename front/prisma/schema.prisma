@@ -54,13 +54,13 @@ model Order_Log {
 }
 
 model Users {
-  id          Int         @id @default(autoincrement())
-  email       String      @unique
-  name        String
-  avatar      String?
-  jwt         String      @default("")
-  role        Roles       @default(Customer)
-  Login_Log   Login_Log[]
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  name      String
+  avatar    String?
+  jwt       String      @default("")
+  role      Roles       @default(Customer)
+  Login_Log Login_Log[]
 }
 
 model Kitchen {
