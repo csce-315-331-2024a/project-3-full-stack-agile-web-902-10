@@ -14,6 +14,17 @@ import {
 } from "@/components/ui/card"
 import KitchenEditButton from "./KitchenEditButton";
 import { useRouter } from "next/navigation";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
 export default function KitchenDesktop({ user, menu_items_init, ingredients_init, ingredients_menu_init, kitchen_init }: { user: Users, menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredients_menu_init: Ingredients_Menu[], kitchen_init: Kitchen[] }) {
@@ -116,6 +127,10 @@ export default function KitchenDesktop({ user, menu_items_init, ingredients_init
         return combinedArray.join(', ');
     }
 
+    function refundOrder(kitchenOrder: Kitchen[]) {
+        socket.emit("kitchen:delete", auth, { where: { order_id: kitchenOrder[0].order_id } });
+    }
+
     function finishKitchenOrder(kitchenOrder: Kitchen[]) {
         socket.emit("kitchen:delete", auth, { where: { order_id: kitchenOrder[0].order_id } });
         // find the total price of the cart by taking the kitchenOrder and getting the menu_item fron the id, and reducing their prices
@@ -172,6 +187,33 @@ export default function KitchenDesktop({ user, menu_items_init, ingredients_init
                             {(user.role === Roles.Kitchen || user.role === Roles.Manager || user.role === Roles.Admin) &&
                                 <Button variant="destructive" onClick={() => { finishKitchenOrder(kitchenOrder) }}>Complete Order</Button>
                             }
+                            <AlertDialog>
+                                <AlertDialogTrigger>
+                                    <Button variant="default">Refund Order</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Proceed with Refund?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Amount to Refund; 
+                                            {" " + kitchenOrder.reduce((acc, kitchen) => {
+                                                const menuItem = menu_items.find(item => item.id === kitchen.menu_id) as Menu_Item;
+                                                return acc + menuItem.price;
+                                            }, 0)}$.
+                                            Choose the method of refund below.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogCancel className="bg-red-500 text-white" onClick={() => refundOrder(kitchenOrder)}>
+                                            Refund With Card
+                                        </AlertDialogCancel>
+                                        <AlertDialogCancel className="bg-red-500 text-white" onClick={() => refundOrder(kitchenOrder)}>
+                                            Refund With Cash
+                                        </AlertDialogCancel>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </CardFooter>
                     </Card>
                 );
