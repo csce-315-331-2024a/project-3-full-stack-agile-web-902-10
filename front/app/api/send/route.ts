@@ -1,9 +1,8 @@
 import { EmailTemplate } from '@/components/email-template';
 import { Resend } from 'resend';
 import { Kitchen } from '@prisma/client';
-import * as React from 'react';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.EMAIL_API);
 
 export async function POST(request: Request) {
     try {
@@ -13,7 +12,7 @@ export async function POST(request: Request) {
             from: 'info@revs.utsawb.dev',
             to: kitchen[0].email as string,
             subject: subject,
-            react: EmailTemplate({ kitchen : kitchen }) as React.ReactElement,
+            react: EmailTemplate({ kitchen : kitchen })
         });
 
         if (error) {

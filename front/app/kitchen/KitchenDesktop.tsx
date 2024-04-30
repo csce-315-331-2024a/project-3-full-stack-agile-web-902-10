@@ -139,7 +139,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
         }
         socket.emit("orderLog:create", auth, create_query);
         if (kitchen[0].email !== null) {
-            fetch("/api/send", {body: JSON.stringify(kitchen)});
+            fetch("/api/send", {method: "POST", body: JSON.stringify(kitchen)});
         }
     }
 

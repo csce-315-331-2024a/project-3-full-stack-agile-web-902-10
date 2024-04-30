@@ -191,7 +191,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                 order_id: order_id,
             }
         }
-        if (user && (user.role === Roles.Customer)) {
+        if (user) {
             kitchen_create.data.email = email;
         }
         socket.emit("kitchen:create", kitchen_create);
