@@ -2,7 +2,7 @@
 
 import { Menu_Item, Ingredient, Ingredients_Menu, Users, Kitchen, Roles } from "@prisma/client";
 import { useState, useEffect } from "react";
-import { useSocket, OrderLogCreate } from "@/lib/socket";
+import { useSocket, OrderLogCreate, IngredientUpdate } from "@/lib/socket";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -14,16 +14,26 @@ import {
 } from "@/components/ui/card"
 import KitchenEditButton from "./KitchenEditButton";
 import { useRouter } from "next/navigation";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
-export default function KitchenDesktop({ user }: { user: Users }) {
-    const [menu_items, setMenuItems] = useState<Menu_Item[]>([]);
-    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-    const [ingredients_menu, setIngredientsMenu] = useState<Ingredients_Menu[]>([]);
-    const [kitchen, setKitchen] = useState<Kitchen[]>([]);
+export default function KitchenDesktop({ user, menu_items_init, ingredients_init, ingredients_menu_init, kitchen_init }: { user: Users, menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredients_menu_init: Ingredients_Menu[], kitchen_init: Kitchen[] }) {
+    const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
+    const [ingredients, setIngredients] = useState<Ingredient[]>(ingredients_init);
+    const [ingredients_menu, setIngredientsMenu] = useState<Ingredients_Menu[]>(ingredients_menu_init);
+    const [kitchen, setKitchen] = useState<Kitchen[]>(kitchen_init);
 
     const socket = useSocket();
-
     const router = useRouter();
     useEffect(() => {
         if (socket) {
@@ -117,6 +127,10 @@ export default function KitchenDesktop({ user }: { user: Users }) {
         return combinedArray.join(', ');
     }
 
+    function refundOrder(kitchenOrder: Kitchen[]) {
+        socket.emit("kitchen:delete", auth, { where: { order_id: kitchenOrder[0].order_id } });
+    }
+
     function finishKitchenOrder(kitchenOrder: Kitchen[]) {
         socket.emit("kitchen:delete", auth, { where: { order_id: kitchenOrder[0].order_id } });
         // find the total price of the cart by taking the kitchenOrder and getting the menu_item fron the id, and reducing their prices
@@ -125,8 +139,26 @@ export default function KitchenDesktop({ user }: { user: Users }) {
             return acc + menuItem.price;
         }, 0);
 
-        const menuItemIdString = kitchenOrder.map(kitchen => kitchen.menu_id).join(", ");
+        for (let i = 0; i < kitchenOrder.length; ++i) {
+            const k = kitchenOrder[i];
+            const ing = k.ingredients_ids.split(",").map(Number);
+            for (let j = 0; j < ing.length; ++j) {
+                const ratio = ingredients_menu.find(im => im.menu_id === k.menu_id && im.ingredients_id === ing[j])?.quantity;
+                const update_query: IngredientUpdate = {
+                    where: {
+                        id: ing[j]
+                    },
+                    data: {
+                        stock : {
+                            decrement: ratio
+                        }
+                    }
+                };
+                socket.emit("ingredient:update", auth, update_query);
+            }
+        }
 
+        const menuItemIdString = kitchenOrder.map(kitchen => kitchen.menu_id).join(", ");
         // make the string for the ingredients, and a space between each comma
         const ingredientsString = combineIngredients(kitchenOrder);
 
@@ -139,7 +171,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
         }
         socket.emit("orderLog:create", auth, create_query);
         if (kitchen[0].email !== null) {
-            fetch("/api/send", {method: "POST", body: JSON.stringify(kitchen)});
+            fetch("/api/send/", { method: "POST", body: JSON.stringify(kitchen) });
         }
     }
 
@@ -149,7 +181,7 @@ export default function KitchenDesktop({ user }: { user: Users }) {
             {getOrderIDs(kitchen).map(orderId => {
                 const kitchenOrder = kitchen.filter(kitchen => kitchen.order_id === orderId);
                 return (
-                    <Card key={orderId} className="w-auto h-auto">
+                    <Card key={orderId} className="w-auto h-auto ">
                         <CardHeader>
                             <CardTitle>#{kitchenOrder[0].order_id}</CardTitle>
                         </CardHeader>
@@ -173,6 +205,33 @@ export default function KitchenDesktop({ user }: { user: Users }) {
                             {(user.role === Roles.Kitchen || user.role === Roles.Manager || user.role === Roles.Admin) &&
                                 <Button variant="destructive" onClick={() => { finishKitchenOrder(kitchenOrder) }}>Complete Order</Button>
                             }
+                            <AlertDialog>
+                                <AlertDialogTrigger>
+                                    <Button variant="default">Refund Order</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Proceed with Refund?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Amount to Refund;
+                                            {" " + kitchenOrder.reduce((acc, kitchen) => {
+                                                const menuItem = menu_items.find(item => item.id === kitchen.menu_id) as Menu_Item;
+                                                return acc + menuItem.price;
+                                            }, 0)}$.
+                                            Choose the method of refund below.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogCancel className="bg-red-500 text-white" onClick={() => refundOrder(kitchenOrder)}>
+                                            Refund With Card
+                                        </AlertDialogCancel>
+                                        <AlertDialogCancel className="bg-red-500 text-white" onClick={() => refundOrder(kitchenOrder)}>
+                                            Refund With Cash
+                                        </AlertDialogCancel>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </CardFooter>
                     </Card>
                 );

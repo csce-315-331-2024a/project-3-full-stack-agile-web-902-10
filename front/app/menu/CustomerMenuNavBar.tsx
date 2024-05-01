@@ -214,23 +214,27 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                 </DrawerTrigger>
                                 <DrawerContent showBar={false} className="h-screen top-0 right-0 left-auto mt-0 w-auto rounded-none">
                                     <DrawerHeader>
-                                        <DrawerTitle>{translated.cart}</DrawerTitle>
-                                        <DrawerDescription>{translated.review_order}</DrawerDescription>
+                                        <DrawerTitle className="pt-4 text-xl">{translated.cart}</DrawerTitle>
+                                        <DrawerDescription className="text-xl">{translated.review_order}</DrawerDescription>
                                     </DrawerHeader>
-                                    <ScrollArea className="flex-col space-y-4 m-8">
+                                    <ScrollArea className="flex-col space-y-4">
                                         {cart.map((item) => (
-                                            <div key={item.menu_item.id}>
-                                                <div className="flex justify-between space-x-12">
+                                            <div key={item.menu_item.id} className="flex flex-col justify-evenly bg-background shadow-sm hover:bg-accent hover:text-accent-foreground w-full">
+                                                <div className="flex justify-start w-full">
                                                     <p className="text-xl py-4 m-4">
-                                                        <Button key={"decrease item"} variant={item.quantity > 1 ? "outline" : "destructive"} onClick={() => removeItem(item)}>{item.quantity > 1 ? "-" : "X"}</Button>
+                                                        <Button aria-label="Decrement cart item" className="w-[4vw] h-[4vh] text-xl" variant={item.quantity > 1 ? "outline" : "destructive"} onClick={() => removeItem(item)}>{item.quantity > 1 ? "-" : "X"}</Button>
                                                     </p>
-                                                    <p className="text-xl py-4 m-4">{translated.qty}: {item.quantity}</p>
-                                                    <p className="text-xl py-4 m-4">{item.menu_item.name}</p>
-                                                    <p className="text-xl py-4 m-4">${item.menu_item.price * item.quantity}</p>
+                                                    <div className="flex flex-col w-full justify-center">
+                                                        <div className="flex flex-row w-full justify-between items-center">
+                                                            <p className="text-xl m-4 self-start">{translated.qty}: {item.quantity}</p>
+                                                            <p className="text-xl m-4 self-stretch">{item.menu_item.name}</p>
+                                                            <p className="text-xl m-4 self-end">${item.menu_item.price * item.quantity}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div className="indent-24">
                                                     {findMissingIngredients(item).map((ingredient_id) => (
-                                                        <p key={ingredient_id}>-{translated.no} {returnIngredientName(ingredient_id)}</p>
+                                                        <p className="pb-4" key={ingredient_id}>-{translated.no} {returnIngredientName(ingredient_id)}</p>
                                                     ))}
                                                 </div>
                                             </div>
@@ -238,7 +242,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                     </ScrollArea>
                                     <DrawerFooter>
                                         {/* Calculate total */}
-                                        <div className="flex justify-between">
+                                        <div className="pt-4 flex justify-center gap-x-4 bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
                                             <p>{translated.total}</p>
                                             <p>${cart.reduce((acc, item) => acc + item.menu_item.price * item.quantity, 0)}</p>
                                         </div>
@@ -267,7 +271,7 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
-                                        <Button variant="destructive" className="p-4" onClick={() => clearCart()}>{translated.clear_cart}</Button>
+                                        <Button variant="destructive" className="" onClick={() => clearCart()}>{translated.clear_cart}</Button>
                                     </DrawerFooter>
                                 </DrawerContent>
                             </Drawer>

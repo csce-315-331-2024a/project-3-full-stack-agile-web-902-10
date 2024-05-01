@@ -778,6 +778,26 @@ export async function translateArray(arr: string[], to: string, callback: any) {
     }
 }
 
+/**
+ * Route that runs a raw psql query
+ * @param auth the auth packet
+ * @param the query
+ * @param callback the callback function
+ */
+export async function rawQuery(auth: AuthPacket, query: string, callback: any) {
+    try {
+        if (!verifyToken(auth.email, auth.jwt)) {
+            return;
+        }
+        console.log(query);
+        const result = await prisma.$queryRawUnsafe(query);
+        console.log(result);
+        callback(result);
+    } catch (error) {
+        console.error("ERROR: " + error)
+    }
+}
+
 
 export function setupListen() {
     io.on("connect", (socket) => {
@@ -814,6 +834,7 @@ export function setupListen() {
         socket.on("kitchen:delete", kitchenDelete);
         socket.on("translateJSON", translateJSON);
         socket.on("translateArray", translateArray);
+        socket.on("rawQuery", rawQuery);
         socket.onAny((event, ...args) => {
             console.log("Event: " + event);
         });
