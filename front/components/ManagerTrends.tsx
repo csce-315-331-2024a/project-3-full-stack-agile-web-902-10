@@ -11,6 +11,17 @@ import BarChart from "@/components/ui/bar-chart"
 import { Roles, Users } from "@prisma/client";
 import { useSocket } from "@/lib/socket";
 import { useState, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { CalendarIcon } from "@radix-ui/react-icons"
+import { addDays, format } from "date-fns"
+import { DateRange } from "react-day-picker"
+ 
+import { cn } from "@/lib/utils"
 
 export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData, restockReportData, whatSellsTogtherData, user }: { excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[], user: Users | null }) {
 
@@ -19,6 +30,11 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
     const router = useRouter();
     const socket = useSocket();
     const [currentUser, setCurrentUser] = useState<Users | null>(user);
+
+    const [date, setDate] = useState<DateRange | undefined>({
+        from: new Date(2022, 0, 20),
+        to: addDays(new Date(2022, 0, 20), 20),
+    })
 
     useEffect(() => {
         if (socket) {
@@ -95,6 +111,44 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                         )}
                     </HoverCardContent>
                 </HoverCard>
+                <div className="grid gap-2">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                        <Button
+                            id="date"
+                            variant={"outline"}
+                            className={cn(
+                            "w-[300px] justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date?.from ? (
+                            date.to ? (
+                                <>
+                                {format(date.from, "LLL dd, y")} -{" "}
+                                {format(date.to, "LLL dd, y")}
+                                </>
+                            ) : (
+                                format(date.from, "LLL dd, y")
+                            )
+                            ) : (
+                            <span>Pick a date</span>
+                            )}
+                        </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={date?.from}
+                            selected={date}
+                            onSelect={setDate}
+                            numberOfMonths={2}
+                        />
+                        </PopoverContent>
+                    </Popover>
+                </div>
                 {selectedTrend == "Product Usage Chart" && (
                     <div>
                         <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsageReportData.map(a => a.ingredient)} data={productUsageReportData.map(b => Number(b.totalquantityused))} />
