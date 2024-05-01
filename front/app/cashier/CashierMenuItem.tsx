@@ -35,6 +35,14 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
         setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
     }, [ingredient_menus]);
 
+    useEffect(() => {
+        minimumIngredient(); reset_ingredients();
+    }, [ingredients]);
+
+    useEffect(() => {
+        reset_ingredients(); resetQuantity(); minimumIngredient();
+    }, []);
+
     const on_ingredient_click = (ingredient_id: number) => {
         if (selectedIngredients.includes(ingredient_id)) {
             setSelectedIngredients(selectedIngredients.filter((selectedIngredient) => selectedIngredient !== ingredient_id));
@@ -69,7 +77,7 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
             quantity: quantity
         }
 
-        if (!ingredientChecker(menu_item, quantity)) {
+        if (!ingredientChecker()) {
             return toast({
                 title: "Uh oh! Something went wrong.",
                 description: `You do not have enough ingredients to make this many items. Try making less than ${quantity} or get a manager to create a catering order for the customer.`,
@@ -89,7 +97,7 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
         setCart(cart);
     }
 
-    const ingredientChecker = (menu_item: Menu_Item, quantity: number) => {
+    function ingredientChecker() {
         let ingredients_in_menu_item = ingredient_menus.filter((ingredient_menu) => ingredient_menu.menu_id === menu_item.id);
         let selectedIngredientIDs = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id);
         let selectedIngredientQuantities = ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.quantity);
@@ -120,9 +128,10 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
         setMaxQuantity(1);
     }
 
-    const minimumIngredient = (ingredient_ids: number[]) => {
-        let requested_stock = maxQuantity;
-        ingredient_ids.forEach(id => {
+    function minimumIngredient() {
+        reset_ingredients();
+        let requested_stock = Infinity;
+        selectedIngredients.forEach(id => {
             const ingredient = ingredients.find(ing => ing.id === id);
             if (ingredient && ingredient.stock < requested_stock) {
                 requested_stock = ingredient.stock;
@@ -135,8 +144,9 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
     function QuantityInput() {
         const handleChange = (e: any) => {
             e.preventDefault();
+            minimumIngredient();
             const newQuantity = parseInt(e.target.value, 10);
-            if (newQuantity >= 1 && newQuantity <= (minimumIngredient(selectedIngredients) + 1)) {
+            if (newQuantity >= 1) {
                 setQuantity(newQuantity);
             }
         };
@@ -145,7 +155,6 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
             <Input
                 type="number"
                 min="1"
-                max={maxQuantity + 2}
                 value={quantity}
                 onChange={handleChange}
                 className="text-2xl h-[7vh] w-[8vw]"
@@ -155,7 +164,7 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
 
 
     return (
-        <Dialog key={menu_item.id} onOpenChange={() => { reset_ingredients(), resetQuantity(), minimumIngredient(selectedIngredients) }}>
+        <Dialog key={menu_item.id} onOpenChange={() => { reset_ingredients(), resetQuantity(), minimumIngredient() }}>
             <DialogTrigger asChild>
                 <Button variant="outline" className="flex-col justify-evenly items-center w-[23vw] h-[10vh]">
                     <h2 className="text-2xl font-bold snap-center">{menu_item.name}</h2>
@@ -201,13 +210,13 @@ export default function CashierMenuItem({ menu_item, ingredients, ingredient_men
                     {quantity > maxQuantity ? (
                         <div className="warning-label w-[15vw]">
                             <p className="text-red-500">*** Warning ***</p>
-                            <p>To order this many, the customer needs to place a catering order!</p>
+                            <p>We only have enough ingredients for {maxQuantity} {menu_item.name}s!</p>
                         </div>
                     ) : (
                         <div>
                             <div className="warning-label w-[15vw]">
                                 <p className="text-green-400">In Stock</p>
-                                <p>We have enough ingredients to make this order</p>
+                                <p>We have enough ingredients to make this order.</p>
                             </div>
                             <DialogClose asChild>
                                 <Button
