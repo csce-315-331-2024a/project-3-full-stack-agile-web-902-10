@@ -66,10 +66,18 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
 
     useEffect(() => {
         if (socket) {
-            console.log(salesReportString())
             socket.emit("rawQuery", auth, salesReportString(), (data: SalesReportData[]) => {
-                console.log(data);
                 setSalesReport(data);
+            });
+        }
+        if (socket) {
+            socket.emit("rawQuery", auth, restockReportString(), (data: RestockReportData[]) => {
+                setRestockReport(data);
+            });
+        }
+        if (socket) {
+            socket.emit("rawQuery", auth, productUsageChartString(), (data: ProductUsageReportData[]) => {
+                setProductUsage(data);
             });
         }
     }, [beginDate, endDate]);
@@ -80,6 +88,28 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
 
     const dateToString = (date: Date) => {
         return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString()
+    }
+
+    function productUsageChartString() {
+        return `SELECT
+            "Ingredient".NAME AS Ingredient,
+            SUM("Ingredients_Menu".QUANTITY) AS TotalQuantityUsed,
+            "Ingredient".CATEGORY
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        JOIN
+            "Ingredients_Menu" ON "Menu_Item".ID = "Ingredients_Menu".MENU_ID
+        JOIN
+            "Ingredient" ON "Ingredients_Menu".INGREDIENTS_ID = "Ingredient".ID
+        WHERE
+            "Order_Log".time BETWEEN '`+ dateToString(beginDate ? beginDate : new Date(1999, 1, 1)) + ` 00:00:00' AND '`+ dateToString(endDate ? endDate : new Date()) +` 23:59:59'
+        GROUP BY
+            "Ingredient".NAME, "Ingredient".CATEGORY
+        ORDER BY
+            TotalQuantityUsed DESC;`
     }
 
     function salesReportString() {
