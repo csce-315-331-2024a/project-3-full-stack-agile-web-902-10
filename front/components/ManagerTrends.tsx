@@ -33,7 +33,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
 
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: new Date(2024, 0, 1),
-        to: new Date(2024, 1, 1)
+        to: new Date(2024, 0, 31)
     })
     const [date, setDate] = useState<Date>(new Date(2024, 0, 1))
 
@@ -56,6 +56,10 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
 
     const onButtonClick = (trend: string) => {
         setSelectedTrend(trend);
+    }
+
+    const dateToString = (date: Date) => {
+        return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDay().toString()
     }
 
     return (
@@ -176,6 +180,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                         </PopoverContent>
                     </Popover>
                 )}
+                {dateToString(dateRange.to)}
                 {selectedTrend == "Product Usage Chart" && (
                     <div>
                         <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsageReportData.map(a => a.ingredient)} data={productUsageReportData.map(b => Number(b.totalquantityused))} />
