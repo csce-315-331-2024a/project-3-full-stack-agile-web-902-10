@@ -165,6 +165,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                     </Popover>
                 </div>
                 )}
+                
                 {selectedTrend == "Product Usage Chart" && (
                     <div>
                         <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsageReportData.map(a => a.ingredient)} data={productUsageReportData.map(b => Number(b.totalquantityused))} />
