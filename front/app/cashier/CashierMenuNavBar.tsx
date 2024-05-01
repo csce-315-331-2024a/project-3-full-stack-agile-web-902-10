@@ -36,7 +36,7 @@ const static_text = {
     clear_cart: "Clear Cart",
     settings: "Settings",
     make_changes: "Make changes to your session here.",
-    dark_mode: "Dark Mode",
+    dark_mode: "High Contrast",
     language: "Language",
     sign_in: "Sign In",
     sign_out: "Sign Out",

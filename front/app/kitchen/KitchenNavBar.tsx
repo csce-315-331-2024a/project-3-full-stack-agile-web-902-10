@@ -57,7 +57,7 @@ export default function KitchenMenuNavBar({ user }: { user: Users | null }) {
                                 <div className="flex-col space-y-4">
                                     <div className="flex items-center gap-4">
                                         <Switch checked={theme === "dark" ? true : false} onCheckedChange={toggleTheme} id="dark-mode" />
-                                        <Label htmlFor="dark-mode">{"Dark Mode"}</Label>
+                                        <Label htmlFor="dark-mode">{"High Contrast"}</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         {user?.name === undefined ?
