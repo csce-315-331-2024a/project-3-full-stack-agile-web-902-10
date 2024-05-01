@@ -31,11 +31,8 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
     const socket = useSocket();
     const [currentUser, setCurrentUser] = useState<Users | null>(user);
 
-    const [dateRange, setDateRange] = useState<DateRange | undefined>({
-        from: new Date(2024, 0, 1),
-        to: new Date(2024, 0, 31)
-    })
-    const [date, setDate] = useState<Date>(new Date(2024, 0, 1))
+    const [beginDate, setBeginDate] = useState<Date>();
+    const [endDate, setEndDate] = useState<Date>();
 
     useEffect(() => {
         if (socket) {
@@ -59,7 +56,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
     }
 
     const dateToString = (date: Date) => {
-        return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDay().toString()
+        return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString()
     }
 
     return (
@@ -111,76 +108,63 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                         )}
                         {selectedTrend == undefined && (
                             <div>
-                                Select a trend using the buttons to the right
+                                Select a trend using the buttons to the left.
                             </div>
                         )}
                     </HoverCardContent>
                 </HoverCard>
-                {(selectedTrend == "Product Usage Chart" || selectedTrend == "Sales Report" || selectedTrend == "What Sells Together") && (
-                    <div className="grid gap-2">
-                        <Popover>
-                            <PopoverTrigger asChild>
-                            <Button
-                                id="date"
-                                variant={"outline"}
-                                className={cn(
-                                "w-[300px] justify-start text-left font-normal",
-                                !dateRange && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {dateRange?.from ? (
-                                dateRange.to ? (
-                                    <>
-                                    {format(dateRange.from, "LLL dd, y")} -{" "}
-                                    {format(dateRange.to, "LLL dd, y")}
-                                    </>
-                                ) : (
-                                    format(dateRange.from, "LLL dd, y")
-                                )
-                                ) : (
-                                <span>Pick a date</span>
-                                )}
-                            </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                                initialFocus
-                                mode="range"
-                                defaultMonth={dateRange?.from}
-                                selected={dateRange}
-                                onSelect={setDateRange}
-                                numberOfMonths={2}
-                            />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                )}
-                {selectedTrend == "Excess Report" && (
+                {(selectedTrend != "Restock Report" && selectedTrend != undefined) && ( <div>
+                From:
                     <Popover>
                         <PopoverTrigger asChild>
                         <Button
                             variant={"outline"}
                             className={cn(
                             "w-[240px] justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
+                            !beginDate && "text-muted-foreground"
                             )}
                         >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? format(date, "PPP") : <span>Pick a date</span>}
+                            {beginDate? format(beginDate, "PPP") : <span>Pick a date</span>}
                         </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                             mode="single"
-                            selected={date}
-                            onSelect={setDate}
+                            selected={beginDate}
+                            onSelect={setBeginDate}
                             initialFocus
                         />
                         </PopoverContent>
                     </Popover>
+                    </div>
                 )}
-                {dateToString(dateRange.to)}
+                {(selectedTrend == "Product Usage Chart" || selectedTrend == "Sales Report" || selectedTrend == "What Sells Together") && ( <div>
+                To:
+                  <Popover>
+                        <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                            "w-[240px] justify-start text-left font-normal",
+                            !endDate && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={endDate}
+                            onSelect={setEndDate}
+                            initialFocus
+                        />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+                )}
                 {selectedTrend == "Product Usage Chart" && (
                     <div>
                         <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsageReportData.map(a => a.ingredient)} data={productUsageReportData.map(b => Number(b.totalquantityused))} />
@@ -208,7 +192,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                 )}
                 {selectedTrend == undefined && (
                     <div>
-                        <h1 className="text-lg font-bold"> Select a trend with the buttons to the right!! </h1>
+                        <h1 className="text-lg font-bold"> Select a trend with the buttons to the left. </h1>
                     </div>
                 )}
             </ScrollArea>
