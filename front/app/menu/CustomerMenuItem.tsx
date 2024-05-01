@@ -19,7 +19,7 @@ import { CartItem } from "@/lib/stores/cart-store"
 export default function CustomerMenuItem({ menu_item, ingredients, ingredient_menus, translated }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[], translated: any }) {
     const cart = useCartStore((state) => state.cart);
     const setCart = useCartStore((state) => state.setCart);
-    
+
     const ingredients_in_menu_item = ingredient_menus.filter((ingredient_menu) => ingredient_menu.menu_id === menu_item.id);
     const [selectedIngredients, setSelectedIngredients] = useState<number[]>(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
 
@@ -39,7 +39,7 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
     const reset_ingredients = () => {
         setSelectedIngredients(ingredients_in_menu_item.map((ingredient_in_menu_item) => ingredient_in_menu_item.ingredients_id));
     }
-    
+
     const compare = (array1: number[], array2: number[]) => {
 
         if (array1.length != array2.length) {
@@ -69,7 +69,7 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
                 return;
             }
         }
-        
+
         cart.push(cartItem);
         setCart(cart);
     }
@@ -102,15 +102,18 @@ export default function CustomerMenuItem({ menu_item, ingredients, ingredient_me
                         alt={menu_item.name}
                         className="aspect-[1/1] h-[500px] w-[500px] object-cover rounded-3xl border"
                     />
-                    <div className="grid grid-cols-3 gap-4 transition-all justify-end">
-                        {ingredients_in_menu_item.map((ingredient_in_menu_item) => {
-                            const ingredient = ingredients.find((ingredient) => ingredient.id === ingredient_in_menu_item.ingredients_id);
-                            if (ingredient) {
-                                return (
-                                    <Button key={ingredient.id} variant={ (selectedIngredients.includes(ingredient.id)) ? "default" : "destructive"} className="w-[10vw] h-[10vh] text-xl font-bold whitespace-normal" onClick={() => on_ingredient_click(ingredient.id)}> <p className={(selectedIngredients.includes(ingredient.id)) ? "" : "line-through"}> {ingredient.name}</p> </Button>
-                                );
-                            }
-                        })}
+                    <div>
+                        <h1 className="text-slate-500 font-bold">Tap to remove/add:</h1>
+                        <div className="grid grid-cols-3 gap-4 transition-all justify-end">
+                            {ingredients_in_menu_item.map((ingredient_in_menu_item) => {
+                                const ingredient = ingredients.find((ingredient) => ingredient.id === ingredient_in_menu_item.ingredients_id);
+                                if (ingredient) {
+                                    return (
+                                        <Button key={ingredient.id} variant={(selectedIngredients.includes(ingredient.id)) ? "default" : "destructive"} className="w-[10vw] h-[10vh] text-xl font-bold whitespace-normal" onClick={() => on_ingredient_click(ingredient.id)}> <p className={(selectedIngredients.includes(ingredient.id)) ? "" : "line-through"}> {ingredient.name}</p> </Button>
+                                    );
+                                }
+                            })}
+                        </div>
                     </div>
                 </div>
                 <DialogFooter>
