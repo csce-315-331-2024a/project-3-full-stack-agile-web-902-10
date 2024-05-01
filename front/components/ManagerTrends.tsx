@@ -31,10 +31,11 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
     const socket = useSocket();
     const [currentUser, setCurrentUser] = useState<Users | null>(user);
 
-    const [date, setDate] = useState<DateRange | undefined>({
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: new Date(2022, 0, 20),
         to: addDays(new Date(2022, 0, 20), 20),
     })
+    const [date, setDate] = useState<Date>()
 
     useEffect(() => {
         if (socket) {
@@ -111,44 +112,70 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                         )}
                     </HoverCardContent>
                 </HoverCard>
-                <div className="grid gap-2">
+                {(selectedTrend == "Product Usage Chart" || selectedTrend == "Sales Report" || selectedTrend == "What Sells Together") && (
+                    <div className="grid gap-2">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                            <Button
+                                id="date"
+                                variant={"outline"}
+                                className={cn(
+                                "w-[300px] justify-start text-left font-normal",
+                                !dateRange && "text-muted-foreground"
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {dateRange?.from ? (
+                                dateRange.to ? (
+                                    <>
+                                    {format(dateRange.from, "LLL dd, y")} -{" "}
+                                    {format(dateRange.to, "LLL dd, y")}
+                                    </>
+                                ) : (
+                                    format(dateRange.from, "LLL dd, y")
+                                )
+                                ) : (
+                                <span>Pick a date</span>
+                                )}
+                            </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                initialFocus
+                                mode="range"
+                                defaultMonth={dateRange?.from}
+                                selected={dateRange}
+                                onSelect={setDateRange}
+                                numberOfMonths={2}
+                            />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                )}
+                {selectedTrend == "Excess Report" && (
                     <Popover>
                         <PopoverTrigger asChild>
                         <Button
-                            id="date"
                             variant={"outline"}
                             className={cn(
-                            "w-[300px] justify-start text-left font-normal",
+                            "w-[240px] justify-start text-left font-normal",
                             !date && "text-muted-foreground"
                             )}
                         >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date?.from ? (
-                            date.to ? (
-                                <>
-                                {format(date.from, "LLL dd, y")} -{" "}
-                                {format(date.to, "LLL dd, y")}
-                                </>
-                            ) : (
-                                format(date.from, "LLL dd, y")
-                            )
-                            ) : (
-                            <span>Pick a date</span>
-                            )}
+                            {date ? format(date, "PPP") : <span>Pick a date</span>}
                         </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
-                            initialFocus
-                            mode="range"
-                            defaultMonth={date?.from}
+                            mode="single"
                             selected={date}
                             onSelect={setDate}
-                            numberOfMonths={2}
+                            initialFocus
                         />
                         </PopoverContent>
                     </Popover>
-                </div>
+                )}
                 {selectedTrend == "Product Usage Chart" && (
                     <div>
                         <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsageReportData.map(a => a.ingredient)} data={productUsageReportData.map(b => Number(b.totalquantityused))} />
