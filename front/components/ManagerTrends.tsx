@@ -32,10 +32,10 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
     const [currentUser, setCurrentUser] = useState<Users | null>(user);
 
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
-        from: new Date(2022, 0, 20),
-        to: addDays(new Date(2022, 0, 20), 20),
+        from: new Date(2024, 0, 1),
+        to: new Date(2024, 1, 1)
     })
-    const [date, setDate] = useState<Date>()
+    const [date, setDate] = useState<Date>(new Date(2024, 0, 1))
 
     useEffect(() => {
         if (socket) {
