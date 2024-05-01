@@ -784,12 +784,24 @@ export async function translateArray(arr: string[], to: string, callback: any) {
  * @param the query
  * @param callback the callback function
  */
+
 export async function rawQuery(auth: AuthPacket, query: string, callback: any) {
     try {
         if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        const result = await prisma.$queryRawUnsafe(query);
+        let result: any = await prisma.$queryRawUnsafe(query);
+
+        // Convert BigInt to string for serialization
+        result = result.map((row: { [s: string]: unknown; } | ArrayLike<unknown>) => {
+            return Object.fromEntries(
+                Object.entries(row).map(([key, value]) => {
+                    // Check if value is BigInt and convert to string
+                    return [key, typeof value === 'bigint' ? value.toString() : value];
+                })
+            );
+        });
+
         console.log(result);
         callback(result);
     } catch (error) {
