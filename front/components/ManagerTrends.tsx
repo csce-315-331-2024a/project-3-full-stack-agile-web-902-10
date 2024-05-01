@@ -11,14 +11,36 @@ import BarChart from "@/components/ui/bar-chart"
 import { Roles, Users } from "@prisma/client";
 import { useSocket } from "@/lib/socket";
 import { useState, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { CalendarIcon } from "@radix-ui/react-icons"
+import { addDays, format } from "date-fns"
+import { DateRange } from "react-day-picker"
+ 
+import { cn } from "@/lib/utils"
 
-export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData, restockReportData, whatSellsTogtherData, user }: { excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[], user: Users | null }) {
+export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData, restockReportDataInit, whatSellsTogetherData, user }: { excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportDataInit: RestockReportData[], whatSellsTogetherData: WhatSellsTogetherData[], user: Users | null }) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
     const router = useRouter();
     const socket = useSocket();
     const [currentUser, setCurrentUser] = useState<Users | null>(user);
+
+    const [beginDate, setBeginDate] = useState<Date>();
+    const [endDate, setEndDate] = useState<Date>();
+
+    const [restockReport, setRestockReport] = useState<RestockReportData[]>(restockReportDataInit);
+    const [whatSellsTogether, setWhatSellsTogether] = useState<WhatSellsTogetherData[]>(whatSellsTogetherData);
+    const [salesReport, setSalesReport] = useState<SalesReportData[]>(salesReportData);
+    const [productUsage, setProductUsage] = useState<ProductUsageReportData[]>(productUsageReportData);
+    const [excessReport, setExcessReport] = useState<ExcessReportData[]>(excessReportData);
+
+    console.log(salesReport);
 
     useEffect(() => {
         if (socket) {
@@ -37,8 +59,135 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
         }
     }, [socket])
 
+    const auth = {
+        email: user?.email,
+        jwt: user?.jwt
+    };
+
+    useEffect(() => {
+        if (socket) {
+            socket.emit("rawQuery", auth, salesReportString(), (data: SalesReportData[]) => {
+                setSalesReport(data);
+            });
+        }
+        if (socket) {
+            socket.emit("rawQuery", auth, restockReportString(), (data: RestockReportData[]) => {
+                setRestockReport(data);
+            });
+        }
+        if (socket) {
+            socket.emit("rawQuery", auth, productUsageChartString(), (data: ProductUsageReportData[]) => {
+                setProductUsage(data);
+            });
+        }
+        if (socket) {
+            socket.emit("rawQuery", auth, excessReportString(), (data: ExcessReportData[]) => {
+                setExcessReport(data);
+            });
+        }
+        if (socket) {
+            socket.emit("rawQuery", auth, whatSellsTogetherString(), (data: WhatSellsTogetherData[]) => {
+                setWhatSellsTogether(data);
+            });
+        }
+    }, [beginDate, endDate]);
+
     const onButtonClick = (trend: string) => {
         setSelectedTrend(trend);
+    }
+
+    const dateToString = (date: Date) => {
+        return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString()
+    }
+
+    function productUsageChartString() {
+        return `SELECT
+            "Ingredient".NAME AS Ingredient,
+            SUM("Ingredients_Menu".QUANTITY) AS TotalQuantityUsed,
+            "Ingredient".CATEGORY
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        JOIN
+            "Ingredients_Menu" ON "Menu_Item".ID = "Ingredients_Menu".MENU_ID
+        JOIN
+            "Ingredient" ON "Ingredients_Menu".INGREDIENTS_ID = "Ingredient".ID
+        WHERE
+            "Order_Log".time BETWEEN '`+ dateToString(beginDate ? beginDate : new Date(1999, 1, 1)) + ` 00:00:00' AND '`+ dateToString(endDate ? endDate : new Date()) +` 23:59:59'
+        GROUP BY
+            "Ingredient".NAME, "Ingredient".CATEGORY
+        ORDER BY
+            TotalQuantityUsed DESC;`
+    }
+
+    function salesReportString() {
+        return `SELECT
+            "Menu_Item".NAME AS MenuItem,
+            COUNT("Order_Log".ID) AS NumberOfOrders,
+            SUM("Order_Log".PRICE) AS TotalSales
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        WHERE
+            "Order_Log".time BETWEEN '`+ dateToString(beginDate ? beginDate : new Date(1999, 1, 1)) + ` 00:00:00' AND '`+ dateToString(endDate ? endDate : new Date()) +` 23:59:59'
+        GROUP BY
+            "Menu_Item".NAME
+        ORDER BY
+            TotalSales DESC;`
+    }
+
+    function excessReportString() {
+        return `SELECT
+        "Ingredient".NAME AS Ingredient,
+        SUM("Ingredients_Menu".QUANTITY) AS TotalQuantityUsed,
+        "Ingredient".CATEGORY
+    FROM
+        "Order_Log"
+    JOIN
+        --string to array needs to change after transposition of order_menu.menu_item_id
+        "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+    JOIN
+        "Ingredients_Menu" ON "Menu_Item".ID = "Ingredients_Menu".MENU_ID
+    JOIN
+        "Ingredient" ON "Ingredients_Menu".INGREDIENTS_ID = "Ingredient".ID
+    WHERE
+        "Order_Log".time BETWEEN '`+ dateToString(beginDate ? beginDate : new Date(1999, 1, 1)) + ` 00:00:00' AND '`+ dateToString(new Date()) +` 23:59:59'
+    GROUP BY
+        "Ingredient".NAME, "Ingredient".CATEGORY, "Ingredient".STOCK
+    HAVING
+        SUM("Ingredients_Menu".QUANTITY) <  0.1* ("Ingredient".STOCK + SUM("Ingredients_Menu".QUANTITY))
+    ORDER BY
+        TotalQuantityUsed DESC;`
+    }
+
+    const restockReportString = () => {
+        return `SELECT * FROM "Ingredient" WHERE is_active = True AND STOCK < MIN_STOCK ORDER BY STOCK;`;
+    }
+
+    function whatSellsTogetherString() {
+        return `SELECT mi1.name AS item1_name, mi2.name AS item2_name, COUNT(*) AS frequency
+        FROM (
+            SELECT t1.item AS item1, t2.item AS item2
+            FROM (
+                SELECT id, UNNEST(STRING_TO_ARRAY(menu_items, ',')::INTEGER[]) AS item
+                FROM "Order_Log"
+                WHERE time >= '`+ dateToString(beginDate ? beginDate : new Date(1999, 1, 1)) + ` 00:00:00' AND time <= '`+ dateToString(endDate ? endDate : new Date()) +` 23:59:59'
+            ) AS t1
+            JOIN (
+                SELECT id, UNNEST(STRING_TO_ARRAY(menu_items, ',')::INTEGER[]) AS item
+                FROM "Order_Log"
+                WHERE time >= '`+ dateToString(beginDate ? beginDate : new Date(1999, 1, 1)) + ` 00:00:00' AND time <= '`+ dateToString(endDate ? endDate : new Date()) +` 23:59:59'
+            ) AS t2 ON t1.id = t2.id AND t1.item < t2.item
+        ) AS menu_pairs
+        JOIN "Menu_Item" AS mi1 ON menu_pairs.item1 = mi1.id
+        JOIN "Menu_Item" AS mi2 ON menu_pairs.item2 = mi2.id
+        GROUP BY item1_name, item2_name
+        ORDER BY frequency DESC
+        LIMIT 10;`
     }
 
     return (
@@ -48,11 +197,11 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                     <h1 className="text-lg font-bold"> Trends </h1>
                     <Separator />
                     <Button variant="destructive" key={"Test3"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => router.push("/manager")}> {"Back to Manager"} </Button>
-                    <Button variant={(selectedTrend == "Product Usage Chart" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Product Usage Chart")}> {"Product Usage Chart"} </Button>
-                    <Button variant={(selectedTrend == "Sales Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
-                    <Button variant={(selectedTrend == "Excess Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Excess Report")}> {"Excess Report"} </Button>
-                    <Button variant={(selectedTrend == "Restock Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
-                    <Button variant={(selectedTrend == "What Sells Together" ? "default" : "secondary")} key={"Test2"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
+                    <Button variant={(selectedTrend == "Product Usage Chart" ? "default" : "secondary")} key={"PUC"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Product Usage Chart")}> {"Product Usage Chart"} </Button>
+                    <Button variant={(selectedTrend == "Sales Report" ? "default" : "secondary")} key={"SR"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
+                    <Button variant={(selectedTrend == "Excess Report" ? "default" : "secondary")} key={"ER"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Excess Report")}> {"Excess Report"} </Button>
+                    <Button variant={(selectedTrend == "Restock Report" ? "default" : "secondary")} key={"RR"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
+                    <Button variant={(selectedTrend == "What Sells Together" ? "default" : "secondary")} key={"WST"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
 
                 </div>
                 <ScrollBar orientation="vertical" />
@@ -95,34 +244,90 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                         )}
                     </HoverCardContent>
                 </HoverCard>
+                {(selectedTrend != "Restock Report" && selectedTrend != undefined) && ( <div>
+                From:
+                    <Popover>
+                        <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                            "w-[240px] justify-start text-left font-normal",
+                            !beginDate && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {beginDate? format(beginDate, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={beginDate}
+                            onSelect={setBeginDate}
+                            initialFocus
+                        />
+                        </PopoverContent>
+                    </Popover>
+                    </div>
+                )}
+                {(selectedTrend == "Product Usage Chart" || selectedTrend == "Sales Report" || selectedTrend == "What Sells Together") && ( <div>
+                To:
+                  <Popover>
+                        <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                            "w-[240px] justify-start text-left font-normal",
+                            !endDate && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={endDate}
+                            onSelect={setEndDate}
+                            initialFocus
+                        />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+                )}
+                {selectedTrend == "Excess Report" && ( <div>
+                To: Present Day
+                </div>
+                )}
                 {selectedTrend == "Product Usage Chart" && (
                     <div>
-                        <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsageReportData.map(a => a.ingredient)} data={productUsageReportData.map(b => Number(b.totalquantityused))} />
+                        <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsage.map(a => a.ingredient)} data={productUsage.map(b => Number(b.totalquantityused))} beginDate={beginDate ? beginDate : new Date(1999, 1, 1)} endDate={endDate ? endDate : new Date()} />
                     </div>
                 )}
                 {selectedTrend == "Sales Report" && (
                     <div>
-                        <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReportData.map(a => a.menuitem)} data={salesReportData.map(b => Number(b.totalsales))} />
+                        <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReport.map( (rep) => rep.menuitem ) } data={salesReport.map( (b) => Number(b.totalsales)) } beginDate={beginDate ? beginDate : new Date(1999, 1, 1)} endDate={endDate ? endDate : new Date()} />
                     </div>
                 )}
                 {selectedTrend == "Excess Report" && (
                     <div>
-                        <DataTable columns={ExcessReportColumns} data={excessReportData} />
+                        <DataTable columns={ExcessReportColumns} data={excessReport} />
                     </div>
                 )}
                 {selectedTrend == "Restock Report" && (
                     <div>
-                        <DataTable columns={RestockReportColumns} data={restockReportData} />
+                        <DataTable columns={RestockReportColumns} data={restockReport} />
                     </div>
                 )}
                 {selectedTrend == "What Sells Together" && (
                     <div>
-                        <DataTable columns={WhatSellsTogetherColumns} data={whatSellsTogtherData} />
+                        <DataTable columns={WhatSellsTogetherColumns} data={whatSellsTogether} />
                     </div>
                 )}
                 {selectedTrend == undefined && (
                     <div>
-                        <h1 className="text-lg font-bold"> Select a trend with the buttons to the left.</h1>
+                        <h1 className="text-lg font-bold"> Select a trend with the buttons to the left. </h1>
                     </div>
                 )}
             </ScrollArea>

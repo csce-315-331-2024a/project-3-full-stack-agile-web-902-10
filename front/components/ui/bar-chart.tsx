@@ -21,12 +21,14 @@ ChartJs.register(
 );
 
 
-export default function BarChart({ title, label, labels, data }:
+export default function BarChart({ title, label, labels, data, beginDate, endDate }:
     {
         title: string,
         label: string,
         labels: string[],
-        data: number[]
+        data: number[],
+        beginDate: Date,
+        endDate: Date
     }) {
 
     const [chartData, setChartData] = useState({
@@ -62,7 +64,9 @@ export default function BarChart({ title, label, labels, data }:
             responsive: true
         })
 
-    }, [])
+        console.log("Chart reloaded")
+
+    }, [beginDate, endDate, data])
 
     return (
         <>
