@@ -23,7 +23,7 @@ import { DateRange } from "react-day-picker"
  
 import { cn } from "@/lib/utils"
 
-export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData, restockReportData, whatSellsTogtherData, user }: { excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportData: RestockReportData[], whatSellsTogtherData: WhatSellsTogetherData[], user: Users | null }) {
+export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData, restockReportDataInit, whatSellsTogetherData, user }: { excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportDataInit: RestockReportData[], whatSellsTogetherData: WhatSellsTogetherData[], user: Users | null }) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);
 
@@ -33,6 +33,14 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
 
     const [beginDate, setBeginDate] = useState<Date>();
     const [endDate, setEndDate] = useState<Date>();
+
+    const [restockReport, setRestockReport] = useState<RestockReportData[]>(restockReportDataInit);
+    const [whatSellsTogether, setWhatSellsTogether] = useState<WhatSellsTogetherData[]>(whatSellsTogetherData);
+    const [salesReport, setSalesReport] = useState<SalesReportData[]>(salesReportData);
+    const [productUsage, setProductUsage] = useState<ProductUsageReportData[]>(productUsageReportData);
+    const [excessReport, setExcessReport] = useState<ExcessReportData[]>(excessReportData);
+
+    console.log(salesReport);
 
     useEffect(() => {
         if (socket) {
@@ -51,12 +59,49 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
         }
     }, [socket])
 
+    const auth = {
+        email: user?.email,
+        jwt: user?.jwt
+    };
+
+    useEffect(() => {
+        if (socket) {
+            console.log(salesReportString())
+            socket.emit("rawQuery", auth, salesReportString(), (data: SalesReportData[]) => {
+                console.log(data);
+                setSalesReport(data);
+            });
+        }
+    }, [beginDate, endDate]);
+
     const onButtonClick = (trend: string) => {
         setSelectedTrend(trend);
     }
 
     const dateToString = (date: Date) => {
         return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString()
+    }
+
+    function salesReportString() {
+        return `SELECT
+            "Menu_Item".NAME AS MenuItem,
+            COUNT("Order_Log".ID) AS NumberOfOrders,
+            SUM("Order_Log".PRICE) AS TotalSales
+        FROM
+            "Order_Log"
+        JOIN
+            --string to array needs to change after transposition of order_menu.menu_item_id
+            "Menu_Item" ON "Menu_Item".ID = ANY(STRING_TO_ARRAY("Order_Log"."menu_items", ',')::INTEGER[])
+        WHERE
+            "Order_Log".time BETWEEN '`+ dateToString(beginDate ? beginDate : new Date(1999, 1, 1)) + ` 00:00:00' AND '`+ dateToString(endDate ? endDate : new Date()) +` 23:59:59'
+        GROUP BY
+            "Menu_Item".NAME
+        ORDER BY
+            TotalSales DESC;`
+    }
+
+    const restockReportString = () => {
+        return `SELECT * FROM "Ingredient" WHERE is_active = True AND STOCK < MIN_STOCK ORDER BY STOCK;`;
     }
 
     return (
@@ -165,30 +210,33 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                     </Popover>
                 </div>
                 )}
-                
+                {selectedTrend == "Excess Report" && ( <div>
+                To: Present Day
+                </div>
+                )}
                 {selectedTrend == "Product Usage Chart" && (
                     <div>
-                        <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsageReportData.map(a => a.ingredient)} data={productUsageReportData.map(b => Number(b.totalquantityused))} />
+                        <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsage.map(a => a.ingredient)} data={productUsage.map(b => Number(b.totalquantityused))} />
                     </div>
                 )}
                 {selectedTrend == "Sales Report" && (
                     <div>
-                        <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReportData.map(a => a.menuitem)} data={salesReportData.map(b => Number(b.totalsales))} />
+                        <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReport.map( (rep) => rep.menuitem ) } data={salesReport.map( (b) => Number(b.totalsales)) } />
                     </div>
                 )}
                 {selectedTrend == "Excess Report" && (
                     <div>
-                        <DataTable columns={ExcessReportColumns} data={excessReportData} />
+                        <DataTable columns={ExcessReportColumns} data={excessReport} />
                     </div>
                 )}
                 {selectedTrend == "Restock Report" && (
                     <div>
-                        <DataTable columns={RestockReportColumns} data={restockReportData} />
+                        <DataTable columns={RestockReportColumns} data={restockReport} />
                     </div>
                 )}
                 {selectedTrend == "What Sells Together" && (
                     <div>
-                        <DataTable columns={WhatSellsTogetherColumns} data={whatSellsTogtherData} />
+                        <DataTable columns={WhatSellsTogetherColumns} data={whatSellsTogether} />
                     </div>
                 )}
                 {selectedTrend == undefined && (

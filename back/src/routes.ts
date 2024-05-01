@@ -789,7 +789,6 @@ export async function rawQuery(auth: AuthPacket, query: string, callback: any) {
         if (!verifyToken(auth.email, auth.jwt)) {
             return;
         }
-        console.log(query);
         const result = await prisma.$queryRawUnsafe(query);
         console.log(result);
         callback(result);
