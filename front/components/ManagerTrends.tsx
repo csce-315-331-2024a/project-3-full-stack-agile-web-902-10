@@ -111,11 +111,11 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                     <h1 className="text-lg font-bold"> Trends </h1>
                     <Separator />
                     <Button variant="destructive" key={"Test3"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => router.push("/manager")}> {"Back to Manager"} </Button>
-                    <Button variant={(selectedTrend == "Product Usage Chart" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Product Usage Chart")}> {"Product Usage Chart"} </Button>
-                    <Button variant={(selectedTrend == "Sales Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
-                    <Button variant={(selectedTrend == "Excess Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Excess Report")}> {"Excess Report"} </Button>
-                    <Button variant={(selectedTrend == "Restock Report" ? "default" : "secondary")} key={"Test"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
-                    <Button variant={(selectedTrend == "What Sells Together" ? "default" : "secondary")} key={"Test2"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
+                    <Button variant={(selectedTrend == "Product Usage Chart" ? "default" : "secondary")} key={"PUC"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Product Usage Chart")}> {"Product Usage Chart"} </Button>
+                    <Button variant={(selectedTrend == "Sales Report" ? "default" : "secondary")} key={"SR"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Sales Report")}> {"Sales Report"} </Button>
+                    <Button variant={(selectedTrend == "Excess Report" ? "default" : "secondary")} key={"ER"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Excess Report")}> {"Excess Report"} </Button>
+                    <Button variant={(selectedTrend == "Restock Report" ? "default" : "secondary")} key={"RR"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("Restock Report")}> {"Restock Report"} </Button>
+                    <Button variant={(selectedTrend == "What Sells Together" ? "default" : "secondary")} key={"WST"} className="w-[8vw] h-[9vh] text-lg font-bold whitespace-normal" onClick={() => onButtonClick("What Sells Together")}> {"What Sells Together"} </Button>
 
                 </div>
                 <ScrollBar orientation="vertical" />
@@ -216,12 +216,12 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
                 )}
                 {selectedTrend == "Product Usage Chart" && (
                     <div>
-                        <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsage.map(a => a.ingredient)} data={productUsage.map(b => Number(b.totalquantityused))} />
+                        <BarChart title={"Product Usage Chart"} label={"Quantity Used"} labels={productUsage.map(a => a.ingredient)} data={productUsage.map(b => Number(b.totalquantityused))} beginDate={beginDate ? beginDate : new Date(1999, 1, 1)} endDate={endDate ? endDate : new Date()} />
                     </div>
                 )}
                 {selectedTrend == "Sales Report" && (
                     <div>
-                        <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReport.map( (rep) => rep.menuitem ) } data={salesReport.map( (b) => Number(b.totalsales)) } />
+                        <BarChart title={"Sales Report"} label={"Total Sales"} labels={salesReport.map( (rep) => rep.menuitem ) } data={salesReport.map( (b) => Number(b.totalsales)) } beginDate={beginDate ? beginDate : new Date(1999, 1, 1)} endDate={endDate ? endDate : new Date()} />
                     </div>
                 )}
                 {selectedTrend == "Excess Report" && (
