@@ -45,7 +45,6 @@ export default function ManagerNavBar({ username }: {
                         </div>
                     </div>
 
-
                     <div className="flex justify-left border-2 rounded-sm">
                         <Dialog>
                         <DialogTrigger className="px-2 py-1 text-xl font-bold transition-colors hover:text-primary">Settings</DialogTrigger>
@@ -57,7 +56,7 @@ export default function ManagerNavBar({ username }: {
                                 <div className="flex-col space-y-4">
                                     <div className="flex items-center gap-4">
                                         <Switch checked={theme === "dark" ? true : false} onCheckedChange={toggleTheme} id="dark-mode" />
-                                        <Label htmlFor="dark-mode">Dark Mode</Label>
+                                        <Label htmlFor="dark-mode">High Contrast</Label>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         {username === undefined ?

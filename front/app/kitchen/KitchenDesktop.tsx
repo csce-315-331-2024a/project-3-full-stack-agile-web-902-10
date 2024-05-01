@@ -2,7 +2,7 @@
 
 import { Menu_Item, Ingredient, Ingredients_Menu, Users, Kitchen, Roles } from "@prisma/client";
 import { useState, useEffect } from "react";
-import { useSocket, OrderLogCreate } from "@/lib/socket";
+import { useSocket, OrderLogCreate, IngredientUpdate } from "@/lib/socket";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -139,8 +139,26 @@ export default function KitchenDesktop({ user, menu_items_init, ingredients_init
             return acc + menuItem.price;
         }, 0);
 
-        const menuItemIdString = kitchenOrder.map(kitchen => kitchen.menu_id).join(", ");
+        for (let i = 0; i < kitchenOrder.length; ++i) {
+            const k = kitchenOrder[i];
+            const ing = k.ingredients_ids.split(",").map(Number);
+            for (let j = 0; j < ing.length; ++j) {
+                const ratio = ingredients_menu.find(im => im.menu_id === k.menu_id && im.ingredients_id === ing[j])?.quantity;
+                const update_query: IngredientUpdate = {
+                    where: {
+                        id: ing[j]
+                    },
+                    data: {
+                        stock : {
+                            decrement: ratio
+                        }
+                    }
+                };
+                socket.emit("ingredient:update", auth, update_query);
+            }
+        }
 
+        const menuItemIdString = kitchenOrder.map(kitchen => kitchen.menu_id).join(", ");
         // make the string for the ingredients, and a space between each comma
         const ingredientsString = combineIngredients(kitchenOrder);
 
@@ -153,7 +171,7 @@ export default function KitchenDesktop({ user, menu_items_init, ingredients_init
         }
         socket.emit("orderLog:create", auth, create_query);
         if (kitchen[0].email !== null) {
-            fetch("/api/send/", {method: "POST", body: JSON.stringify(kitchen)});
+            fetch("/api/send/", { method: "POST", body: JSON.stringify(kitchen) });
         }
     }
 
@@ -195,7 +213,7 @@ export default function KitchenDesktop({ user, menu_items_init, ingredients_init
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Proceed with Refund?</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            Amount to Refund; 
+                                            Amount to Refund;
                                             {" " + kitchenOrder.reduce((acc, kitchen) => {
                                                 const menuItem = menu_items.find(item => item.id === kitchen.menu_id) as Menu_Item;
                                                 return acc + menuItem.price;

@@ -51,11 +51,12 @@ const static_text = {
     clear_cart: "Clear Cart",
     settings: "Settings",
     make_changes: "Make changes to your session here.",
-    dark_mode: "Dark Mode",
+    dark_mode: "High Contrast",
     language: "Language",
     sign_in: "Sign In",
     sign_out: "Sign Out",
-    place_order: "Place Order",
+    dine_in: "Dine In",
+    credit: "Credit Card",
     checkout_desc: "Checkout here.",
     no: "No",
     qty: "Qty",
@@ -262,7 +263,10 @@ export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients
                                                 </div>
                                                 <DialogFooter>
                                                     <DialogClose asChild>
-                                                        <Button type="submit" onClick={() => placeOrder()}>{translated.place_order}</Button>
+                                                        <Button type="submit" onClick={() => placeOrder()}>{translated.dine_in}</Button>
+                                                    </DialogClose>
+                                                    <DialogClose asChild>
+                                                        <Button type="submit" onClick={() => placeOrder()}>{translated.credit}</Button>
                                                     </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
