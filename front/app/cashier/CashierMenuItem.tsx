@@ -20,6 +20,17 @@ import { Label } from "@radix-ui/react-label"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 
+
+/**
+ * Renders a cashier menu item component.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Menu_Item} props.menu_item - The menu item object.
+ * @param {Ingredient[]} props.ingredients - The list of available ingredients.
+ * @param {Ingredients_Menu[]} props.ingredient_menus - The list of ingredient menus.
+ * @returns {JSX.Element} The rendered CashierMenuItem component.
+ */
 export default function CashierMenuItem({ menu_item, ingredients, ingredient_menus }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[] }) {
     const cart = useCartStore((state) => state.cart);
     const setCart = useCartStore((state) => state.setCart);

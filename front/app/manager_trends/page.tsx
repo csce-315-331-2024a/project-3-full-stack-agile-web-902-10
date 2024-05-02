@@ -6,6 +6,11 @@ import { getUserSession } from "@/lib/session";
 import { Roles } from "@prisma/client";
 import Redirect from "@/components/Redirect";
 
+/**
+ * ManagerTrendsPage component.
+ * 
+ * @returns The ManagerTrendsPage component.
+ */
 export default async function ManagerTrendsPage() {
     const user_session = await getUserSession();
     const user = user_session ? await prisma.users.findUnique({

@@ -10,11 +10,22 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
-export async function EmailTemplate({ kitchen }: { kitchen: Kitchen[] }) {
+/**
+ * Renders an email template for a kitchen order.
+ * @param {Object} props - The component props.
+ * @param {Kitchen[]} props.kitchen - The kitchen order data.
+ * @returns {JSX.Element} - The rendered email template.
+ */
+export async function EmailTemplate({ kitchen }: { kitchen: Kitchen[] }): Promise<JSX.Element> {
     const menu_items = await prisma.menu_Item.findMany();
     const ingredients = await prisma.ingredient.findMany();
 
-    function getIngredientNames(kitchenIngredients: string) {
+    /**
+     * Retrieves the names of the ingredients based on their IDs.
+     * @param {string} kitchenIngredients - The comma-separated string of ingredient IDs.
+     * @returns {string} - The names of the ingredients.
+     */
+    function getIngredientNames(kitchenIngredients: string): string {
         const ingredientIds = kitchenIngredients.split(",");
         return ingredientIds.map(id => {
             const ingredient = ingredients.find(ingredient => ingredient.id === Number(id));

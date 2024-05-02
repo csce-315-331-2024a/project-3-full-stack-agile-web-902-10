@@ -62,6 +62,14 @@ const static_text = {
     qty: "Qty",
 }
 
+/**
+ * Renders the CustomerMenuNavBar component.
+ * 
+ * @param user - The user object.
+ * @param ingredient_menus - The ingredient menus object.
+ * @param ingredients - The ingredients object.
+ * @returns The rendered CustomerMenuNavBar component.
+ */
 export default function CustomerMenuNavBar({ user, ingredient_menus, ingredients }: { user: Users | null, ingredient_menus: Ingredients_Menu[], ingredients: Ingredient[] }) {
     const { theme, setTheme } = useTheme();
 

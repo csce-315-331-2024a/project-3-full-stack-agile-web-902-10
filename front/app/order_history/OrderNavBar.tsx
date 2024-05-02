@@ -11,6 +11,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, 
 import { Users } from "@prisma/client";
 
 
+/**
+ * Renders the OrderNavBar component.
+ * 
+ * @param user - The user object.
+ * @returns The rendered OrderNavBar component.
+ */
 export default function OrderNavBar({ user }: { user: Users | null }) {
     const { theme, setTheme } = useTheme();
 

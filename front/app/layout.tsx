@@ -14,6 +14,12 @@ const overpass_mono = Overpass_Mono({
     display: "swap"
 })
 
+/**
+ * HomeLayout component.
+ * 
+ * @param children - The children of the component.
+ * @returns The HomeLayout component.
+ */
 export default function HomeLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
     return (
         <html lang="en" className={overpass_mono.className}>

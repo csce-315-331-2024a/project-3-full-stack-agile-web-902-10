@@ -23,6 +23,19 @@ import { DateRange } from "react-day-picker"
  
 import { cn } from "@/lib/utils"
 
+/**
+ * Component for displaying manager trends.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {ExcessReportData[]} props.excessReportData - The excess report data.
+ * @param {ProductUsageReportData[]} props.productUsageReportData - The product usage report data.
+ * @param {SalesReportData[]} props.salesReportData - The sales report data.
+ * @param {RestockReportData[]} props.restockReportDataInit - The restock report data.
+ * @param {WhatSellsTogetherData[]} props.whatSellsTogetherData - The "what sells together" data.
+ * @param {Users | null} props.user - The user data.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function ManagerTrends({ excessReportData, productUsageReportData, salesReportData, restockReportDataInit, whatSellsTogetherData, user }: { excessReportData: ExcessReportData[], productUsageReportData: ProductUsageReportData[], salesReportData: SalesReportData[], restockReportDataInit: RestockReportData[], whatSellsTogetherData: WhatSellsTogetherData[], user: Users | null }) {
 
     const [selectedTrend, setSelectedTrend] = useState<string | undefined>(undefined);

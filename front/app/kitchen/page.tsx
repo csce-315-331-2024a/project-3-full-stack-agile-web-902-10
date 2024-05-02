@@ -11,6 +11,11 @@ export const metadata = {
     title: "Kitchen | Rev's Grill",
 };
 
+/**
+ * KitchenPage component.
+ * 
+ * @returns The KitchenPage component.
+ */
 export default async function KitchenPage() {
     const user_session = await getUserSession();
     const user = user_session ? await prisma.users.findUnique({

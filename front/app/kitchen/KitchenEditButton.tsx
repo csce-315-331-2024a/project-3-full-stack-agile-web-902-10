@@ -21,6 +21,17 @@ import {
 } from "@/components/ui/card"
 import { useSocket, KitchenUpdate, AuthPacket } from "@/lib/socket";
 
+/**
+ * Renders the EditButton component.
+ * 
+ * @param user - The user object.
+ * @param menu_item - The menu item object.
+ * @param ingredients_menu - The ingredients menu object.
+ * @param ingredients - The ingredients object.
+ * @param currentIDS - The current ingredient IDs.
+ * @param kitchenID - The kitchen ID.
+ * @returns The rendered EditButton component.
+ */
 export default function EditButton({ user, menu_item, ingredients_menu, ingredients, currentIDS, kitchenID }: { user: Users, menu_item: Menu_Item, ingredients_menu: Ingredients_Menu[], ingredients: Ingredient[], currentIDS: number[], kitchenID: number }) {
     const ingredients_in_menu_item = ingredients_menu.filter((ingredient_menu) => ingredient_menu.menu_id === menu_item.id);
     const [selectedIngredients, setSelectedIngredients] = useState<number[]>(currentIDS);

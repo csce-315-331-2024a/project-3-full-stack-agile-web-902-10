@@ -40,6 +40,11 @@ import {
     SelectLabel
 } from "@/components/ui/select"
 
+/**
+ * Renders the LoginLogDesktop component.
+ * 
+ * @returns The rendered LoginLogDesktop component.
+ */
 export default function LoginLogDesktop() {
     const [loginLogs, setLoginLogs] = useState<Login_Log[]>([]);
     const [users, setUsers] = useState<Users[]>([]);

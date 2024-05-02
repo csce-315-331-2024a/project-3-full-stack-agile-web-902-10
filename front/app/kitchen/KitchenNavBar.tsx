@@ -23,6 +23,12 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import LanguageSelector from "@/components/LanguageSelector.";
 
 
+/**
+ * Renders the KitchenMenuNavBar component.
+ * 
+ * @param user - The user object.
+ * @returns The rendered KitchenMenuNavBar component.
+ */
 export default function KitchenMenuNavBar({ user }: { user: Users | null }) {
     const { theme, setTheme } = useTheme();
 
