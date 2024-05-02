@@ -20,6 +20,7 @@ import {
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { addDays, format } from "date-fns"
 import { DateRange } from "react-day-picker"
+import { useToast } from "@/components/ui/use-toast"
  
 import { cn } from "@/lib/utils"
 
@@ -53,7 +54,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
     const [productUsage, setProductUsage] = useState<ProductUsageReportData[]>(productUsageReportData);
     const [excessReport, setExcessReport] = useState<ExcessReportData[]>(excessReportData);
 
-    console.log(salesReport);
+    console.log(excessReport)
 
     useEffect(() => {
         if (socket) {
@@ -77,6 +78,7 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
         jwt: user?.jwt
     };
 
+    const { toast } = useToast();
     useEffect(() => {
         if (socket) {
             socket.emit("rawQuery", auth, salesReportString(), (data: SalesReportData[]) => {
@@ -101,6 +103,12 @@ export default function ManagerTrends({ excessReportData, productUsageReportData
         if (socket) {
             socket.emit("rawQuery", auth, whatSellsTogetherString(), (data: WhatSellsTogetherData[]) => {
                 setWhatSellsTogether(data);
+            });
+        }
+        if ((endDate ? endDate : new Date()) < (beginDate ? beginDate : new Date(1999, 1, 1))) {
+            toast({
+                title: "Inavlid Date",
+                description: "Please make sure the end date isn't before the start date"
             });
         }
     }, [beginDate, endDate]);
