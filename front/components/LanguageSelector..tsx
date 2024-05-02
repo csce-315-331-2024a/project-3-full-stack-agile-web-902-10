@@ -13,6 +13,13 @@ import {
 import { useLanguageStore } from "@/lib/provider/language-store-provider";
 import { language_name_code, getKeyByValue } from "@/lib/utils";
 
+/**
+ * LanguageSelector component.
+ * 
+ * @param translated - The translated object.
+ * @param id - The ID of the component.
+ * @returns The LanguageSelector component.
+ */
 export default function LanguageSelector({ translated, id }: { translated: any, id : string} ) {
     const language = useLanguageStore((state) => state.language);
     const setLanguage = useLanguageStore((state) => state.setLanguage);

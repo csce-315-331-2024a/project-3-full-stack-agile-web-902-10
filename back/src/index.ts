@@ -1,3 +1,7 @@
+/**
+ * Entry point of the application.
+ * Sets up the server to listen on the specified port or the default port 5000.
+ */
 import { io } from "./socket";
 import { setupListen } from "./routes";
 

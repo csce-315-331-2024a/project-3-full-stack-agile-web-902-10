@@ -8,6 +8,11 @@ export const metadata = {
     title: "Menu Board | Rev's Grill",
 };
 
+/**
+ * Menu Board component.
+ * 
+ * @returns The Menu Board component.
+ */
 export default async function menu_board() {
     const menu_items = await prisma.menu_Item.findMany({where: {is_active: true}});
     const categories = Array.from(new Set(menu_items.map((item) => item.category)));

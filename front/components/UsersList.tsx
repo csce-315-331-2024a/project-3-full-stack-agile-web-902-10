@@ -19,6 +19,12 @@ function maskEmail(email: string) {
     return `${firstChar}${maskedPart}@${domain}`;
 };
 
+
+/**
+ * Renders a list of users with their roles and allows changing the roles.
+ * @param users - An array of user objects.
+ * @param user - The currently logged-in user object.
+ */
 export default function UsersList({ users, user }:
     {
         users: Users[],

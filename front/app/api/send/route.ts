@@ -4,6 +4,11 @@ import { Kitchen } from '@prisma/client';
 
 const resend = new Resend(process.env.EMAIL_API);
 
+/**
+ * Handles the POST request to send an email notification for a kitchen order.
+ * @param request - The request object containing the kitchen order details.
+ * @returns A JSON response indicating the success or failure of the email sending process.
+ */
 export async function POST(request: Request) {
     try {
         const kitchen: Kitchen[] = await request.json();

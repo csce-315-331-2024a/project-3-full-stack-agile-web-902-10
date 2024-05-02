@@ -12,6 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
 
+
+/**
+ * Represents the Manager Navigation Bar component.
+ * @param {Object} props - The component props.
+ * @param {string | undefined} props.username - The username of the manager.
+ * @returns {JSX.Element} - The rendered Manager Navigation Bar component.
+ */
 export default function ManagerNavBar({ username }: { 
     username: string | undefined,
     }){

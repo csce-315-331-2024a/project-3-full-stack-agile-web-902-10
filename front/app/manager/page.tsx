@@ -9,6 +9,11 @@ export const metadata = {
     title: "Manager | Rev's Grill",
 };
 
+/**
+ * ManagerPage component.
+ * 
+ * @returns The ManagerPage component.
+ */
 export default async function ManagerPage() {
     const user_session = await getUserSession();
     const user = user_session ? await prisma.users.findUnique({
