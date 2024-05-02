@@ -45,6 +45,13 @@ const static_text = {
     checkout_desc: "Checkout here.",
 }
 
+/**
+ * CashierMenuNavBar component displays the navigation bar for the cashier menu.
+ * 
+ * @param user - The user object.
+ * @param ingredient_menus - An array of ingredient menus.
+ * @param ingredients - An array of ingredients.
+ */
 export default function CashierMenuNavBar({ user, ingredient_menus, ingredients }: { user: Users | null, ingredient_menus: Ingredients_Menu[], ingredients: Ingredient[] }) {
     const { theme, setTheme } = useTheme();
 

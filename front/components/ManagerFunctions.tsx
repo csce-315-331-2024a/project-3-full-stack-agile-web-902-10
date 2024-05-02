@@ -52,6 +52,19 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/lib/imageFB";
 
+
+
+/**
+ * ManagerFunctions component
+ * 
+ * @component ManagerFunctions
+ * @param menu_items_init - Initial array of menu items
+ * @param categories_init - Initial array of categories
+ * @param ingredients_init - Initial array of ingredients
+ * @param menuIngredients_init - Initial array of menu ingredients
+ * @param users_init - Initial array of users
+ * @param user - Current user
+ */
 export default function ManagerFunctions({ menu_items_init, categories_init, ingredients_init, menuIngredients_init, users_init, user }: { menu_items_init: Menu_Item[], categories_init: string[], ingredients_init: Ingredient[], menuIngredients_init: Ingredients_Menu[], users_init: Users[], user: Users | null }) {
     const [showEditDiv, setShowEditDiv] = useState(false);
     const [showTrendDiv, setShowTrendDiv] = useState(false);

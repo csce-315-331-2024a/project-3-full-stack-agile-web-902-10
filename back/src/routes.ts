@@ -859,6 +859,10 @@ export function setupListen() {
     });
 }
 
+/**
+ * 
+ * @param io the socket.io instance
+ */
 export function setupTestListen(io: any) {
     io.on("connect", (socket: any) => {
         console.log("Connected: " + socket.id);

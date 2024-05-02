@@ -16,6 +16,15 @@ import { Menu_Item, Ingredient, Ingredients_Menu } from "@prisma/client"
 import { useCartStore } from "@/lib/provider/cart-store-provider"
 import { CartItem } from "@/lib/stores/cart-store"
 
+/**
+ * Renders the CustomerMenuItem component.
+ * 
+ * @param menu_item - The menu item object.
+ * @param ingredients - The ingredients object.
+ * @param ingredient_menus - The ingredients menu object.
+ * @param translated - The translated text.
+ * @returns The rendered CustomerMenuItem component.
+ */
 export default function CustomerMenuItem({ menu_item, ingredients, ingredient_menus, translated }: { menu_item: Menu_Item, ingredients: Ingredient[], ingredient_menus: Ingredients_Menu[], translated: any }) {
     const cart = useCartStore((state) => state.cart);
     const setCart = useCartStore((state) => state.setCart);

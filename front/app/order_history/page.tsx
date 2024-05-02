@@ -11,6 +11,11 @@ export const metadata = {
     title: "Order History | Rev's Grill",
 };
 
+/**
+ * OrderHistoryPage component.
+ * 
+ * @returns The OrderHistoryPage component.
+ */
 export default async function OrderHistoryPage() {
     const user_session = await getUserSession();
     const user = user_session ? await prisma.users.findUnique({

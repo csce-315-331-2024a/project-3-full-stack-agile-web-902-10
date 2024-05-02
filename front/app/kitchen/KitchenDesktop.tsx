@@ -27,6 +27,16 @@ import {
 } from "@/components/ui/alert-dialog"
 
 
+/**
+ * Renders the KitchenDesktop component.
+ * 
+ * @param user - The user object.
+ * @param menu_items_init - The initial menu items.
+ * @param ingredients_init - The initial ingredients.
+ * @param ingredients_menu_init - The initial ingredient menus.
+ * @param kitchen_init - The initial kitchen orders.
+ * @returns The rendered KitchenDesktop component.
+ */
 export default function KitchenDesktop({ user, menu_items_init, ingredients_init, ingredients_menu_init, kitchen_init }: { user: Users, menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredients_menu_init: Ingredients_Menu[], kitchen_init: Kitchen[] }) {
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
     const [ingredients, setIngredients] = useState<Ingredient[]>(ingredients_init);

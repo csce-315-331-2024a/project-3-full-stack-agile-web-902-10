@@ -7,6 +7,11 @@ import UsersList from "@/components/UsersList";
 import { getUserSession } from "@/lib/session";
 import Redirect from "@/components/Redirect";
 
+/**
+ * UsersPage component.
+ * 
+ * @returns The UsersPage component.
+ */
 export default async function UsersPage() {
     const users = await prisma.users.findMany();
     const session = await getUserSession();

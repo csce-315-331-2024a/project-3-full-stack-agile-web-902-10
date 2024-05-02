@@ -11,6 +11,16 @@ import { useSocket } from "@/lib/socket";
 import CashierMenuItem from "./CashierMenuItem";
 import { useRouter } from "next/navigation";
 
+
+/**
+ * Renders the CashierMenuDesktop component.
+ * 
+ * @param menu_items_init - The initial menu items.
+ * @param ingredients_init - The initial ingredients.
+ * @param ingredient_menus_init - The initial ingredient menus.
+ * @param user - The user object.
+ * @returns The rendered CashierMenuDesktop component.
+ */
 export default function CashierMenuDesktop({ menu_items_init, ingredients_init, ingredient_menus_init, user }: { menu_items_init: Menu_Item[], ingredients_init: Ingredient[], ingredient_menus_init: Ingredients_Menu[], user: Users | null }) {
     // make a state for the selected category
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);

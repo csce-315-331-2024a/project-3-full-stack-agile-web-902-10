@@ -42,6 +42,11 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination"
 
+/**
+ * Renders the OrderHistoryDesktop component.
+ * 
+ * @returns The rendered OrderHistoryDesktop component.
+ */
 export default function OrderHistoryDesktop() {
     const [orders, setOrders] = useState<Order_Log[]>([]);
     const [menu_items, setMenuItems] = useState<Menu_Item[]>([]);

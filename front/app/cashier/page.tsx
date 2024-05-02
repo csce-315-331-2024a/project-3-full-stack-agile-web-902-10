@@ -11,6 +11,11 @@ export const metadata = {
 };
 
 
+/**
+ * MenuPage component.
+ * 
+ * @returns The MenuPage component.
+ */
 export default async function MenuPage() {
     const user_session = await getUserSession();
     const user = user_session ? await prisma.users.findUnique({

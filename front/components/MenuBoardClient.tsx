@@ -5,6 +5,15 @@ import { useEffect } from "react";
 import { useSocket } from "@/lib/socket";
 import { getTemperature, getCondition } from "@/app/api/weather";
 
+
+/**
+ * Component for displaying the menu board on the client side.
+ * 
+ * @param menu_items_init - Initial array of menu items.
+ * @param categories_init - Initial array of categories.
+ * @param temperature_init - Initial temperature value.
+ * @param condition_init - Initial weather condition.
+ */
 export default function MenuBoardClient({menu_items_init, categories_init, temperature_init, condition_init}: {menu_items_init: Menu_Item[], categories_init: string[], temperature_init: number, condition_init: string}) {
 
     const [menu_items, setMenuItems] = useState<Menu_Item[]>(menu_items_init);
