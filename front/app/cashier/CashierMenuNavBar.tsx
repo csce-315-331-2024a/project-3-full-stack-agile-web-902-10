@@ -119,7 +119,9 @@ export default function CashierMenuNavBar({ user, ingredient_menus, ingredients 
     const placeOrder = () => {
         const num = new Date().getTime() % 34212;
         for (let i = 0; i < cart.length; ++i) {
-            handleKitchenCreation(cart[i].menu_item.id, cart[i].ingredient_ids.toString(), num);
+            for (let j = 0; j < cart[i].quantity; ++j) {
+                handleKitchenCreation(cart[i].menu_item.id, cart[i].ingredient_ids.toString(), num);
+            }
         }
         clearCart();
     }
