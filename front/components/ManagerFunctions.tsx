@@ -531,7 +531,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
                                     <div className="">
                                         <div className="flex items-center">
-                                            <Label htmlFor="picture">Select Picture (.webp only)</Label>
+                                            <Label htmlFor="picture">Select Picture</Label>
                                             <p className="text-red-500">*</p>
                                         </div>
                                         {uploadedimageURL === '' ?
@@ -652,7 +652,7 @@ export default function ManagerFunctions({ menu_items_init, categories_init, ing
 
                                                         <div className="">
                                                             <div className="flex items-center py-2">
-                                                                <Label htmlFor="picture">Change Picture (.webp only)</Label>
+                                                                <Label htmlFor="picture">Change Picture</Label>
                                                             </div>
                                                             {uploadedimageURL === '' ?
                                                                 <input
